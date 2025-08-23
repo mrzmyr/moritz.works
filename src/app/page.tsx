@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { LastPosts } from "@/components/last-posts";
+import { StructuredData } from "@/components/structured-data";
 import ActivityIndicator from "../components/activity-indicator";
 import { getBooks } from "../lib/get-books";
 
@@ -11,6 +12,7 @@ export default async function Page() {
 
 	return (
 		<div>
+			<StructuredData type="person" />
 			<div className="text-neutral-800 leading-7 space-y-6">
 				<div className="flex items-center gap-6 mb-6">
 					<div className="flex flex-col">

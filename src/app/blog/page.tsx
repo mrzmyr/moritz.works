@@ -1,7 +1,38 @@
 import dayjs from "dayjs";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { siteConfig } from "@/config/app";
 import { getPosts } from "../../lib/notion";
+
+export const metadata: Metadata = {
+	title: "Blog",
+	description: `Read the latest thoughts and insights from ${siteConfig.author.name} on software engineering, user experience, and engineering management in the climate tech space.`,
+	openGraph: {
+		title: `Blog | ${siteConfig.name}`,
+		description: `Read the latest thoughts and insights from ${siteConfig.author.name} on software engineering, user experience, and engineering management in the climate tech space.`,
+		url: `${siteConfig.url}/blog`,
+		type: "website",
+		images: [
+			{
+				url: `${siteConfig.url}/static/og/default.png`,
+				width: 1200,
+				height: 630,
+				alt: `${siteConfig.author.name} Blog`,
+			},
+		],
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: `Blog | ${siteConfig.name}`,
+		description: `Read the latest thoughts and insights from ${siteConfig.author.name} on software engineering, user experience, and engineering management in the climate tech space.`,
+		images: [`${siteConfig.url}/static/og/default.png`],
+		creator: siteConfig.author.twitter,
+	},
+	alternates: {
+		canonical: `${siteConfig.url}/blog`,
+	},
+};
 
 // Enable ISR with 60 seconds revalidation
 export const revalidate = 60;

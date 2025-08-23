@@ -7,6 +7,8 @@ import { NotionPage } from "@/components/notion-page";
 import { PageBack } from "@/components/page-back";
 import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";
+import { StructuredData } from "@/components/structured-data";
+import { siteConfig } from "@/config/app";
 import { getPost, getPosts } from "@/lib/notion";
 
 // Initialize dayjs plugins
@@ -37,35 +39,66 @@ export async function generateMetadata(props: {
 	const params = await props.params;
 	const post = await getPost(params.slug);
 
+	const postUrl = `${siteConfig.url}/blog/${post.slug}`;
+
 	return {
 		title: post.title,
 		description: post.excerpt,
+		keywords: [...siteConfig.keywords, ...post.title.toLowerCase().split(" ")],
+		authors: [
+			{
+				name: siteConfig.author.name,
+				url: siteConfig.url,
+			},
+		],
+		creator: siteConfig.author.name,
+		publisher: siteConfig.author.name,
 		openGraph: {
+			type: "article",
 			title: post.title,
-			url: `/blog/${post.id}`,
 			description: post.excerpt,
+			url: postUrl,
+			siteName: siteConfig.name,
+			publishedTime: post.createdAt,
+			modifiedTime: post.updatedAt,
+			authors: [siteConfig.author.name],
 			images: [
 				{
-					url: `/static/og/default.png`,
+					url: `${siteConfig.url}/static/og/default.png`,
+					width: 1200,
+					height: 630,
 					alt: post.title,
 				},
 			],
 		},
-		authors: {
-			name: "Moritz Meyer",
-			url: "https://moritz.works",
-		},
 		twitter: {
 			card: "summary_large_image",
+			title: post.title,
+			description: post.excerpt,
+			images: [`${siteConfig.url}/static/og/default.png`],
+			creator: siteConfig.author.twitter,
+		},
+		alternates: {
+			canonical: postUrl,
 		},
 	};
 }
 
 const Content = async ({ slug }: { slug: string }) => {
 	const post = await getPost(slug);
+	const postUrl = `${siteConfig.url}/blog/${post.slug}`;
 
 	return (
 		<>
+			<StructuredData
+				type="article"
+				title={post.title}
+				description={post.excerpt}
+				url={postUrl}
+				datePublished={post.createdAt}
+				dateModified={post.updatedAt}
+				image={`${siteConfig.url}/static/og/default.png`}
+			/>
 			<div className="mb-8">
 				<PostHeadline>{post.title}</PostHeadline>
 				<PostMetadata
