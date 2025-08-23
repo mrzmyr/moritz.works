@@ -33,6 +33,8 @@ export async function generateStaticParams() {
 	}));
 }
 
+export const runtime = "nodejs";
+
 export async function generateMetadata(props: {
 	params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
