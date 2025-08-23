@@ -1,138 +1,10 @@
 "use client";
 
-import {
-	type ParsedFilter,
-	parseFilterAction,
-} from "@/app/blog/linear-filter/actions";
-import {
-	Command,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@/components/ui/command";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { Check, ListFilter } from "lucide-react";
-import { useCallback, useState } from "react";
-import { LinearFilterPill } from "./linear-filter-pill";
-import {
-	AiFilterIcon,
-	AssigneeIcon,
-	DateIcon,
-	LabelIcon,
-	StatusIcon,
-} from "./linear-icons";
-import { Button } from "./ui/button";
+import { useCallback, useEffect, useState } from "react";
+import { parseFilterAction } from "@/app/blog/linear-filter/actions";
+import { FilterType, type ParsedFilter } from "@/app/blog/linear-filter/types";
+import { FilterPill, RootFilterDropdown } from "./linear-filter-pill";
 import { Skeleton } from "./ui/skeleton";
-
-const terms = [
-	{
-		value: "Status",
-		icon: <StatusIcon />,
-	},
-	{
-		value: "Assignee",
-		icon: <AssigneeIcon />,
-	},
-	{
-		value: "Created At",
-		icon: <DateIcon />,
-	},
-	{
-		value: "Label",
-		icon: <LabelIcon />,
-	},
-];
-
-export function FilterDropdown({
-	onSelect,
-}: {
-	onSelect: (value: string) => void;
-}) {
-	const [open, setOpen] = useState(false);
-	const [value, setValue] = useState("");
-	const [filterValue, setFilterValue] = useState("");
-
-	const [filteredItems, setFilteredItems] = useState(terms);
-
-	return (
-		<Popover open={open} onOpenChange={setOpen}>
-			<PopoverTrigger asChild>
-				<Button
-					variant="ghost"
-					aria-expanded={open}
-					className={cn(
-						"px-1.5 h-7 has-[>svg]:px-1.5 font-normal",
-						open && "bg-neutral-100",
-					)}
-				>
-					<ListFilter className="w-3 h-3" />
-					Filter…
-				</Button>
-			</PopoverTrigger>
-			<PopoverContent align="start" className="p-0">
-				<Command shouldFilter={false}>
-					<CommandInput
-						placeholder="Filter…"
-						className="h-9"
-						onValueChange={(value) => {
-							setFilterValue(value.trim());
-							setFilteredItems(
-								terms.filter((term) =>
-									term.value.toLowerCase().includes(value.toLowerCase()),
-								),
-							);
-						}}
-					/>
-					<CommandList>
-						<CommandGroup>
-							{filteredItems.map((term) => (
-								<CommandItem
-									key={term.value}
-									value={term.value}
-									onSelect={(currentValue) => {
-										setValue(currentValue === value ? "" : currentValue);
-										setOpen(false);
-									}}
-								>
-									<div className="flex flex-row gap-2 items-center">
-										{term.icon}
-										{term.value}
-									</div>
-									<Check
-										className={cn(
-											"ml-auto",
-											value === term.value ? "opacity-100" : "opacity-0",
-										)}
-									/>
-								</CommandItem>
-							))}
-							<CommandItem
-								value="ai_filter"
-								onSelect={() => onSelect(filterValue)}
-							>
-								<div className="flex flex-row gap-2 items-center">
-									<AiFilterIcon />
-									<span>AI Filter</span>
-									{filterValue && (
-										<span className="text-muted-foreground">
-											"{filterValue}"
-										</span>
-									)}
-								</div>
-							</CommandItem>
-						</CommandGroup>
-					</CommandList>
-				</Command>
-			</PopoverContent>
-		</Popover>
-	);
-}
 
 export function LinearFilter({
 	onFiltersChange,
@@ -143,47 +15,50 @@ export function LinearFilter({
 	const [parsedFilters, setParsedFilters] = useState<ParsedFilter | null>({
 		conditions: [
 			{
-				type: "label",
+				name: "Label",
+				type: FilterType.LABEL,
 				operator: "not_include",
 				value: ["bug", "feature"],
+				selectedValue: [],
 			},
 			{
-				type: "status",
+				name: "Status",
+				type: FilterType.STATUS,
 				operator: "equals",
 				value: ["done"],
+				selectedValue: [],
 			},
 		],
 		raw_input: "label not includes bug or feature and status done",
 	});
 
-	const onSelect = (newQuery: string) => {
-		parse(newQuery);
-	};
+	// Sync parsed filters with parent component
+	useEffect(() => {
+		onFiltersChange(parsedFilters);
+	}, [parsedFilters, onFiltersChange]);
 
-	const parse = useCallback(
-		async (query: string) => {
-			setIsLoading(true);
+	const parse = useCallback(async (query: string) => {
+		const q = query.trim();
+		if (!q) return;
 
-			setParsedFilters(null);
-			onFiltersChange(null);
+		setIsLoading(true);
+		setParsedFilters(null);
 
-			const result = await parseFilterAction(query);
-
+		try {
+			const result = await parseFilterAction(q);
 			if (result.success) {
 				setParsedFilters(result.data);
-				onFiltersChange(result.data);
 			}
-
+		} finally {
 			setIsLoading(false);
-		},
-		[onFiltersChange],
-	);
+		}
+	}, []);
 
-	const hasFilters = parsedFilters && parsedFilters.conditions.length > 0;
+	const hasFilters = !!parsedFilters?.conditions?.length;
 
 	return (
-		<div>
-			{!hasFilters && !isLoading && <FilterDropdown onSelect={onSelect} />}
+		<div className="h-[28px] flex items-center">
+			{!hasFilters && !isLoading && <RootFilterDropdown onSelect={parse} />}
 
 			{isLoading && (
 				<div className="flex flex-row gap-2 flex-wrap">
@@ -192,22 +67,22 @@ export function LinearFilter({
 				</div>
 			)}
 
-			{hasFilters && (
+			{hasFilters && parsedFilters && (
 				<div className="flex flex-row gap-2 flex-wrap">
-					{parsedFilters.conditions.map((condition) => (
-						<LinearFilterPill
-							key={condition.type}
+					{parsedFilters.conditions.map((condition, idx) => (
+						<FilterPill
+							key={`${condition.type}-${condition.operator}-${idx}`}
 							filter={condition}
-							onRemove={(filter) => {
-								const newFilters = {
-									...parsedFilters,
-									conditions: parsedFilters.conditions.filter(
-										(c) => c.type !== filter.type,
-									),
-								};
-
-								setParsedFilters(newFilters);
-								onFiltersChange(newFilters);
+							onRemove={(toRemove) => {
+								setParsedFilters((prev) => {
+									if (!prev) return prev;
+									const next: ParsedFilter = {
+										...prev,
+										conditions: prev.conditions.filter((c) => c !== toRemove),
+									};
+									onFiltersChange(next);
+									return next;
+								});
 							}}
 						/>
 					))}

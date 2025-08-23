@@ -1,3 +1,5 @@
+import { Check } from "lucide-react";
+
 export const DateIcon = () => {
 	return (
 		<svg
@@ -97,5 +99,114 @@ export const AiFilterIcon = () => {
 			<path d="M3.35661 7.75299C3.4804 7.75299 3.58698 7.84037 3.61126 7.96175L4.09841 10.3975L6.01651 10.877C6.13211 10.9059 6.21321 11.0098 6.21321 11.129C6.21321 11.2481 6.13211 11.352 6.01651 11.3809L4.09841 11.8604L3.61126 14.2962C3.58698 14.4176 3.4804 14.505 3.35661 14.505C3.23282 14.505 3.12624 14.4176 3.10196 14.2962L2.61481 11.8604L0.696707 11.3809C0.581101 11.352 0.5 11.2481 0.5 11.129C0.5 11.0098 0.581101 10.9059 0.696707 10.877L2.61481 10.3975L3.10196 7.96175C3.12624 7.84037 3.23282 7.75299 3.35661 7.75299Z"></path>
 			<path d="M6.47291 12.4274C6.58469 12.4274 6.68392 12.499 6.71927 12.605L6.9379 13.2609L7.59379 13.4795C7.69983 13.5149 7.77136 13.6141 7.77136 13.7259C7.77137 13.8377 7.69984 13.9369 7.5938 13.9722L6.9379 14.1909L6.71927 14.8468C6.68392 14.9528 6.58469 15.0244 6.47291 15.0244C6.36113 15.0244 6.26189 14.9528 6.22654 14.8468L6.00791 14.1909L5.35201 13.9722C5.24597 13.9369 5.17445 13.8377 5.17445 13.7259C5.17445 13.6141 5.24598 13.5149 5.35202 13.4795L6.00791 13.2609L6.22654 12.605C6.26189 12.499 6.36113 12.4274 6.47291 12.4274Z"></path>
 		</svg>
+	);
+};
+
+export const TodoIcon = () => {
+	return (
+		<svg
+			width="14"
+			height="14"
+			viewBox="0 0 14 14"
+			fill="none"
+			role="img"
+			focusable="false"
+			aria-hidden="true"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<circle
+				cx="7"
+				cy="7"
+				r="6"
+				fill="none"
+				stroke="lch(68.75% 0 139.088)"
+				strokeWidth="1.5"
+				strokeDasharray="3.14 0"
+				strokeDashoffset="-0.7"
+			></circle>
+			<circle
+				className="progress"
+				cx="7"
+				cy="7"
+				r="2"
+				fill="none"
+				stroke="lch(68.75% 0 139.088)"
+				strokeWidth="4"
+				strokeDasharray="11.309733552923255 22.61946710584651"
+				strokeDashoffset="11.309733552923255"
+				transform="rotate(-90 7 7)"
+			></circle>
+		</svg>
+	);
+};
+
+export const InProgressIcon = () => {
+	return (
+		<svg width="14" height="14" viewBox="0 0 14 14" fill="none" role="img">
+			<title>In Progress</title>
+			<circle
+				cx="7"
+				cy="7"
+				r="6"
+				fill="none"
+				stroke="lch(80% 90 85)"
+				strokeWidth="1.5"
+				strokeDasharray="3.14 0"
+				strokeDashoffset="-0.7"
+			></circle>
+			<circle
+				cx="7"
+				cy="7"
+				r="2"
+				fill="none"
+				stroke="lch(80% 90 85)"
+				strokeWidth="4"
+				strokeDasharray="11.309733552923255 22.61946710584651"
+				strokeDashoffset="9.896016858807847"
+				transform="rotate(-90 7 7)"
+			></circle>
+		</svg>
+	);
+};
+
+export const DoneIcon = () => {
+	return (
+		<span className="relative flex items-center justify-center">
+			<span className="absolute w-3.5 h-3.5 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+				<Check className="w-3.5! h-3.5! text-white" />
+			</span>
+			<svg
+				width="14"
+				height="14"
+				viewBox="0 0 14 14"
+				fill="none"
+				role="img"
+				focusable="false"
+				aria-hidden="true"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<circle
+					cx="7"
+					cy="7"
+					r="6"
+					fill="none"
+					stroke="lch(48% 59.31 288.43)"
+					strokeWidth="1.5"
+					strokeDasharray="3.14 0"
+					strokeDashoffset="-0.7"
+				></circle>
+				<circle
+					cx="7"
+					cy="7"
+					r="3"
+					fill="none"
+					stroke="lch(48% 59.31 288.43)"
+					strokeWidth="6"
+					strokeDasharray="18.84955592153876 37.69911184307752"
+					strokeDashoffset="0"
+					transform="rotate(-90 7 7)"
+				></circle>
+			</svg>
+		</span>
 	);
 };
