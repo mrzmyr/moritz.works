@@ -17,7 +17,6 @@ import {
 	CodeBlockHeader,
 	CodeBlockItem,
 } from "@/components/ui/kibo-ui/code-block";
-import Video from "@/components/video";
 import PostComments from "../../../components/comments";
 import type { ParsedFilter } from "./types";
 import { FilterType } from "./types";
@@ -61,7 +60,7 @@ export default function LinearFilterDemo() {
 			<PageBack />
 
 			<div className="mb-8">
-				<PostHeadline>How Linear's AI Filter Really Works</PostHeadline>
+				<PostHeadline>How Linear&apos;s AI Filter Really Works</PostHeadline>
 				<PostMetadata
 					createdAt={new Date("2025-08-18")}
 					updatedAt={new Date("2025-08-18")}
@@ -130,10 +129,10 @@ export default function LinearFilterDemo() {
 				<h2>The Magic Behind Natural Language Filtering</h2>
 
 				<p>
-					Linear's AI filter feels like magic because it bridges the gap between
-					how we think and how computers understand data. Instead of memorizing
-					syntax like <code>label:bug AND status:todo</code>, you just type
-					"show me bugs that need work."
+					Linear&apos;s AI filter feels like magic because it bridges the gap
+					between how we think and how computers understand data. Instead of
+					memorizing syntax like <code>label:bug AND status:todo</code>, you
+					just type &quot;show me bugs that need work.&quot;
 				</p>
 
 				<h3>The OpenAI API Implementation</h3>
@@ -326,17 +325,17 @@ export const parsedFilter = z.object({
 
 				<p>
 					Most implementations fail because they try to be too clever. Instead
-					of building complex NLP pipelines, we leverage the LLM's existing
+					of building complex NLP pipelines, we leverage the LLM&apos;s existing
 					language understanding and constrain the output format. The AI handles
-					the ambiguity ("bugs older than 3 months" → date filter with "before"
-					operator), while Zod handles the validation.
+					the ambiguity (&quot;bugs older than 3 months&quot; → date filter with
+					&quot;before&quot; operator), while Zod handles the validation.
 				</p>
 
 				<p>
 					The system is forgiving on input but strict on output. Users can say
-					"bugs from last week" or "show me old bug reports" and both get parsed
-					correctly. The structured response format means the frontend always
-					knows exactly what to render.
+					&quot;bugs from last week&quot; or &quot;show me old bug reports&quot;
+					and both get parsed correctly. The structured response format means
+					the frontend always knows exactly what to render.
 				</p>
 
 				<p>

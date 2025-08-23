@@ -191,7 +191,7 @@ export function RootFilterDropdown({
 									<span>AI Filter</span>
 									{query.trim() && (
 										<span className="text-muted-foreground">
-											"{query.trim()}"
+											&quot;{query.trim()}&quot;
 										</span>
 									)}
 								</div>

@@ -5,7 +5,7 @@ const PostComments = ({ slug }: { slug: string }) => {
 	return (
 		<Script
 			src="https://utteranc.es/client.js"
-			// @ts-expect-error
+			// @ts-expect-error - this is a valid attribute
 			repo={GITHUB_REPO}
 			issue-term={slug}
 			theme="preferred-color-scheme"

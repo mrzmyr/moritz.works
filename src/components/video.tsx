@@ -14,7 +14,11 @@ const Video = ({
 	const togglePlay = () => {
 		if (ref.current) {
 			setIsPlaying((prev) => !prev);
-			ref.current.paused ? ref.current.play() : ref.current.pause();
+			if (ref.current.paused) {
+				ref.current.play();
+			} else {
+				ref.current.pause();
+			}
 		}
 	};
 
