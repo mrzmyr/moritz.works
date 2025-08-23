@@ -2,11 +2,68 @@ import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import type React from "react";
 import { Toaster } from "sonner";
+import { StructuredData } from "@/components/structured-data";
+import { siteConfig } from "@/config/app";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "moritz.works",
-	description: "Where I write down little realizations I make on my way.",
+	title: {
+		default: siteConfig.title,
+		template: `%s | ${siteConfig.name}`,
+	},
+	description: siteConfig.description,
+	keywords: siteConfig.keywords,
+	authors: [
+		{
+			name: siteConfig.author.name,
+			url: siteConfig.url,
+		},
+	],
+	creator: siteConfig.author.name,
+	openGraph: {
+		type: "website",
+		locale: "en_US",
+		url: siteConfig.url,
+		title: siteConfig.title,
+		description: siteConfig.description,
+		siteName: siteConfig.name,
+		images: [
+			{
+				url: `${siteConfig.url}/static/og/default.png`,
+				width: 1200,
+				height: 630,
+				alt: siteConfig.title,
+			},
+		],
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: siteConfig.title,
+		description: siteConfig.description,
+		images: [`${siteConfig.url}/static/og/default.png`],
+		creator: siteConfig.author.twitter,
+	},
+	robots: {
+		index: true,
+		follow: true,
+		googleBot: {
+			index: true,
+			follow: true,
+			"max-video-preview": -1,
+			"max-image-preview": "large",
+			"max-snippet": -1,
+		},
+	},
+	manifest: "/manifest.json",
+	icons: {
+		icon: "/favicon.svg",
+		shortcut: "/favicon.ico",
+		apple: "/favicon.svg",
+	},
+	metadataBase: new URL(siteConfig.url),
+	alternates: {
+		canonical: "/",
+	},
 };
 
 export default function RootLayout({
@@ -16,6 +73,10 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en" className="dark:bg-neutral-900 antialiased">
+			<head>
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<StructuredData type="website" />
+			</head>
 			<body className="bg-neutral-50 dark:bg-neutral-900 antialiased">
 				<div className="max-w-2xl lg:max-w-3xl mx-auto pt-8 pb-12 px-4 h-full">
 					{children}
