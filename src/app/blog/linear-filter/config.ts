@@ -1,5 +1,4 @@
-export const SYSTEM_PROMPT = `You are a filter parser for a Linear-like issue tracking system. 
-Parse natural language filter descriptions into structured JSON format.
+export const SYSTEM_PROMPT = `You are a filter parser. Parse natural language filter descriptions into structured JSON format.
 
 If you see multiple consititions, return an array of conditions.
 

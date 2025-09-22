@@ -11,13 +11,13 @@ const openai = new OpenAI({
 
 export async function parseFilterAction(input: string): Promise<
 	| {
-			success: true;
-			data: ParsedFilter;
-	  }
+		success: true;
+		data: ParsedFilter;
+	}
 	| {
-			success: false;
-			error: string;
-	  }
+		success: false;
+		error: string;
+	}
 > {
 	if (!input?.trim()) {
 		return { success: false, error: "Input is required" };

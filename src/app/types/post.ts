@@ -1,4 +1,4 @@
-import { ExtendedRecordMap } from "notion-types";
+import type { ExtendedRecordMap } from "notion-types";
 
 export type Post = {
   id: string;
