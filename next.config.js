@@ -6,11 +6,11 @@ module.exports = {
   async rewrites() {
     return [
       {
-        source: "/ingest/static/:path*",
+        source: "/relay-4Hyx/static/:path*",
         destination: "https://eu-assets.i.posthog.com/static/:path*",
       },
       {
-        source: "/ingest/:path*",
+        source: "/relay-4Hyx/:path*",
         destination: "https://eu.i.posthog.com/:path*",
       },
     ];
