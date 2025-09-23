@@ -69,7 +69,7 @@ const WorkList = () => {
         from="2022"
       />
       <WorkListItem
-        image="/static/images/bemer-logo-2.png"
+        image="/static/images/bemer-logo.png"
         title="Project Manager"
         country="CH"
         name="BEMER"
