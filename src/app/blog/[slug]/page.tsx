@@ -119,15 +119,15 @@ const Skeleton = () => {
   return (
     <div className="animate-pulse">
       <div className="mb-8">
-        <div className="h-8 bg-neutral-200 rounded mb-2 w-3/4"></div>
-        <div className="h-4 bg-neutral-200 rounded w-1/2 mt-2"></div>
+        <div className="h-8 bg-neutral-200 dark:bg-neutral-800 rounded mb-2 w-3/4"></div>
+        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-1/2 mt-2"></div>
       </div>
       <div className="space-y-4">
-        <div className="h-4 bg-neutral-200 rounded w-full"></div>
-        <div className="h-4 bg-neutral-200 rounded w-full"></div>
-        <div className="h-4 bg-neutral-200 rounded w-3/4"></div>
-        <div className="h-4 bg-neutral-200 rounded w-5/6"></div>
-        <div className="h-4 bg-neutral-200 rounded w-2/3"></div>
+        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-full"></div>
+        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-full"></div>
+        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-3/4"></div>
+        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-5/6"></div>
+        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-2/3"></div>
       </div>
     </div>
   );
