@@ -3,11 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { parseFilterAction } from "@/app/blog/linear-filter/actions";
 import { FilterType, type ParsedFilter } from "@/app/blog/linear-filter/types";
-import {
-  FilterPill,
-  RootFilterDropdown,
-} from "../app/blog/linear-filter/components/linear-filter-pill";
-import { Skeleton } from "./ui/skeleton";
+import { FilterPill, RootFilterDropdown } from "./linear-filter-pill";
+import { Skeleton } from "../../../../components/ui/skeleton";
 
 export function LinearFilter({
   onFiltersChange,
