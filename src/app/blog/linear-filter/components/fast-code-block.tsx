@@ -1,13 +1,10 @@
 import {
+  type BundledLanguage,
   CodeBlock,
   CodeBlockBody,
   CodeBlockContent,
-  CodeBlockData,
-  CodeBlockFilename,
-  CodeBlockFiles,
-  CodeBlockHeader,
+  type CodeBlockData,
   CodeBlockItem,
-  type BundledLanguage,
 } from "@/components/ui/kibo-ui/code-block";
 import { cn } from "@/lib/utils";
 

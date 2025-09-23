@@ -1,9 +1,9 @@
 "use client";
 
-import { parseFilterAction } from "@/app/blog/linear-filter/actions";
-import { FilterType, type ParsedFilter } from "@/app/blog/linear-filter/types";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useCallback, useEffect, useState } from "react";
+import { parseFilterAction } from "@/app/blog/linear-filter/actions";
+import type { ParsedFilter } from "@/app/blog/linear-filter/types";
+import { Skeleton } from "@/components/ui/skeleton";
 import { FilterDropdown } from "./filter-dropdown";
 import { FilterPill } from "./filter-pill";
 
