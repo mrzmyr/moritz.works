@@ -21,6 +21,7 @@ const QuickLink = ({
 }: {
   children: React.ReactNode;
   href: string;
+  [key: string]: any;
 }) => {
   return (
     <Link
