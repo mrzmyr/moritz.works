@@ -31,7 +31,11 @@ export const PostComments = ({ slug }: { slug: string }) => {
     script.setAttribute("data-loading", "lazy");
 
     ref.current.appendChild(script);
-  }, []);
+  }, [slug]);
 
-  return <div className="-mt-4" ref={ref} />;
+  return (
+    <div className="mt-12 border-t border-neutral-200 dark:border-neutral-800 pt-8">
+      <div ref={ref} />
+    </div>
+  );
 };

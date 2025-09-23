@@ -7,7 +7,7 @@ import { PageBack } from "@/components/page-back";
 import { PostComments } from "@/components/post-comments";
 import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";
-import { StructuredData } from "@/components/structured-data";
+import { PostStructuredData } from "@/components/post-structured-data";
 import { siteConfig } from "@/config/app";
 import { getPost, getPosts } from "@/lib/notion";
 
@@ -92,7 +92,7 @@ const Content = async ({ slug }: { slug: string }) => {
 
   return (
     <>
-      <StructuredData
+      <PostStructuredData
         type="article"
         title={post.title}
         description={post.excerpt}

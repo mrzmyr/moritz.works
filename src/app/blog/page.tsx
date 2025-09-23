@@ -1,9 +1,16 @@
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import {
+  PostListItem,
+  PostListItemSkeleton,
+} from "@/components/post-list-item";
 import { siteConfig } from "@/config/app";
 import { getPosts } from "../../lib/notion";
+
+dayjs.extend(relativeTime);
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -38,21 +45,20 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 const PostsSkeleton = () => {
+  const skeletonKeys = [
+    "posts-skeleton-1",
+    "posts-skeleton-2",
+    "posts-skeleton-3",
+    "posts-skeleton-4",
+    "posts-skeleton-5",
+  ];
+
   return (
-    <ul className="space-y-4">
-      {[...Array(5)].map((_, index) => (
-        <li
-          key={index}
-          className="border-b border-neutral-200 dark:border-neutral-800 pb-4"
-        >
-          <div className="animate-pulse">
-            <div className="h-6 bg-neutral-200 dark:bg-neutral-800 rounded mb-2"></div>
-            <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-3/4 mb-2"></div>
-            <div className="h-3 bg-neutral-200 dark:bg-neutral-800 rounded w-1/4 mt-2"></div>
-          </div>
-        </li>
+    <>
+      {skeletonKeys.map((key) => (
+        <PostListItemSkeleton key={key} />
       ))}
-    </ul>
+    </>
   );
 };
 
@@ -60,32 +66,18 @@ const Posts = async () => {
   const posts = await getPosts();
 
   return (
-    <div className="-ml-4">
+    <>
       {posts.map((post) => (
-        <Link
-          href={`/blog/${post.slug}`}
-          className="group flex flex-col gap-4 p-4 rounded-lg hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50"
+        <PostListItem
+          id={post.id}
+          slug={post.slug!}
+          title={post.title}
+          excerpt={post.excerpt}
+          createdAt={post.createdAt}
           key={post.id}
-        >
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2 justify-between">
-              <h2 className="text-lg font-medium dark:text-white">
-                {post.title}
-              </h2>
-              <div className="text-xl text-neutral-500 dark:text-neutral-400 mt-2">
-                {post.icon.emoji}
-              </div>
-            </div>
-            <div className="text-sm text-neutral-600 dark:text-neutral-400">
-              {post.excerpt}
-            </div>
-          </div>
-          <div className="text-xs text-neutral-400 dark:text-neutral-400">
-            {dayjs(post.createdAt).format("MMMM D, YYYY")}
-          </div>
-        </Link>
+        />
       ))}
-    </div>
+    </>
   );
 };
 
@@ -100,10 +92,14 @@ export default async function Page() {
           ← Back
         </Link>
       </div>
-      <h1 className="text-3xl font-bold mb-8 dark:text-white">Blog</h1>
-      <Suspense fallback={<PostsSkeleton />}>
-        <Posts />
-      </Suspense>
+
+      <h1 className="text-2xl font-medium mb-4">Blog</h1>
+
+      <div className="flex flex-col gap-2 -ml-4">
+        <Suspense fallback={<PostsSkeleton />}>
+          <Posts />
+        </Suspense>
+      </div>
     </>
   );
 }

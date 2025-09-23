@@ -1,11 +1,11 @@
-import { StructuredData } from "@/components/structured-data";
-import { siteConfig } from "@/config/app";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import type React from "react";
 import { Toaster } from "sonner";
+import { PostStructuredData } from "@/components/post-structured-data";
+import { siteConfig } from "@/config/app";
 import "./globals.css";
-import { PostHogProvider } from "./providers";
+import { PostHogProvider } from "@/app/providers";
 
 export const metadata: Metadata = {
   title: {
@@ -80,7 +80,7 @@ export default function RootLayout({
     >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <StructuredData type="website" />
+        <PostStructuredData type="website" />
       </head>
       <body className="bg-neutral-50 dark:bg-neutral-900 antialiased">
         <div className="max-w-2xl lg:max-w-3xl mx-auto pt-8 pb-12 px-4 h-full">
