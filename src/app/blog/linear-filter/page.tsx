@@ -51,8 +51,9 @@ export default function LinearFilterDemo() {
         <p>
           But there&apos;s one LLM capability I can&apos;t stop being fascinated
           by: how effortlessly they handle translation. Not just from{" "}
-          <span className="font-semibold">"中文 to русский</span> or{" "}
-          <span className="font-semibold">español to Deutsch</span>, but from{" "}
+          <span className="font-semibold">&quot;中文 to русский</span> or{" "}
+          <span className="font-semibold">español to Deutsch&quot;</span>, but
+          from{" "}
           <span className="font-semibold">
             natural language to structured data
           </span>
@@ -81,7 +82,7 @@ export default function LinearFilterDemo() {
           >
             Product Intelligence feature
           </a>
-          .
+          ).
         </p>{" "}
         <p>
           It feels magical: instead of memorizing syntax like{" "}
@@ -125,7 +126,10 @@ export default function LinearFilterDemo() {
           </FigureContent>
         </Figure>
         <H2>Demo</H2>
-        <p>Try it yourself, by typing e.g. "show me bugs that need work."</p>
+        <p>
+          Try it yourself, by typing e.g. &quot;show me bugs that need
+          work.&quot;
+        </p>
         <Figure>
           <FigureContent>
             <Filter onChange={() => {}} />
@@ -135,7 +139,7 @@ export default function LinearFilterDemo() {
         <p>
           We will use <code>gpt-4o-mini</code> for this example.The system
           prompt is surprisingly minimal but effective. We add the current date,
-          to support relative date queries ("bugs since last week").
+          to support relative date queries (&quot;bugs since last week&quot;).
         </p>
         <SystemPromptCodeBlock />
         <div className=" mt-6">
@@ -170,8 +174,8 @@ export default function LinearFilterDemo() {
           <FilterSchemaCodeBlock />
         </div>
         <div className="mt-6">
-          Here's an example output of the filter schema which we will use later
-          on.
+          Here&apos;s an example output of the filter schema which we will use
+          later on.
         </div>
         <FilterSchemaExampleCodeBlock />
         <H2>Parsing via LLM</H2>
@@ -259,7 +263,7 @@ export default function LinearFilterDemo() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Hayden's
+            Hayden&apos;s
           </a>{" "}
           <a
             href="https://www.kibo-ui.com/components/pill"
