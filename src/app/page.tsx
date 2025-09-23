@@ -52,12 +52,14 @@ export default async function Page() {
           Currently, I&apos;m working as{" "}
           <span className="font-semibold">Engineering Manager</span> at{" "}
           <span className="font-semibold">1KOMMA5°</span> in the{" "}
-          <TreeDeciduous className="inline-block w-4 h-4 -mt-1 -mr-0.5" />{" "}
-          Climate Tech space, mostly focused on customer experience in delivery
-          processes.
+          <span>
+            <TreeDeciduous className="inline-block w-4 h-4 -mt-1 -mr-0.5" />{" "}
+            Climate Tech
+          </span>{" "}
+          space, mostly focused on customer experience in delivery processes.
         </div>
         <div className="leading-7">
-          Originally studied the combination of computer science and psychology
+          Originally I studied a combination of computer science and psychology
           namely Usability Engineering, made a{" "}
           <a
             href="https://www.researchgate.net/publication/335566326_Emoji_Emoji_on_the_Wall_Show_Me_One_I_Show_You_All_-_An_Exploratory_Study_on_the_Connection_Between_Traits_and_Emoji_Usage"
