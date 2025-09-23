@@ -21,7 +21,7 @@ export const PostListItem = ({
     <Link
       href={`/blog/${slug}`}
       key={id}
-      className="flex justify-between group items-start hover:bg-neutral-100 dark:hover:bg-neutral-800 px-4 py-2.5 rounded-md"
+      className="flex flex-col sm:flex-row justify-between group items-start hover:bg-neutral-100 dark:hover:bg-neutral-800 px-4 py-2.5 rounded-md"
     >
       <div className="flex flex-col gap-1">
         <div className="dark:text-white">{title}</div>
@@ -31,7 +31,7 @@ export const PostListItem = ({
           </div>
         )}
       </div>
-      <div className="text-sm text-neutral-400 dark:text-neutral-400">
+      <div className="text-sm text-neutral-400 dark:text-neutral-400 mt-2 sm:mt-0">
         {dayjs(createdAt).fromNow()}
       </div>
     </Link>

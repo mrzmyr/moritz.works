@@ -95,7 +95,7 @@ export default async function Page() {
 
       <h1 className="text-2xl font-medium mb-4 dark:text-white">Blog</h1>
 
-      <div className="flex flex-col gap-2 -ml-4">
+      <div className="flex flex-col gap-2 -ml-4 -mr-4">
         <Suspense fallback={<PostsSkeleton />}>
           <Posts />
         </Suspense>
