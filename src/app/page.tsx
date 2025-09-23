@@ -49,7 +49,7 @@ export default async function Page() {
           Hey, I&apos;m Moritz. I work in the triangle{" "}
           <span className="text-[12px] px-0.5 -mt-1 inline-block">◢</span> of
           Software Engineering, User Experience, and Engineering Management.
-          Currently, I&apos;m work as{" "}
+          Currently, I&apos;m working as{" "}
           <span className="font-semibold">Engineering Manager</span> at{" "}
           <span className="font-semibold">1KOMMA5°</span> in the{" "}
           <TreeDeciduous className="inline-block w-4 h-4 -mt-1 -mr-0.5" />{" "}
