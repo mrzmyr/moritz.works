@@ -1,45 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import { parseFilterAction } from "@/app/blog/linear-filter/actions";
 import { FilterType, type ParsedFilter } from "@/app/blog/linear-filter/types";
-import {
-  FilterPill,
-  RootFilterDropdown,
-} from "../app/blog/linear-filter/components/linear-filter-pill";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCallback, useEffect, useState } from "react";
+import { FilterDropdown } from "./filter-dropdown";
+import { FilterPill } from "./filter-pill";
 
-export function LinearFilter({
-  onFiltersChange,
+export function Filter({
+  onChange,
+  initialFilters,
 }: {
-  onFiltersChange: (filters: ParsedFilter | null) => void;
+  onChange: (filters: ParsedFilter | null) => void;
+  initialFilters?: ParsedFilter | null;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShake, setShouldShake] = useState(false);
-  const [parsedFilters, setParsedFilters] = useState<ParsedFilter | null>({
-    conditions: [
-      {
-        name: "Label",
-        type: FilterType.LABEL,
-        operator: "not_include",
-        value: ["bug", "feature"],
-        selectedValue: [],
-      },
-      {
-        name: "Status",
-        type: FilterType.STATUS,
-        operator: "equals",
-        value: ["done"],
-        selectedValue: [],
-      },
-    ],
-    raw_input: "label not includes bug or feature and status done",
-  });
+  const [parsedFilters, setParsedFilters] = useState<ParsedFilter | null>(
+    initialFilters || null
+  );
 
   // Sync parsed filters with parent component
   useEffect(() => {
-    onFiltersChange(parsedFilters);
-  }, [parsedFilters, onFiltersChange]);
+    onChange(parsedFilters);
+  }, [parsedFilters, onChange]);
 
   const parse = useCallback(async (query: string) => {
     const q = query.trim();
@@ -68,7 +52,7 @@ export function LinearFilter({
   return (
     <div className="h-[28px] flex items-center">
       {!hasFilters && !isLoading && (
-        <RootFilterDropdown onSelect={parse} shouldShake={shouldShake} />
+        <FilterDropdown onSelect={parse} shouldShake={shouldShake} />
       )}
 
       {isLoading && (

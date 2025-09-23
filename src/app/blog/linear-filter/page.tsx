@@ -1,11 +1,15 @@
 "use client";
 
-import { DemoBox } from "@/components/demo-box";
+import Image from "next/image";
+import { Figure, FigureCaption, FigureContent } from "@/components/figure";
+import { H2, H3 } from "@/components/headlines";
 import { PageBack } from "@/components/page-back";
 import { PostComments } from "@/components/post-comments";
 import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";
-import Image from "next/image";
+import { FastCodeBlock } from "./components/fast-code-block";
+import { Filter } from "./components/filter";
+import { FilterClose } from "./components/filter-close";
 import { FilterOperator } from "./components/filter-operator";
 import { FilterPill } from "./components/filter-pill";
 import {
@@ -16,20 +20,8 @@ import { FilterTypeBadge } from "./components/filter-type-badge";
 import { FilterValueSelector } from "./components/filter-value-selector";
 import { DateIcon, LabelIcon, StatusIcon } from "./components/icons";
 import { LlmActionCodeBlock } from "./components/llm-action-code-block";
-import { RootFilterDropdown } from "./components/root-filter-dropdown";
 import { SystemPromptCodeBlock } from "./components/system-prompt-code-block";
 import { FilterType } from "./types";
-import {
-  CodeBlock,
-  CodeBlockBody,
-  CodeBlockItem,
-  CodeBlockContent,
-  type BundledLanguage,
-} from "@/components/ui/kibo-ui/code-block";
-import { FastCodeBlock } from "./components/fast-code-block";
-import { XIcon } from "lucide-react";
-import { FilterClose } from "./components/filter-close";
-import { toast } from "sonner";
 
 export default function LinearFilterDemo() {
   return (
@@ -44,37 +36,110 @@ export default function LinearFilterDemo() {
         />
       </div>
 
-      <div className="prose dark:prose-invert max-w-none prose-headings:mb-2 text-neutral-900 prose-li:my-0.5 prose-ul:pl-4 prose-code:bg-neutral-100/50 prose-code:border prose-code:border-neutral-200 prose-code:text-neutral-900 prose-code:rounded-md prose-code:px-1 prose-code:py-0 prose-code:font-normal prose-code:after:content-[''] prose-code:before:content-['']">
+      <div className="prose dark:prose-invert max-w-none prose-headings:mb-2 text-neutral-900 prose-li:my-0.5 prose-ul:pl-4 prose-code:bg-neutral-100/50 prose-code:border prose-code:border-neutral-200 prose-code:text-neutral-900 prose-code:rounded-md prose-code:px-1 prose-code:py-0 prose-code:font-normal prose-code:after:content-[''] prose-code:before:content-[''] prose-a:no-underline">
         <p>
-          Linear&apos;s AI filter feels like magic because it bridges the gap
-          between how we think and how computers understand data. Instead of
-          memorizing syntax like <code>label:bug AND status:todo</code>, you
-          just type &quot;show me bugs that need work.&quot;
+          So here we are in 2025, hype everywhere,{" "}
+          <a
+            href="https://www.forbes.com/sites/jasonsnyder/2025/08/26/mit-finds-95-of-genai-pilots-fail-because-companies-avoid-friction"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            yet 95% of AI projects fail
+          </a>
+          .
         </p>
-
+        <p>
+          But there&apos;s one LLM capability I can&apos;t stop being fascinated
+          by: how effortlessly they handle translation. Not just from{" "}
+          <span className="font-semibold">"中文 to русский</span> or{" "}
+          <span className="font-semibold">español to Deutsch</span>, but from{" "}
+          <span className="font-semibold">
+            natural language to structured data
+          </span>
+          .
+        </p>
+        <p>
+          In my view, that&apos;s one of the best real-world applications of AI
+          in products today along with code generation in IDE like Cursor or
+          Windsurf.
+        </p>
+        <p>
+          One company that nails this is{" "}
+          <a
+            href="https://linear.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold"
+          >
+            Linear
+          </a>
+          , with their AI-powered filters (long before their{" "}
+          <a
+            href="https://linear.app/changelog/2025-08-14-product-intelligence-technology-preview"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Product Intelligence feature
+          </a>
+          .
+        </p>{" "}
+        <p>
+          It feels magical: instead of memorizing syntax like{" "}
+          <code>label:bug AND status:todo</code> or even needing to learn
+          specific query languages (e.g.{" "}
+          <a
+            href="https://linear.app/help/hc/en-us/articles/600021211133-JQL"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            JQL for JIRA
+          </a>
+          ,{" "}
+          <a
+            href="https://posthog.com/blog/introducing-hogql"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            HogQL for PostHog
+          </a>
+          ), you can simply type:
+        </p>
+        <blockquote>show me bugs that need work.</blockquote>
+        <p>
+          The system bridges the gap between how we think and how computers
+          understand data.
+        </p>
         <p>
           And the ingredients are surprisingly simple. All we need is a{" "}
           <strong>system prompt</strong>, a <strong>filter schema</strong>, and
-          an <strong>LLM action</strong>.
+          an <strong>LLM parser</strong>.
         </p>
-
-        <DemoBox>
-          <Image
-            src="/static/images/blog/linear-filter-overview.png"
-            alt="Linear Filter Overview"
-            width={1854}
-            height={468}
-          />
-        </DemoBox>
-
-        <h3>System Prompt</h3>
-
-        <p>The system prompt is surprisingly minimal but effective:</p>
-
+        <Figure>
+          <FigureContent>
+            <Image
+              src="/static/images/blog/linear-filter-overview.png"
+              alt="Linear Filter Overview"
+              width={1854}
+              height={468}
+            />
+          </FigureContent>
+        </Figure>
+        <H2>Demo</H2>
+        <p>Try it yourself, by typing e.g. "show me bugs that need work."</p>
+        <Figure>
+          <FigureContent>
+            <Filter onChange={() => {}} />
+          </FigureContent>
+        </Figure>
+        <H2>System Prompt</H2>
+        <p>
+          We will use <code>gpt-4o-mini</code> for this example.The system
+          prompt is surprisingly minimal but effective. We add the current date,
+          to support relative date queries ("bugs since last week").
+        </p>
         <SystemPromptCodeBlock />
-
         <div className=" mt-6">
-          <h3>Filter Schema</h3>
+          <H2>Filter Schema</H2>
           <p>
             Filters are hard, especially when they happen in conjunction. We
             kept it simple in this example, using three filter types:
@@ -100,19 +165,20 @@ export default function LinearFilterDemo() {
             </div>
           </div>
         </div>
-
-        <div className="mt-8">
+        <p>I used Zod schema for validation and parsing the filter schema.</p>
+        <div className="mt-4">
           <FilterSchemaCodeBlock />
         </div>
-
-        <div className=" mt-6">An example output looks like this:</div>
-
+        <div className="mt-6">
+          Here's an example output of the filter schema which we will use later
+          on.
+        </div>
         <FilterSchemaExampleCodeBlock />
-
-        <h3>Parsing via LLM</h3>
-
+        <H2>Parsing via LLM</H2>
         <p>
-          The core parsing happens in a single API call with{" "}
+          Now that we have the filter schema, we need to parse the user input
+          into the filter schema. The core parsing happens in a single API call
+          with{" "}
           <a
             href="https://platform.openai.com/docs/guides/structured-outputs"
             target="_blank"
@@ -125,43 +191,102 @@ export default function LinearFilterDemo() {
           This will guide the LLM to example format we defined in the filter
           schema above.
         </p>
-
         <LlmActionCodeBlock />
-
-        <h3>UI</h3>
-
-        <DemoBox>
-          <Image
-            src="/static/images/blog/linear-filter-component.png"
-            alt="Linear Filter UI"
-            width={1854}
-            height={468}
-            className="rounded-lg"
-          />
-        </DemoBox>
-
+        <H2>UI</H2>
         <p>
-          Alongside ▲ Vercel, Linear is the benchmark in terms of UI in modern
-          web apps, from performance to design. To an extend that founders say
-          they want to build a Linear version of X.
+          Alongside ▲ Vercel, Linear is <i>the</i> benchmark for modern web
+          apps, from performance to design. To an extend that founders say they
+          want to build a Linear version of X.
         </p>
-
-        <DemoBox className="mt-8 py-8 flex justify-center">
-          <div className="md:scale-150 lg:scale-200">
-            <FilterPill
-              filter={{
-                name: "Date",
-                type: FilterType.DATE,
-                value: "2024-01-01",
-                operator: "before",
-                selectedValue: ["2024-01-01"],
-                unit: "days",
-              }}
-              onRemove={() => {}}
+        <H3 className="mt-4">Sub Components</H3>
+        <p>
+          The filter component that is similar to Linear&apos;s. It is basically
+          built from a <code>FilterPills</code> which includes the{" "}
+          <code>FilterDropdown</code> and items from the <code>FilterPill</code>{" "}
+          component.
+        </p>
+        <Figure className="mt-4">
+          <FigureContent>
+            <div className="grid grid-cols-2 gap-2.5 items-center">
+              <div className="text-sm">Filter Type Badge</div>
+              <div>
+                <FilterTypeBadge type={FilterType.DATE} />
+              </div>
+              <div className="text-sm">Filter Value Selector</div>
+              <div>
+                <FilterValueSelector
+                  filter={{
+                    name: "Date",
+                    type: FilterType.DATE,
+                    value: "2024-01-01",
+                    operator: "before",
+                    selectedValue: ["2024-01-01"],
+                    unit: "days",
+                  }}
+                />
+              </div>
+              <div className="text-sm">Filter Operator</div>
+              <div>
+                <div className="flex flex-row gap-1">
+                  <FilterOperator operator="before" />
+                </div>
+              </div>
+              <div className="text-sm">Filter Close</div>
+              <div>
+                <FilterClose onClick={() => {}} />
+              </div>
+            </div>
+          </FigureContent>
+        </Figure>
+        <H3 className="mt-4">Filter Pill</H3>
+        <Figure className="flex justify-center not-prose p-0">
+          <FigureContent className="p-0">
+            <Image
+              src="/static/images/blog/linear-filter-components-filter-pill.png"
+              alt="Linear Filter Pills"
+              width={1854}
+              height={468}
             />
-          </div>
-        </DemoBox>
-
+          </FigureContent>
+        </Figure>
+        <p>
+          The filter pill renders the sub components{" "}
+          <code>FilterTypeBadge</code>, <code>FilterOperator</code>,{" "}
+          <code>FilterValueSelector</code>, and <code>FilterClose</code> (naming
+          borrowed from{" "}
+          <a
+            href="https://x.com/haydenbleasel"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Hayden's
+          </a>{" "}
+          <a
+            href="https://www.kibo-ui.com/components/pill"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Kibo UI Pill component
+          </a>
+          ).
+        </p>
+        <Figure className="mb-4">
+          <FigureContent className="flex py-8 justify-center">
+            <div className="md:scale-150 lg:scale-200">
+              <FilterPill
+                filter={{
+                  name: "Date",
+                  type: FilterType.DATE,
+                  value: "2024-01-01",
+                  operator: "before",
+                  selectedValue: ["2024-01-01"],
+                  unit: "days",
+                }}
+                onRemove={() => {}}
+              />
+            </div>
+          </FigureContent>
+        </Figure>
         <FastCodeBlock
           data={[
             {
@@ -185,93 +310,122 @@ export default function LinearFilterDemo() {
           defaultValue="tsx"
           className="mt-4"
         />
-
+        <H3 className="mt-4">Filter</H3>
+        <Figure className="flex justify-center not-prose p-0">
+          <FigureContent className="p-0">
+            <Image
+              src="/static/images/blog/linear-filter-components-filter.png"
+              alt="Linear Filter Pills"
+              width={1854}
+              height={468}
+            />
+          </FigureContent>
+        </Figure>
         <p>
-          This is also true for their filter component, it's breaking down a
-          super complex problem into a simple and easy to understand interface.
+          It all comes together in the <code>Filter</code> component where we
+          iterate over the <code>FilterPill</code> components or only show the{" "}
+          <code>FilterDropdown</code> if there are no filters.
         </p>
-
-        <strong>Parts</strong>
-
-        <DemoBox className="mt-4">
-          <div className="grid grid-cols-2 gap-1">
-            <div>Filter Type Badge</div>
-            <div>
-              <FilterTypeBadge type={FilterType.DATE} />
-            </div>
-            <div>Filter Value Selector</div>
-            <div>
-              <FilterValueSelector
-                filter={{
-                  name: "Date",
-                  type: FilterType.DATE,
-                  value: "2024-01-01",
-                  operator: "before",
-                  selectedValue: ["2024-01-01"],
-                  unit: "days",
-                }}
-              />
-            </div>
-            <div>Filter Operator</div>
-            <div>
-              <div className="flex flex-row gap-1">
-                <FilterOperator operator="before" />
-                <FilterOperator operator="after" />
-              </div>
-            </div>
-            <div>Filter Dropdown</div>
-            <div>
-              <RootFilterDropdown onSelect={() => {}} shouldShake={false} />
-            </div>
-            <div>Filter Pill</div>
-            <div>
-              <FilterPill
-                filter={{
-                  name: "Date",
-                  type: FilterType.DATE,
-                  value: "2024-01-01",
-                  operator: "before",
-                  selectedValue: ["2024-01-01"],
-                  unit: "days",
-                }}
-                onRemove={() => {}}
-              />
-            </div>
-            <div>Filter Close</div>
-            <div>
-              <FilterClose
-                onClick={() => toast("Don't click me 3 more times!")}
-              />
-            </div>
-          </div>
-        </DemoBox>
-
+        <Figure>
+          <FigureContent className="flex justify-center px-2">
+            <Filter
+              onChange={() => {}}
+              initialFilters={{
+                conditions: [
+                  {
+                    name: "Status",
+                    type: FilterType.STATUS,
+                    operator: "equals",
+                    value: ["done"],
+                    selectedValue: [],
+                  },
+                  {
+                    name: "Label",
+                    type: FilterType.LABEL,
+                    operator: "include",
+                    value: ["bug"],
+                    selectedValue: [],
+                  },
+                  {
+                    name: "Date",
+                    type: FilterType.DATE,
+                    operator: "before",
+                    value: "2024-01-01",
+                    selectedValue: [],
+                    unit: "days",
+                  },
+                ],
+                raw_input: "status done",
+              }}
+            />
+          </FigureContent>
+          <FigureCaption>
+            Prefilled filter with status equals done
+          </FigureCaption>
+        </Figure>
+        <Figure className="flex flex-col justify-center mt-8">
+          <FigureContent>
+            <Filter onChange={() => {}} />
+          </FigureContent>
+          <FigureCaption>Filter with no initial filters</FigureCaption>
+        </Figure>
         <div className=" mt-6">
-          <h3>Why This Approach Works</h3>
-
+          <H2>Cost</H2>
           <p>
-            Most implementations fail because they try to be too clever. Instead
-            of building complex NLP pipelines, we leverage the LLM&apos;s
-            existing language understanding and constrain the output format. The
-            AI handles the ambiguity (&quot;bugs older than 3 months&quot; →
-            date filter with &quot;before&quot; operator), while Zod handles the
-            validation.
+            Using <code>gpt-4o-mini</code> at{" "}
+            <a
+              href="https://openai.com/api/pricing/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              $0.15 per 1M input tokens
+            </a>{" "}
+            (<span className="font-mono">$0.00000015</span> per input token) and
+            $0.60 per 1M output tokens (
+            <span className="font-mono">$0.00000060</span> per output token),
+            the{" "}
+            <span className="font-semibold">
+              system prompt contains 138 tokens
+            </span>{" "}
+            and the response JSON roughly{" "}
+            <span className="font-semibold">88 tokens</span>.
+            <H3>Cost per Request</H3>
+            <p>
+              <span className="text-neutral-600 dark:text-neutral-400">
+                Input: 138 × $0.00000015 = $0.0000207 (~$0.000021)
+                <br />
+                Output: 88 × $0.00000060 = $0.0000528 (~$0.000053)
+                <br />
+                <span>
+                  <strong>Total per request:</strong> $0.0000207 + $0.0000528 ={" "}
+                  <span className="font-semibold">
+                    ~$0.000074 per filter parse
+                  </span>
+                </span>
+              </span>
+            </p>
+            <span className="mt-2">
+              Requests per $0.10:{" "}
+              <span className="font-semibold">1,361 requests</span>
+            </span>
+            <br />
+            <span className="dark:text-neutral-400 mt-2">
+              Requests per $10:{" "}
+              <span className="font-semibold">136,054 requests</span>
+            </span>
           </p>
 
+          <H2>Conclusion</H2>
           <p>
-            The system is forgiving on input but strict on output. Users can say
-            &quot;bugs from last week&quot; or &quot;show me old bug
-            reports&quot; and both get parsed correctly. The structured response
-            format means the frontend always knows exactly what to render.
+            This is a simple example of how to use an LLM to parse user input
+            into a structured format. It is a great way to add AI capabilities
+            to your products.
           </p>
-
           <p>
-            The real power emerges when users combine multiple conditions
-            naturally. The AI understands context and intent, turning
-            conversational queries into precise data filters.
+            I hope you found this example useful. If you have any questions,
+            please feel free to reach out to me.
           </p>
         </div>
-
         <div className="mt-12">
           <hr className="my-8" />
           <PostComments slug="linear-filter" />

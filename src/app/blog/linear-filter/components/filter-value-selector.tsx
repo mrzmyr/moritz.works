@@ -1,11 +1,11 @@
-import { toast } from "sonner";
 import type { FilterCondition } from "@/app/blog/linear-filter/types";
 import {
   FILTER_PLURAL_NAMES,
   FilterType,
 } from "@/app/blog/linear-filter/types";
 import { capitalize } from "@/app/blog/linear-filter/utils";
-import { FilterDropdown } from "./filter-dropdown";
+import { toast } from "sonner";
+import { FilterValueDropdown } from "./filter-value-dropdown";
 import { PillSegment } from "./pill-segment";
 import { ITEMS_BY_TYPE } from "./shared";
 
@@ -42,7 +42,7 @@ export const FilterValueSelector = ({
       filter.value.includes(i.value as never)
     );
     return (
-      <FilterDropdown
+      <FilterValueDropdown
         items={subItems}
         title={capitalize(FILTER_PLURAL_NAMES[filter.type])}
         selectedItems={filter.value}
@@ -61,7 +61,7 @@ export const FilterValueSelector = ({
               : `${selected.length} ${FILTER_PLURAL_NAMES[filter.type]}`}
           </span>
         </PillSegment>
-      </FilterDropdown>
+      </FilterValueDropdown>
     );
   }
 

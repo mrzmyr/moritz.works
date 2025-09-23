@@ -12,13 +12,13 @@ import {
   TodoIcon,
 } from "./icons";
 
-export type DropdownItem = {
+export type FilterValueDropdownItem = {
   value: string;
   title: string;
   icon: React.ReactNode;
 };
 
-export const ITEMS_BY_TYPE: Record<FilterType, DropdownItem[]> = {
+export const ITEMS_BY_TYPE: Record<FilterType, FilterValueDropdownItem[]> = {
   date: [
     { value: "1 month ago", title: "1 month ago", icon: <CalendarIcon /> },
     { value: "3 months ago", title: "3 months ago", icon: <CalendarIcon /> },

@@ -1,18 +1,16 @@
 export const SYSTEM_PROMPT = `
-
-You are a filter parser.
 Parse natural language filter descriptions into structured JSON format.
-
 If you see multiple conditions, return an array of conditions.
-
-# Examples
-
-- "bugs older than 3 months" (label: include, value: bug; date: before, value: 3, unit: months)
-- "label not includes bug and status done" (label: not_include, value: bug, status: equals, value: done)
-
 If the user asks for a filter that is not possible, return an empty array.
 
-Today's date is ${new Date().toISOString().split("T")[0]}.
+# Examples
+- "bugs older than 3 months"  
+  (label: include, value: bug; date: before, value: 3, unit: months)  
+
+- "label not includes bug and status done"  
+  (label: not_include, value: bug; status: equals, value: done)  
+
+Today's date is ${new Date().toISOString().split("T")[0]}
 `;
 
 export const LABEL_COLORS = {

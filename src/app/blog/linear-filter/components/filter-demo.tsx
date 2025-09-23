@@ -1,6 +1,5 @@
 import { FilterType, type ParsedFilter } from "@/app/blog/linear-filter/types";
-import { DemoBox } from "@/components/demo-box";
-import { LinearFilter } from "@/app/blog/linear-filter/components/linear-filter";
+import { DemoBox } from "@/components/figure";
 import {
   CodeBlock,
   CodeBlockBody,
@@ -12,6 +11,7 @@ import {
   type BundledLanguage,
 } from "@/components/ui/kibo-ui/code-block";
 import { useCallback, useState } from "react";
+import { Filter } from "./filter";
 
 export const FilterDemo = () => {
   const [parsedFilters, setParsedFilters] = useState<ParsedFilter | null>({
@@ -41,7 +41,7 @@ export const FilterDemo = () => {
   return (
     <>
       <DemoBox>
-        <LinearFilter onFiltersChange={handleFiltersChange} />
+        <Filter onChange={handleFiltersChange} />
       </DemoBox>
 
       {parsedFilters && parsedFilters.conditions.length > 0 && (

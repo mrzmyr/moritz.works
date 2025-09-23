@@ -1,9 +1,9 @@
 import {
+  type BundledLanguage,
   CodeBlock,
   CodeBlockBody,
   CodeBlockContent,
   CodeBlockItem,
-  type BundledLanguage,
 } from "@/components/ui/kibo-ui/code-block";
 
 const code = `
@@ -15,13 +15,7 @@ const labelFilter = z.object({
   selectedValue: z.array(z.enum(["bug", "feature", "customer-support"])),
 });
 
-const statusFilter = z.object({
-  name: z.literal("Status"),
-  type: z.literal(FilterType.STATUS),
-  operator: z.enum(["equals"]),
-  value: z.array(z.enum(["todo", "in_progress", "done"])),
-  selectedValue: z.array(z.enum(["todo", "in_progress", "done"])),
-});
+// … same for status and date filters
 
 // Union of all possible filter types
 const filterCondition = z.discriminatedUnion("type", [

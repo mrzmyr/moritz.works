@@ -292,7 +292,7 @@ const highlight = (
   });
 
 export type CodeBlockData = {
-  language: string;
+  language: BundledLanguage;
   filename: string;
   code: string;
 };
@@ -334,7 +334,7 @@ export const CodeBlock = ({
     <CodeBlockContext.Provider value={{ value, onValueChange, data }}>
       <div
         className={cn(
-          "size-full overflow-hidden rounded-md border shadow-[0_1px_3px_-2px_rgba(0,0,0,0.3)] h-fit text-xs",
+          "size-full overflow-hidden rounded-md border h-fit text-xs",
           className
         )}
         {...props}
