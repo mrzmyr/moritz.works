@@ -1,6 +1,6 @@
 "use client";
 
-import { createElement } from "react";
+import { cn } from "@/lib/utils";
 
 const slugify = (text: string) => {
   return text
@@ -37,7 +37,7 @@ const Headline = ({
   const HeadingTag = as;
 
   return (
-    <HeadingTag className={className} {...props}>
+    <HeadingTag className={cn(className, "scroll-m-4")} {...props}>
       <a href={`#${_id}`} id={_id} className="no-underline cursor-default">
         {children}
       </a>

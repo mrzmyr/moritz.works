@@ -28,7 +28,7 @@ export const FigureContent = ({
   return (
     <div
       className={cn(
-        "bg-white dark:bg-neutral-800 rounded-lg p-6 py-4 border border-neutral-200 dark:border-neutral-700 w-full",
+        "bg-white dark:bg-neutral-800/50 rounded-lg p-6 py-4 border border-neutral-200 dark:border-neutral-800 w-full overflow-hidden",
         className
       )}
     >

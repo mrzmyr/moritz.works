@@ -4,18 +4,44 @@ import { Suspense } from "react";
 import { LastPosts, LastPostsSkeleton } from "@/components/last-posts";
 import { PostStructuredData } from "@/components/post-structured-data";
 import { Books, BooksSkeleton } from "./components/books";
+import WorkList from "./components/work-list";
+
+const Headline = ({ children }: { children: React.ReactNode }) => {
+  return <div className="font-medium dark:text-white">{children}</div>;
+};
+
+const Section = ({ children }: { children: React.ReactNode }) => {
+  return <div className="flex flex-col mt-12">{children}</div>;
+};
+
+const QuickLink = ({
+  children,
+  href,
+  ...props
+}: {
+  children: React.ReactNode;
+  href: string;
+}) => {
+  return (
+    <Link
+      href={href}
+      className="text-neutral-600 dark:text-neutral-400 text-sm hover:text-neutral-800 dark:hover:text-neutral-200"
+      {...props}
+    >
+      {children}
+    </Link>
+  );
+};
 
 export default async function Page() {
   return (
     <div>
       <PostStructuredData type="person" />
-      <div className="text-neutral-800 leading-7 space-y-6 prose prose-a:decoration-neutral-300 prose-a:hover:decoration-neutral-400">
+      <div className="text-neutral-800 leading-7 space-y-6 dark:text-neutral-200">
         <div className="flex items-center gap-6">
           <div className="flex flex-col">
             <span className="font-semibold tracking-tight">Moritz Meyer</span>
-            <span className="opacity-50 bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 rounded text-sm">
-              he/him
-            </span>
+            <span className="opacity-50 rounded text-sm">he/him</span>
           </div>
         </div>
         <div className="leading-7 lg:mt-36">
@@ -30,36 +56,75 @@ export default async function Page() {
           processes.
         </div>
         <div className="leading-7">
-          I <Link href="/blog">write</Link> down little realizations I make on
-          my way.
+          Originally studied the combination of computer science and psychology
+          namely Usability Engineering, made a{" "}
+          <a
+            href="https://www.researchgate.net/publication/335566326_Emoji_Emoji_on_the_Wall_Show_Me_One_I_Show_You_All_-_An_Exploratory_Study_on_the_Connection_Between_Traits_and_Emoji_Usage"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            study
+          </a>{" "}
+          if how you use emojis predicts your character, and built{" "}
+          <Link
+            href="https://pixy.day"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            Pixy
+          </Link>
+          .
+        </div>
+        <div className="leading-7">
+          I{" "}
+          <Link href="/blog" className="underline">
+            write
+          </Link>{" "}
+          down little realizations I make on my way.
         </div>
       </div>
-      <div className="mt-12">
-        <div className="flex items-center justify-between pr-4">
-          <div className="font-medium dark:text-white">Recent Posts</div>
-          <Link
-            href="/blog"
-            className="text-sm text-neutral-600 dark:text-neutral-400 hover:underline flex items-center"
+
+      <Section>
+        <div className="flex items-center justify-between">
+          <Headline>Work</Headline>
+          <QuickLink
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://www.linkedin.com/in/bd40da1b5cafa74efb3c0d32ae3989b0/"
           >
             View All
-          </Link>
+          </QuickLink>
         </div>
 
-        <div className="flex flex-col gap-2 -ml-4 mt-4">
+        <div className="mt-6">
+          <WorkList />
+        </div>
+      </Section>
+
+      <Section>
+        <div className="flex items-center justify-between">
+          <Headline>Recent Posts</Headline>
+          <QuickLink href="/blog">View All</QuickLink>
+        </div>
+
+        <div className="flex flex-col gap-2 -ml-4 mt-4 -mr-4">
           <Suspense fallback={<LastPostsSkeleton />}>
             <LastPosts />
           </Suspense>
         </div>
-      </div>
-      <div className="mt-12">
-        <div className="font-medium dark:text-white">Currently Reading</div>
+      </Section>
 
-        <div className="-ml-4">
+      <Section>
+        <Headline>Currently Reading</Headline>
+
+        <div className="-ml-4 -mr-4 mt-4">
           <Suspense fallback={<BooksSkeleton />}>
             <Books />
           </Suspense>
         </div>
-      </div>
+      </Section>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { CalendarIcon } from "lucide-react";
 import type React from "react";
-import type { FilterCondition } from "@/app/blog/linear-filter/types";
-import { FilterType } from "@/app/blog/linear-filter/types";
+import type { FilterCondition } from "@/app/blog/(markdown)/linear-filter/types";
+import { FilterType } from "@/app/blog/(markdown)/linear-filter/types";
 import {
   AssigneeIcon,
   DateIcon,

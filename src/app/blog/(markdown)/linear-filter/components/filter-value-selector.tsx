@@ -1,10 +1,10 @@
-import type { FilterCondition } from "@/app/blog/linear-filter/types";
+import { toast } from "sonner";
+import type { FilterCondition } from "@/app/blog/(markdown)/linear-filter/types";
 import {
   FILTER_PLURAL_NAMES,
   FilterType,
-} from "@/app/blog/linear-filter/types";
-import { capitalize } from "@/app/blog/linear-filter/utils";
-import { toast } from "sonner";
+} from "@/app/blog/(markdown)/linear-filter/types";
+import { capitalize } from "@/app/blog/(markdown)/linear-filter/utils";
 import { FilterValueDropdown } from "./filter-value-dropdown";
 import { PillSegment } from "./pill-segment";
 import { ITEMS_BY_TYPE } from "./shared";
@@ -22,7 +22,7 @@ export const FilterValueSelector = ({
       <button
         type="button"
         onClick={() => toast("Not implemented 🤫")}
-        className="flex gap-1.5 items-center px-1.5 py-0.5 hover:bg-neutral-100 text-xs"
+        className="flex gap-1.5 items-center px-1.5 py-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-xs"
       >
         {new Date(filter.value).toLocaleDateString("en-US", {
           month: "short",

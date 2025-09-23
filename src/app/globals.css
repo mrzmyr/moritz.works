@@ -9,7 +9,7 @@
 @import "katex/dist/katex.min.css";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* @custom-variant dark (&:is(.dark *)); */
 @plugin "@tailwindcss/typography";
 
 .antialiased {
@@ -245,4 +245,42 @@ h4.notion-h {
 
 .shadow-nice {
 	box-shadow: 0 1px 3px -2px rgba(0, 0, 0, 0.3);
+}
+
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a,
+h6 a {
+	@apply no-underline;
+}
+
+a {
+	@apply decoration-neutral-200;
+	@apply underline-offset-2;
+
+	@apply dark:decoration-neutral-700;
+
+	&:hover {
+		@apply decoration-neutral-400;
+		@apply dark:decoration-neutral-600;
+	}
+}
+
+::selection {
+	background-color: #d8ecfc;
+	color: #008cff;
+}
+
+code:not(.shiki *) {
+	@apply bg-neutral-100 dark:bg-neutral-800;
+	@apply text-neutral-900 dark:text-neutral-200;
+	@apply border border-neutral-200 dark:border-neutral-700;
+}
+
+.dark code:not(.shiki *) {
+	@apply bg-neutral-800;
+	@apply text-neutral-200;
+	@apply border border-neutral-700;
 }

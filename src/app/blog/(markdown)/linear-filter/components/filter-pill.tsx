@@ -1,4 +1,4 @@
-import type { ParsedFilter } from "@/app/blog/linear-filter/types";
+import type { ParsedFilter } from "@/app/blog/(markdown)/linear-filter/types";
 import { Divider } from "./divider";
 import { FilterClose } from "./filter-close";
 import { FilterOperator } from "./filter-operator";
@@ -13,7 +13,7 @@ export const FilterPill = ({
   onRemove: (filter: ParsedFilter["conditions"][number]) => void;
 }) => {
   return (
-    <div className="flex flex-row text-xs items-center border border-gray-200 rounded-sm max-w-fit overflow-hidden">
+    <div className="flex flex-row text-xs items-center border border-neutral-200 dark:border-neutral-700 rounded-sm max-w-fit overflow-hidden">
       <FilterTypeBadge type={filter.type} />
       <Divider />
       <FilterOperator operator={filter.operator} />
