@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { parseFilterAction } from "@/app/blog/(markdown)/linear-filter/actions";
-import type { ParsedFilter } from "@/app/blog/(markdown)/linear-filter/types";
+import { parseFilterAction } from "@/app/blog/linear-filter/actions";
+import type { ParsedFilter } from "@/app/blog/linear-filter/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FilterDropdown } from "./filter-dropdown";
 import { FilterPill } from "./filter-pill";

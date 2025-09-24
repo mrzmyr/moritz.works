@@ -3,8 +3,8 @@ import type React from "react";
 import type {
   FilterCondition,
   LabelValues,
-} from "@/app/blog/(markdown)/linear-filter/types";
-import { FilterType } from "@/app/blog/(markdown)/linear-filter/types";
+} from "@/app/blog/linear-filter/types";
+import { FilterType } from "@/app/blog/linear-filter/types";
 import { cn } from "@/lib/utils";
 import {
   AssigneeIcon,

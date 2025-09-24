@@ -1,10 +1,10 @@
 import { toast } from "sonner";
-import type { FilterCondition } from "@/app/blog/(markdown)/linear-filter/types";
+import type { FilterCondition } from "@/app/blog/linear-filter/types";
 import {
   FILTER_PLURAL_NAMES,
   FilterType,
-} from "@/app/blog/(markdown)/linear-filter/types";
-import { capitalize } from "@/app/blog/(markdown)/linear-filter/utils";
+} from "@/app/blog/linear-filter/types";
+import { capitalize } from "@/app/blog/linear-filter/utils";
 import { FilterValueDropdown } from "./filter-value-dropdown";
 import { PillSegment } from "./pill-segment";
 import { ITEMS_BY_TYPE } from "./shared";
