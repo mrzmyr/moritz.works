@@ -1,4 +1,4 @@
-import type { FilterCondition } from "@/app/blog/(markdown)/linear-filter/types";
+import type { FilterCondition } from "@/app/blog/linear-filter/types";
 import { PillSegment } from "./pill-segment";
 import { DISPLAY_MAP } from "./shared";
 

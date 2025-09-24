@@ -1,4 +1,4 @@
-import type { ParsedFilter } from "@/app/blog/(markdown)/linear-filter/types";
+import type { ParsedFilter } from "@/app/blog/linear-filter/types";
 import { Divider } from "./divider";
 import { FilterClose } from "./filter-close";
 import { FilterOperator } from "./filter-operator";
