@@ -10,11 +10,11 @@ import { cn } from "@/lib/utils";
 
 export const FastCodeBlock = ({
   data,
-  defaultValue,
+  language,
   className,
 }: {
   data: CodeBlockData[];
-  defaultValue: string;
+  language: BundledLanguage;
   className?: string;
 }) => {
   return (
@@ -23,7 +23,7 @@ export const FastCodeBlock = ({
         ...item,
         code: item.code.trim(),
       }))}
-      defaultValue={defaultValue}
+      defaultValue={language}
       className={cn(className, "not-prose")}
     >
       <CodeBlockBody>

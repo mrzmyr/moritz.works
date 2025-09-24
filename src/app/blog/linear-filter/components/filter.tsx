@@ -6,6 +6,7 @@ import type { ParsedFilter } from "@/app/blog/(markdown)/linear-filter/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FilterDropdown } from "./filter-dropdown";
 import { FilterPill } from "./filter-pill";
+import { ISSUES, IssueList } from "./issue-list";
 
 export function Filter({
   onChange,
@@ -50,7 +51,7 @@ export function Filter({
   const hasFilters = !!parsedFilters?.conditions?.length;
 
   return (
-    <div className="h-[28px] flex items-center">
+    <div className="flex flex-col items-start">
       {!hasFilters && !isLoading && (
         <FilterDropdown onSelect={parse} shouldShake={shouldShake} />
       )}
@@ -91,6 +92,10 @@ export function Filter({
           ))}
         </div>
       )}
+
+      <div className="mt-4 w-full">
+        <IssueList filters={parsedFilters} issues={ISSUES} />
+      </div>
     </div>
   );
 }

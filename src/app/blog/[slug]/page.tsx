@@ -1,47 +1,28 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { NotionPage } from "@/components/notion-page";
 import { PageBack } from "@/components/page-back";
 import { PostComments } from "@/components/post-comments";
 import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";
 import { PostStructuredData } from "@/components/post-structured-data";
 import { siteConfig } from "@/config/app";
-import { getPost, getPosts } from "@/lib/notion";
+import { getPostMetadata, getPosts } from "@/lib/posts";
 
 // Initialize dayjs plugins
 dayjs.extend(relativeTime);
-
-// Enable ISR with 60 seconds revalidation
-export const revalidate = 60;
-
-// Allow dynamic params for on-demand generation
-export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  // For ISR, we only pre-generate the most recent posts
-  // Other posts will be generated on-demand when requested
-  const posts = await getPosts();
-
-  // Pre-generate only the 5 most recent posts
-  const recentPosts = posts.slice(0, 5);
-
-  return recentPosts.map((post) => ({
-    slug: post.slug,
-  }));
-}
-
-export const runtime = "nodejs";
 
 export async function generateMetadata(props: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const post = await getPost(params.slug);
+  const { data: post, error } = await getPostMetadata(params.slug);
 
-  const postUrl = `${siteConfig.url}/blog/${post.slug}`;
+  if (error || !post) {
+    notFound();
+  }
 
   return {
     title: post.title,
@@ -59,7 +40,7 @@ export async function generateMetadata(props: {
       type: "article",
       title: post.title,
       description: post.excerpt,
-      url: postUrl,
+      url: post.url,
       siteName: siteConfig.name,
       publishedTime: post.createdAt,
       modifiedTime: post.updatedAt,
@@ -81,14 +62,19 @@ export async function generateMetadata(props: {
       creator: siteConfig.author.twitter,
     },
     alternates: {
-      canonical: postUrl,
+      canonical: post.url,
     },
   };
 }
 
-const Content = async ({ slug }: { slug: string }) => {
-  const post = await getPost(slug);
-  const postUrl = `${siteConfig.url}/blog/${post.slug}`;
+const PostContent = async ({ slug }: { slug: string }) => {
+  const { data: post, error } = await getPostMetadata(slug);
+
+  if (error || !post) {
+    notFound();
+  }
+
+  const { default: Content } = await import(`@/content/${slug}.mdx`);
 
   return (
     <>
@@ -96,7 +82,7 @@ const Content = async ({ slug }: { slug: string }) => {
         type="article"
         title={post.title}
         description={post.excerpt}
-        url={postUrl}
+        url={post.url}
         datePublished={post.createdAt}
         dateModified={post.updatedAt}
         image={`${siteConfig.url}/static/og/default.png`}
@@ -108,27 +94,20 @@ const Content = async ({ slug }: { slug: string }) => {
           updatedAt={new Date(post.updatedAt)}
         />
       </div>
-      <div className="prose text-md prose-p:mb-3 prose-p:mt-3 dark:prose-invert dark:text-neutral-300 text-black">
-        {post.recordMap && <NotionPage recordMap={post.recordMap} />}
+      <div className="prose prose-neutral dark:prose-invert dark:prose-p:opacity-95 max-w-none prose-headings:mt-4 prose-headings:mb-2 text-neutral-900 dark:text-neutral-200 prose-li:my-0.5 prose-ul:pl-4 prose-ul:my-1 prose-code:bg-neutral-100/50 prose-code:border prose-code:border-neutral-200 prose-code:text-neutral-900 prose-code:rounded-md prose-code:px-1 prose-code:py-0 prose-code:font-normal prose-code:after:content-[''] prose-code:before:content-[''] prose-a:underline prose-headings:font-semibold prose-pre:bg-white dark:prose-pre:bg-neutral-900 prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-700 prose-pre:rounded-md prose-pre:font-normal prose-pre:after:content-[''] prose-pre:before:content-[''] prose-p:my-2 prose-hr:mb-4 prose-p:leading-[1.65]">
+        <Content />
       </div>
+
+      <PostComments slug={slug} />
     </>
   );
 };
 
-const Skeleton = () => {
+const PostContentSkeleton = () => {
   return (
-    <div className="animate-pulse">
-      <div className="mb-8">
-        <div className="h-8 bg-neutral-200 dark:bg-neutral-800 rounded mb-2 w-3/4"></div>
-        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-1/2 mt-2"></div>
-      </div>
-      <div className="space-y-4">
-        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-full"></div>
-        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-full"></div>
-        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-3/4"></div>
-        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-5/6"></div>
-        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-2/3"></div>
-      </div>
+    <div className="mb-8">
+      <div className="h-[24px] w-2/5 bg-neutral-200 dark:bg-neutral-700 rounded" />
+      <div className="h-[20px] w-3/5 bg-neutral-200 dark:bg-neutral-700 rounded" />
     </div>
   );
 };
@@ -142,13 +121,24 @@ export default async function Page({
 
   return (
     <>
-      <PageBack />
-      <Suspense fallback={<Skeleton />}>
-        <Content slug={slug} />
+      <PageBack href="/blog" />
+      <Suspense fallback={<PostContentSkeleton />}>
+        <PostContent slug={slug} />
       </Suspense>
-      <div className="mt-12">
-        <PostComments slug={slug} />
-      </div>
     </>
   );
 }
+
+export async function generateStaticParams() {
+  const { data: posts, error } = await getPosts();
+
+  if (error || !posts) {
+    notFound();
+  }
+
+  return posts.map((post) => ({
+    slug: post.id,
+  }));
+}
+
+export const dynamicParams = false;

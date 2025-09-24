@@ -1,0 +1,193 @@
+---
+title: "Study: Emojis & Personaility Traits"
+excerpt: "Do the ‘recently used emojis’ on your smartphone predict your personality?"
+createdAt: 2018-01-24
+updatedAt: 2018-01-24
+---
+
+## Research Question
+
+In my applied statistics course at the [Ruhr West University of Applied Sciences](https://de.wikipedia.org/wiki/Hochschule_Ruhr_West) held by [Prof. Dr. Eimler](https://www.linkedin.com/in/prof-dr-sabrina-c-eimler-b0a23b22/), I build a tool chain to extract the results of a study which looked into the connection between personality traits and emoji usage. The study was presented at the [GOR Congress](https://www.gor.de/) in cologne.
+
+**Research Question**: Do the ‘recently used emojis’ on your smartphone predict personality traits or vice versa?
+
+![2018-03-17-1.png](/static/images/blog/emoji-study-2018-03-17-1.png)
+
+## The Mission
+
+Unlike common psychology studies, a bottom-up process was used, which means instead of having a clear perspective about the possible outcome and comparing statistical results with the first formulated hypothesis we first assess data from the participants and try to build a conclusion afterward.
+
+An example of the ‘recently used emojis’ dock from WhatsApp on Android
+
+Basically, we wanted to get a clue about the **emoji usage** by assessing ‘recently used emojis’ WhatsApp screenshots and the participant personality by letting them answer **personality questions** on psychological scales (Big Five Inventory, Happiness and Life Satisfaction, Impression Motivation and demographics).
+
+Possible questions were…
+
+- If you were to consider your life in general, how happy or unhappy would you say you are, on the whole? (Happiness and Life Satisfaction)
+- Do you strive to present yourself in photos well? (Impression Motivation)
+- Is it important to you that other people think you’re popular? (Impression Motivation)
+
+Some of the [latent variables](https://en.wikipedia.org/wiki/Latent_variable) we aimed for were happiness and life satisfaction, [emotional stability](https://en.wikipedia.org/wiki/Big_Five_personality_traits#Neuroticism) or [openness to new experiences](https://en.wikipedia.org/wiki/Big_Five_personality_traits#Openness_to_experience).
+
+An elementary difference to existing methods of measuring emoji usage was using **actual real screenshots** instead of letting participants reproduce real-world behaviour.
+
+Possible Outcomes were…
+
+1. An Analysis with [Rapidminer](https://rapidminer.com/), a great building blocks tool for data mining, to use machine learning algorithms like decision trees and making simple prediction models
+2. A [scatter chart](https://en.wikipedia.org/wiki/Scatter_plot) for all emojis to make manual [clustering analysis](https://en.wikipedia.org/wiki/Cluster_analysis) possible
+
+**Fun Bonus:** Make an oracle which tells you facts about your personality by uploading your own ‘recently used emojis’ screenshot.
+
+## Behind the Scenes
+
+Let’s say we have 300 participants with around 35 emojis in every screenshot. Which makes around 10.000 emojis in total. That’s a lot of emojis to make mistakes on while identifying them by hand.
+
+Out of that problem a chain of tools was build including a python script which identified the emojis from the screenshots, a UI for reviewing the extracted metadata and a web scatter plot visualising connections between certain personality traits:
+
+1. The Emoji Identifier (Python, OpenCV)
+2. The Emojis Review UI (React, NodeJS)
+3. Emoji Statistics (D3, Amazon S3)
+
+![Parts of the project](/static/images/blog/emoji-study-2018-03-17-2.png)
+
+Parts of the project
+
+![The Architecture](/static/images/blog/emoji-study-2018-03-17-9.png)
+
+The Architecture
+
+### 1. Emoji Identifier
+
+![The process to cut out the emojis](/static/images/blog/emoji-study-2018-03-17-4.png)
+
+The process to cut out the emojis
+
+The purpose of the Emoji Identifier is to cut out the emojis from the screenshots to make a [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance) matching against all 2.7k emojis. To speed up the process the emojis were scaled down to the dimensions of `24x24` pixels. The identification process then took around `2 minutes` per screenshot. The identifier is written in Python 3 using [OpenCV](https://opencv.org/).
+
+![Identifier Process](/static/images/blog/emoji-study-2018-03-17-3.png)
+
+## Identifier Process
+
+The identifier outputs JSON (and saves it to the database) including…
+
+- `recognitions`: The emojis with the least Euclidean distance per position
+- `suggestions`: The five emojis with the least Euclidean distance following the recognition
+- `meta`: Metadata about the identification
+
+#### Example Output
+
+```json
+{
+  "recognitions": [{
+    "key": "face-with-tears-of-joy_1f602",
+    "hex": "1f602",
+    "name": "face-with-tears-of-joy"
+  }, {
+    "key": "smiling-face-with-heart-shaped-eyes_1f60d",
+    "hex": "1f60d",
+    "name": "smiling-face-with-heart-shaped-eyes"
+    // … 33 more items
+  }, ],
+  "suggestions": [
+    [{
+      "key": "face-with-tears-of-joy_1f602",
+      "hex": "1f602",
+      "name": "face-with-tears-of-joy"
+    }, {
+      "key": "full-moon-symbol_1f315",
+      "hex": "1f315",
+      "name": "full-moon-symbol"
+    }, 
+    // … 33 more items
+  ],
+  ],
+  "meta": {
+    "rows": 5,
+    "columns": 7,
+    "emoji_type": "apple",
+    "runtime": 166
+  }
+}
+```
+
+We prelimited the screenshots to WhatsApp, whereas iPhones use the [native keyboard emojis](https://emojipedia.org/apple/) and Android got its own so-called [WhatsApp emojis](https://emojipedia.org/whatsapp/). We agreed on the fact that the difference is not significant and we’d interpreting them the same way.
+
+![Native iOS Emoji Keyboard ‘frequently used emojis’ (iOS)](/static/images/blog/emoji-study-2018-03-17-5-1.png)
+
+Native iOS Emoji Keyboard ‘frequently used emojis’ (iOS)
+
+![WhatsApp ‘recently used emojis’ (Android)](/static/images/blog/emoji-study-2018-03-17-5-2.png)
+
+WhatsApp ‘recently used emojis’ (Android)
+
+### 2. Emoji Review UI
+
+The purpose of the Review UI was to make it easier for the team to fix incorrect recognition from the identifier.
+
+We saved the JSON data in a MongoDB together with the uploaded screenshot, so we had a single place to edit the resulting identification.
+
+This it how it looks like to fix incorrect recognition, on the left the original screenshot and on the right the recognition itself.
+
+![2018-03-17-1.gif](/static/images/blog/emoji-study-2018-03-17-1.gif)
+
+### 3. The Scatter Chart
+
+To get a better understanding of the data, we used a scatter chart to visualize emojis in relation to the personality traits. For that [D3.js Charts](https://d3js.org/) were used.
+
+**🎉  Demo**: You can [play around with the chart here](https://emoji-study.vercel.app/).
+
+![2018-03-17-2.gif](/static/images/blog/emoji-study-2018-03-17-2.gif)
+
+### Bonus: The Oracle
+
+It seems like an obvious approach to show off the results of the study in a more entertaining and interactive way because people get engaged more when you make an estimation about them.
+
+*Sample output:*
+
+> You are female. You did not have a crush. You are the life of the party. You feel the feelings of others. You are slightly annoyed. You get jobs done right away. You have excellent ideas.
+> 
+
+![Output of the Oracle](/static/images/blog/emoji-study-2018-03-17-11.png)
+
+Output of the Oracle
+
+The estimations are calculated by the mean of every assessed personality trait per emoji. The value of each personality trait is sorted into buckets. Then, a random phrase gets picked for its direction.
+
+**Example:**
+
+We have a JSON list of positive / negative effect phrases ([from Wikipedia](https://en.wikipedia.org/wiki/Big_Five_personality_traits#Descriptions_of_the_particular_personality_traits)) for every personality trait.
+
+```json
+{
+  "NEUROTICISM": {
+    "positive": ["You are easily irritated.", "You are easily stressed.", "You are slightly annoyed.", "You often have mood swings.", "You are worried about things.", "You are much more anxious than most people."],
+    "negative": [
+			"You are relaxed most of the time.", 
+			"You rarely feel depressed."
+		]
+  },
+  // …
+}
+```
+
+The buckets look like this…
+
+- 0 - 2 → low neuroticism → pick a phrase from `negative`
+- 2 - 3 → neither high nor low neuroticism
+- 3 - 5 → high neuroticism → pick a phrase from `positive`
+
+That means if a participant had a neuroticism value of 3.8 the output could be: *You are worried about things.*
+
+## The Congress Poster
+
+This is the congress poster we submitted to the Global Online Research committee. It got an **8 out of 10 rating by two international peer-to-peer reviewers.**
+
+[2018-03-17-1.pdf](/static/images/blog/emoji-study-2018-03-17-1.pdf)
+
+![2018-03-17-1-1.png](/static/images/blog/emoji-study-2018-03-17-1-1.png)
+
+## References
+
+1. [Happiness and Satisfaction Scale (ISSP)](https://zis.gesis.org/skala/Breyer-Voss-Happiness-and-Satisfaction-Scale-(ISSP))
+2. Marengo, D., Giannotta, F., & Settanni, M. (2017). Assessing personality using emoji: An exploratory study. Personality and Individual Differences, 112, 74-78.
+3. [Unicode Emoji, Version 11.0](https://unicode.org/Public/emoji/11.0/emoji-data.txt), [Full List](https://unicode.org/emoji/charts/full-emoji-list.html)

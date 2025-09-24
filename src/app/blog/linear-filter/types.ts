@@ -25,6 +25,8 @@ export type DateFilter = z.infer<typeof dateFilter>;
 
 const labelValues = z.enum(["bug", "feature", "customer-support"]);
 
+export type LabelValues = z.infer<typeof labelValues>;
+
 const labelFilter = z.object({
 	name: z.literal("Label"),
 	type: z.literal(FilterType.LABEL),
@@ -37,6 +39,8 @@ export type LabelFilter = z.infer<typeof labelFilter>;
 
 const statusValues = z.enum(["todo", "in_progress", "done"]);
 
+export type StatusValues = z.infer<typeof statusValues>;
+
 const statusFilter = z.object({
 	name: z.literal("Status"),
 	type: z.literal(FilterType.STATUS),
@@ -46,6 +50,7 @@ const statusFilter = z.object({
 });
 
 export type StatusFilter = z.infer<typeof statusFilter>;
+
 
 const filterCondition = z.discriminatedUnion("type", [
 	dateFilter,

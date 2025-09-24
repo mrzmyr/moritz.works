@@ -1,25 +1,14 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Link from "next/link";
+import type { Post } from "@/lib/posts/types";
 
 dayjs.extend(relativeTime);
 
-export const PostListItem = ({
-  id,
-  slug,
-  title,
-  excerpt,
-  createdAt,
-}: {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt?: string;
-  createdAt: string;
-}) => {
+export const PostListItem = ({ id, url, title, excerpt, createdAt }: Post) => {
   return (
     <Link
-      href={`/blog/${slug}`}
+      href={url}
       key={id}
       className="flex flex-col sm:flex-row justify-between group items-start hover:bg-neutral-100 dark:hover:bg-neutral-800 px-4 py-2.5 rounded-md"
     >

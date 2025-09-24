@@ -1,7 +1,7 @@
 import { TreeDeciduous } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
-import { LastPosts, LastPostsSkeleton } from "@/components/last-posts";
+import { LastPosts } from "@/components/last-posts";
 import { PostStructuredData } from "@/components/post-structured-data";
 import { Books, BooksSkeleton } from "./components/books";
 import WorkList from "./components/work-list";
@@ -113,9 +113,7 @@ export default async function Page() {
         </div>
 
         <div className="flex flex-col gap-2 -ml-4 mt-4 -mr-4">
-          <Suspense fallback={<LastPostsSkeleton />}>
-            <LastPosts />
-          </Suspense>
+          <LastPosts />
         </div>
       </Section>
 

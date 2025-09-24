@@ -1,42 +1,37 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { getPosts } from "../lib/notion";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { getPosts } from "@/lib/posts";
 import { PostListItem, PostListItemSkeleton } from "./post-list-item";
 
 dayjs.extend(relativeTime);
 
-export const LastPosts = async () => {
-  const posts = await getPosts();
+const Posts = async () => {
+  const { data: posts, error } = await getPosts();
+  if (error || !posts) {
+    notFound();
+  }
+  return posts
+    .slice(0, 3)
+    .map((post) => <PostListItem key={post.id} {...post} />);
+};
 
+const LastPostsSkeleton = () => {
+  const keys = Array.from({ length: 3 }, (_, index) => `post-${index}`);
   return (
-    <>
-      {posts.slice(0, 3).map((post) => (
-        <PostListItem
-          id={post.id}
-          slug={post.slug!}
-          title={post.title}
-          excerpt={post.excerpt}
-          createdAt={post.createdAt}
-          key={post.id}
-        />
+    <div className="flex flex-col gap-2">
+      {keys.map((key) => (
+        <PostListItemSkeleton key={key} />
       ))}
-    </>
+    </div>
   );
 };
 
-export const LastPostsSkeleton = () => {
-  // Use a static array of keys to avoid using index as key
-  const skeletonKeys = [
-    "last-posts-skeleton-1",
-    "last-posts-skeleton-2",
-    "last-posts-skeleton-3",
-  ];
-
+export const LastPosts = async () => {
   return (
-    <>
-      {skeletonKeys.map((key) => (
-        <PostListItemSkeleton key={key} />
-      ))}
-    </>
+    <Suspense fallback={<LastPostsSkeleton />}>
+      <Posts />
+    </Suspense>
   );
 };

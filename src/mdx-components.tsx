@@ -4,6 +4,7 @@ import { PostComments } from "@/components/post-comments";
 import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";
 import { PostStructuredData } from "@/components/post-structured-data";
+import { SimpleCodeBlock } from "@/components/simple-code-block";
 import { ZoomImage } from "@/components/zoom-image";
 
 const components: MDXComponents = {
@@ -14,7 +15,17 @@ const components: MDXComponents = {
   Figure,
   FigureCaption,
   FigureContent,
-  img: ZoomImage,
+  img: ({ ...props }) => {
+    return (
+      <Figure>
+        <FigureContent>
+          <ZoomImage className="w-full" {...props} />
+        </FigureContent>
+        {props.alt && <FigureCaption>{props.alt}</FigureCaption>}
+      </Figure>
+    );
+  },
+  code: SimpleCodeBlock,
 };
 
 export function useMDXComponents(): MDXComponents {

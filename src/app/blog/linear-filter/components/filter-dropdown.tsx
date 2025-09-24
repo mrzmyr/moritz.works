@@ -1,3 +1,6 @@
+import { motion, type Variants } from "framer-motion";
+import { Check, ListFilter } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Command,
   CommandGroup,
@@ -11,9 +14,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { motion, type Variants } from "framer-motion";
-import { Check, ListFilter } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
 import { AiFilterIcon } from "./icons";
 import { TERMS } from "./shared";
 

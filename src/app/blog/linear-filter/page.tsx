@@ -306,7 +306,7 @@ export default function LinearFilterDemo() {
               `,
           },
         ]}
-        defaultValue="tsx"
+        language="tsx"
         className="mt-4"
       />
       <H3 className="mt-4">Filter</H3>

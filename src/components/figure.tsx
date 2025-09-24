@@ -7,7 +7,7 @@ export const Figure = ({
   children: React.ReactNode;
   className?: string;
 }) => {
-  return <figure className={cn("not-prose", className)}>{children}</figure>;
+  return <figure className={cn(className)}>{children}</figure>;
 };
 
 export const FigureCaption = ({ children }: { children: React.ReactNode }) => {
@@ -26,13 +26,13 @@ export const FigureContent = ({
   className?: string;
 }) => {
   return (
-    <div
+    <span
       className={cn(
-        "bg-white dark:bg-neutral-800/50 rounded-lg p-6 py-4 border border-neutral-200 dark:border-neutral-800 w-full overflow-hidden",
+        "bg-white dark:bg-neutral-800/50 rounded-lg p-4 md:p-6 lg:p-8 border border-neutral-200 dark:border-neutral-800 w-full overflow-hidden block",
         className
       )}
     >
       {children}
-    </div>
+    </span>
   );
 };

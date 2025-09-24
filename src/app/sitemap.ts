@@ -1,14 +1,18 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/config/app";
-import { getPosts } from "@/lib/notion";
+import { getPosts } from "@/lib/posts";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	// Get all posts
-	const posts = await getPosts();
+	const { data: posts, error } = await getPosts();
+
+	if (error || !posts) {
+		return [];
+	}
 
 	// Create post entries
 	const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
-		url: `${siteConfig.url}/blog/${post.slug}`,
+		url: post.url,
 		lastModified: new Date(post.updatedAt),
 		changeFrequency: "weekly",
 		priority: 0.7,

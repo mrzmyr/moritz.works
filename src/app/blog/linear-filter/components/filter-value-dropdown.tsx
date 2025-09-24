@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { toast } from "sonner";
 import {
   Command,
   CommandGroup,
@@ -11,8 +13,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { toast } from "sonner";
 import { MiniCheckbox } from "./mini-checkbox";
 import type { FilterValueDropdownItem } from "./shared";
 
@@ -35,7 +35,7 @@ export const FilterValueDropdown = ({
         <button
           type="button"
           className={cn(
-            "px-1.5 h-5 has-[>svg]:px-1.5 font-normal hover:bg-neutral-100",
+            "px-1.5 h-5 has-[>svg]:px-1.5 font-normal hover:bg-neutral-100 dark:hover:bg-neutral-700",
             open && "bg-neutral-100"
           )}
         >

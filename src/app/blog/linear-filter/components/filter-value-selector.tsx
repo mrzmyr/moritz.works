@@ -48,7 +48,7 @@ export const FilterValueSelector = ({
         selectedItems={filter.value}
       >
         <PillSegment>
-          <div className="flex -space-x-[0px] [&>*]:outline-1 [&>*]:outline-white">
+          <div className="flex -space-x-[0px] [&>*]:outline-1 [&>*]:outline-white dark:[&>*]:outline-transparent">
             {selected.map((i) => (
               <span key={i.value} className="inline-flex">
                 {i.icon}

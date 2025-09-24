@@ -1,7 +1,11 @@
 import { CalendarIcon } from "lucide-react";
 import type React from "react";
-import type { FilterCondition } from "@/app/blog/(markdown)/linear-filter/types";
+import type {
+  FilterCondition,
+  LabelValues,
+} from "@/app/blog/(markdown)/linear-filter/types";
 import { FilterType } from "@/app/blog/(markdown)/linear-filter/types";
+import { cn } from "@/lib/utils";
 import {
   AssigneeIcon,
   DateIcon,
@@ -11,6 +15,20 @@ import {
   StatusIcon,
   TodoIcon,
 } from "./icons";
+
+export const LabelBullet = ({ type }: { type: LabelValues }) => {
+  const typeToColor: Record<LabelValues, string> = {
+    bug: "bg-[#eb5757]",
+    feature: "bg-[#5e6ad2]",
+    "customer-support": "bg-[#26b5ce]",
+  };
+
+  return (
+    <span
+      className={cn("inline-block w-2.5 h-2.5 rounded-full", typeToColor[type])}
+    />
+  );
+};
 
 export type FilterValueDropdownItem = {
   value: string;
@@ -28,23 +46,17 @@ export const ITEMS_BY_TYPE: Record<FilterType, FilterValueDropdownItem[]> = {
     {
       value: "bug",
       title: "bug",
-      icon: (
-        <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#eb5757]" />
-      ),
+      icon: <LabelBullet type="bug" />,
     },
     {
       value: "feature",
       title: "feature",
-      icon: (
-        <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#5e6ad2]" />
-      ),
+      icon: <LabelBullet type="feature" />,
     },
     {
       value: "customer-support",
       title: "customer-support",
-      icon: (
-        <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#26b5ce]" />
-      ),
+      icon: <LabelBullet type="customer-support" />,
     },
   ],
   status: [

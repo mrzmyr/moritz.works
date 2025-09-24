@@ -1,14 +1,15 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { PageBack } from "@/components/page-back";
 import {
   PostListItem,
   PostListItemSkeleton,
 } from "@/components/post-list-item";
 import { siteConfig } from "@/config/app";
-import { getPosts } from "../../lib/notion";
+import { getPosts } from "@/lib/posts";
 
 dayjs.extend(relativeTime);
 
@@ -41,57 +42,32 @@ export const metadata: Metadata = {
   },
 };
 
-// Enable ISR with 60 seconds revalidation
-export const revalidate = 60;
+const Posts = async () => {
+  const { data: posts, error } = await getPosts();
+
+  if (error || !posts) {
+    notFound();
+  }
+
+  return posts.map((post) => <PostListItem key={post.id} {...post} />);
+};
 
 const PostsSkeleton = () => {
-  const skeletonKeys = [
-    "posts-skeleton-1",
-    "posts-skeleton-2",
-    "posts-skeleton-3",
-    "posts-skeleton-4",
-    "posts-skeleton-5",
-  ];
+  const keys = Array.from({ length: 3 }, (_, index) => `post-${index}`);
 
   return (
-    <>
-      {skeletonKeys.map((key) => (
+    <div className="flex flex-col gap-2">
+      {keys.map((key) => (
         <PostListItemSkeleton key={key} />
       ))}
-    </>
+    </div>
   );
 };
 
-const Posts = async () => {
-  const posts = await getPosts();
-
+export default function Page() {
   return (
     <>
-      {posts.map((post) => (
-        <PostListItem
-          id={post.id}
-          slug={post.slug!}
-          title={post.title}
-          excerpt={post.excerpt}
-          createdAt={post.createdAt}
-          key={post.id}
-        />
-      ))}
-    </>
-  );
-};
-
-export default async function Page() {
-  return (
-    <>
-      <div className="mb-6">
-        <Link
-          href="/"
-          className="text-sm text-neutral-600 dark:text-neutral-400 hover:underline flex items-center"
-        >
-          ← Back
-        </Link>
-      </div>
+      <PageBack href="/" />
 
       <h1 className="text-2xl font-medium mb-4 dark:text-white">Blog</h1>
 
