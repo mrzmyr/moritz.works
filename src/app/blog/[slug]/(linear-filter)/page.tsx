@@ -45,9 +45,8 @@ export default function Page() {
         .
       </p>
       <p>
-        In my view, that&apos;s one of the best real-world applications of AI in
-        products today along with code generation in IDE like Cursor or
-        Windsurf.
+        In my view, that&apos;s one of the best real-world ways to leverage AI
+        in products along with code generation and RAG.
       </p>
       <p>
         One company that nails this is{" "}
