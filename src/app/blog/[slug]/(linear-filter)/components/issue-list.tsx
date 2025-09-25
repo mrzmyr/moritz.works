@@ -120,7 +120,7 @@ const LabelBadge = ({
   return (
     <div
       className={cn(
-        "text-xs border border-neutral-200 dark:border-neutral-700/50 rounded-full px-2.5 py-0.5 inline-flex items-center gap-2 dark:text-neutral-400 bg-white dark:bg-neutral-800",
+        "h-5 text-xs border border-neutral-200 dark:border-neutral-700/50 rounded-full px-2.5 py-0.5 inline-flex items-center gap-2 dark:text-neutral-400 bg-white dark:bg-neutral-800",
         className
       )}
       {...props}
@@ -164,8 +164,8 @@ export const IssueList = ({
   return (
     <div className="w-full flex flex-col gap-1">
       {_issues.map((issue) => (
-        <div key={issue.id} className="flex flex-row gap-2 text-sm w-full">
-          <div className="text-sm text-neutral-400 dark:text-neutral-400 w-2/12">
+        <div key={issue.id} className="flex flex-row gap-2 text-xs w-full">
+          <div className="text-neutral-400 dark:text-neutral-400 w-2/12">
             {issue.id}
           </div>
           <div className="w-2/12">{issue.status}</div>

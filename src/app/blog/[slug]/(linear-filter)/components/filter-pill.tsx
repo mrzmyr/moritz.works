@@ -1,4 +1,4 @@
-import type { ParsedFilter } from "@/app/blog/linear-filter/types";
+import type { ParsedFilter } from "../types";
 import { Divider } from "./divider";
 import { FilterClose } from "./filter-close";
 import { FilterOperator } from "./filter-operator";
@@ -7,9 +7,11 @@ import { FilterValueSelector } from "./filter-value-selector";
 
 export const FilterPill = ({
   filter,
+  onChange,
   onRemove,
 }: {
   filter: ParsedFilter["conditions"][number];
+  onChange: (filter: ParsedFilter["conditions"][number]) => void;
   onRemove: (filter: ParsedFilter["conditions"][number]) => void;
 }) => {
   return (
@@ -18,7 +20,7 @@ export const FilterPill = ({
       <Divider />
       <FilterOperator operator={filter.operator} />
       <Divider />
-      <FilterValueSelector filter={filter} />
+      <FilterValueSelector filter={filter} onChange={onChange} />
       <Divider />
       <FilterClose onClick={() => onRemove(filter)} />
     </div>

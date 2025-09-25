@@ -2,14 +2,12 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { PageBack } from "@/components/page-back";
-import { PostComments } from "@/components/post-comments";
-import { PostHeadline } from "@/components/post-headline";
-import { PostMetadata } from "@/components/post-metadata";
-import { PostStructuredData } from "@/components/post-structured-data";
+import { type FC, Suspense } from "react";
 import { siteConfig } from "@/config/app";
 import { getPostMetadata, getPosts } from "@/lib/posts";
+import { tryCatch } from "@/lib/utils";
+
+type PostModule = { default: FC };
 
 // Initialize dayjs plugins
 dayjs.extend(relativeTime);
@@ -74,33 +72,33 @@ const PostContent = async ({ slug }: { slug: string }) => {
     notFound();
   }
 
-  const { default: Content } = await import(`@/content/${slug}.mdx`);
+  // Then try a TSX component (NOT a route's page.tsx)
+  const {
+    success: tsxSuccess,
+    data: tsxData,
+    error: tsxError,
+  } = await tryCatch(import(`@/app/blog/[slug]/(${slug})/page.tsx`));
 
-  return (
-    <>
-      <PostStructuredData
-        type="article"
-        title={post.title}
-        description={post.excerpt}
-        url={post.url}
-        datePublished={post.createdAt}
-        dateModified={post.updatedAt}
-        image={`${siteConfig.url}/static/og/default.png`}
-      />
-      <div className="mb-8">
-        <PostHeadline>{post.title}</PostHeadline>
-        <PostMetadata
-          createdAt={new Date(post.createdAt)}
-          updatedAt={new Date(post.updatedAt)}
-        />
-      </div>
-      <div className="prose prose-neutral dark:prose-invert dark:prose-p:opacity-95 max-w-none prose-headings:mt-4 prose-headings:mb-2 text-neutral-900 dark:text-neutral-200 prose-li:my-0.5 prose-ul:pl-4 prose-ul:my-1 prose-code:bg-neutral-100/50 prose-code:border prose-code:border-neutral-200 prose-code:text-neutral-900 prose-code:rounded-md prose-code:px-1 prose-code:py-0 prose-code:font-normal prose-code:after:content-[''] prose-code:before:content-[''] prose-a:underline prose-headings:font-semibold prose-pre:bg-white dark:prose-pre:bg-neutral-900 prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-700 prose-pre:rounded-md prose-pre:font-normal prose-pre:after:content-[''] prose-pre:before:content-[''] prose-p:my-2 prose-hr:mb-4 prose-p:leading-[1.65]">
-        <Content />
-      </div>
+  if (tsxSuccess && tsxData && !tsxError) {
+    const tsx: PostModule = tsxData;
+    const TsxContent = tsx.default;
+    return <TsxContent />;
+  }
 
-      <PostComments slug={slug} />
-    </>
-  );
+  // Try MDX first
+  const {
+    success,
+    data,
+    error: mdxError,
+  } = await tryCatch(import(`@/content/${slug}.mdx`));
+
+  if (success && data && !mdxError) {
+    const mdx: PostModule = data;
+    const MdxContent = mdx.default;
+    return <MdxContent />;
+  }
+
+  notFound();
 };
 
 const PostContentSkeleton = () => {
@@ -120,12 +118,9 @@ export default async function Page({
   const { slug } = await params;
 
   return (
-    <>
-      <PageBack href="/blog" />
-      <Suspense fallback={<PostContentSkeleton />}>
-        <PostContent slug={slug} />
-      </Suspense>
-    </>
+    <Suspense fallback={<PostContentSkeleton />}>
+      <PostContent slug={slug} />
+    </Suspense>
   );
 }
 

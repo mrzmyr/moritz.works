@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { parseFilterAction } from "@/app/blog/linear-filter/actions";
-import type { ParsedFilter } from "@/app/blog/linear-filter/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { parseFilterAction } from "../actions";
+import type { ParsedFilter } from "../types";
 import { FilterDropdown } from "./filter-dropdown";
 import { FilterPill } from "./filter-pill";
 import { ISSUES, IssueList } from "./issue-list";
@@ -79,6 +79,19 @@ export function Filter({
             <FilterPill
               key={`${condition.type}-${condition.operator}-${idx}`}
               filter={condition}
+              onChange={(updated) => {
+                const newConditions = parsedFilters?.conditions.map((c) =>
+                  c === condition ? updated : c
+                );
+
+                setParsedFilters((prev) => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    conditions: newConditions,
+                  };
+                });
+              }}
               onRemove={(toRemove) => {
                 setParsedFilters((prev) => {
                   if (!prev) return prev;

@@ -1,5 +1,6 @@
+"use client";
+
 import { useState } from "react";
-import { toast } from "sonner";
 import {
   Command,
   CommandGroup,
@@ -13,21 +14,34 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { FILTER_PLURAL_NAMES, type FilterCondition } from "../types";
+import { capitalize } from "../utils";
 import { MiniCheckbox } from "./mini-checkbox";
-import type { FilterValueDropdownItem } from "./shared";
+import { ITEMS_BY_TYPE } from "./shared";
 
 export const FilterValueDropdown = ({
-  items,
-  title,
-  selectedItems,
+  filter,
+  onChange,
   children,
 }: {
-  items: FilterValueDropdownItem[];
-  title: string;
-  selectedItems: string[];
+  filter: FilterCondition;
+  onChange: (filter: FilterCondition) => void;
   children: React.ReactNode;
 }) => {
+  const title = capitalize(FILTER_PLURAL_NAMES[filter.type]);
+  const items = ITEMS_BY_TYPE[filter.type];
+
   const [open, setOpen] = useState(false);
+  const selectedItems = filter.value as string[];
+
+  const onSelect = (value: string) => {
+    const newSelectedItems = selectedItems.includes(value)
+      ? selectedItems.filter((item) => item !== value)
+      : [...selectedItems, value];
+
+    onChange({ ...filter, value: newSelectedItems as never });
+    setOpen(false);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -52,7 +66,7 @@ export const FilterValueDropdown = ({
                   key={value}
                   value={value}
                   className="group"
-                  onSelect={() => toast("Not implemented 🤫")}
+                  onSelect={() => onSelect(value)}
                 >
                   <div className="flex flex-row gap-2 items-center">
                     <MiniCheckbox checked={selectedItems.includes(value)} />

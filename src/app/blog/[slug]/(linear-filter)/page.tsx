@@ -3,9 +3,6 @@
 import Image from "next/image";
 import { Figure, FigureCaption, FigureContent } from "@/components/figure";
 import { H2, H3 } from "@/components/headlines";
-import { PostComments } from "@/components/post-comments";
-import { PostHeadline } from "@/components/post-headline";
-import { PostMetadata } from "@/components/post-metadata";
 import { FastCodeBlock } from "./components/fast-code-block";
 import { Filter } from "./components/filter";
 import { FilterClose } from "./components/filter-close";
@@ -22,16 +19,9 @@ import { LlmActionCodeBlock } from "./components/llm-action-code-block";
 import { SystemPromptCodeBlock } from "./components/system-prompt-code-block";
 import { FilterType } from "./types";
 
-export default function LinearFilterDemo() {
+export default function Page() {
   return (
     <>
-      <div className="mb-8">
-        <PostHeadline>Linear AI Filter</PostHeadline>
-        <PostMetadata
-          createdAt={new Date("2025-08-18")}
-          updatedAt={new Date("2025-08-18")}
-        />
-      </div>
       <p>
         So here we are in 2025, hype everywhere,{" "}
         <a
@@ -215,6 +205,7 @@ export default function LinearFilterDemo() {
             <div className="text-sm">Filter Value Selector</div>
             <div>
               <FilterValueSelector
+                onChange={() => {}}
                 filter={{
                   name: "Date",
                   type: FilterType.DATE,
@@ -281,6 +272,7 @@ export default function LinearFilterDemo() {
                 selectedValue: ["2024-01-01"],
                 unit: "days",
               }}
+              onChange={() => {}}
               onRemove={() => {}}
             />
           </div>
@@ -385,31 +377,29 @@ export default function LinearFilterDemo() {
           </span>{" "}
           and the response JSON roughly{" "}
           <span className="font-semibold">88 tokens</span>.
-          <H3>Cost per Request</H3>
-          <p>
-            <span className="text-neutral-600 dark:text-neutral-400">
-              Input: 138 × $0.00000015 = $0.0000207 (~$0.000021)
-              <br />
-              Output: 88 × $0.00000060 = $0.0000528 (~$0.000053)
-              <br />
-              <span>
-                <strong>Total per request:</strong> $0.0000207 + $0.0000528 ={" "}
-                <span className="font-semibold">
-                  ~$0.000074 per filter parse
-                </span>
-              </span>
+        </p>
+        <H3>Cost per Request</H3>
+        <p>
+          <span className="text-neutral-600 dark:text-neutral-400">
+            Input: 138 × $0.00000015 = $0.0000207 (~$0.000021)
+            <br />
+            Output: 88 × $0.00000060 = $0.0000528 (~$0.000053)
+            <br />
+            <span>
+              <strong>Total per request:</strong> $0.0000207 + $0.0000528 ={" "}
+              <span className="font-semibold">~$0.000074 per filter parse</span>
             </span>
-          </p>
-          <span className="mt-2">
-            Requests per $0.10:{" "}
-            <span className="font-semibold">1,361 requests</span>
-          </span>
-          <br />
-          <span className="dark:text-neutral-400 mt-2">
-            Requests per $10:{" "}
-            <span className="font-semibold">136,054 requests</span>
           </span>
         </p>
+        <span className="mt-2">
+          Requests per $0.10:{" "}
+          <span className="font-semibold">1,361 requests</span>
+        </span>
+        <br />
+        <span className="dark:text-neutral-400 mt-2">
+          Requests per $10:{" "}
+          <span className="font-semibold">136,054 requests</span>
+        </span>
 
         <H2>Conclusion</H2>
         <p>
@@ -421,10 +411,6 @@ export default function LinearFilterDemo() {
           I hope you found this example useful. If you have any questions,
           please feel free to reach out to me.
         </p>
-      </div>
-      <div className="mt-12">
-        <hr className="my-8" />
-        <PostComments slug="linear-filter" />
       </div>
     </>
   );

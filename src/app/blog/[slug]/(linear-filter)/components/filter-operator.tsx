@@ -1,4 +1,4 @@
-import type { FilterCondition } from "@/app/blog/linear-filter/types";
+import type { FilterCondition } from "../types";
 import { PillSegment } from "./pill-segment";
 import { OPERATOR_LABELS } from "./shared";
 
