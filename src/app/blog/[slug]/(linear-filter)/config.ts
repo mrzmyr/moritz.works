@@ -4,11 +4,11 @@ If you see multiple conditions, return an array of conditions.
 If the user asks for a filter that is not possible, return an empty array.
 
 # Examples
-- "bugs older than 3 months"  
-  (label: include, value: bug; date: before, value: 3, unit: months)  
+- "features that we shipped last week"  
+  (label: include, value: feature; date: after, value: "date from last week", unit: days)  
 
-- "label not includes bug and status done"  
-  (label: not_include, value: bug; status: equals, value: done)  
+- "bugs from customer support"  
+  (label: include, value: customer-support; label: include, value: bug)  
 
 Today's date is ${new Date().toISOString().split("T")[0]}
 `;

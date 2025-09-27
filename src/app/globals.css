@@ -32,8 +32,10 @@ a {
 
 	@apply dark:decoration-neutral-700;
 
+	@apply duration-200 ease-out;
+
 	&:hover {
-		@apply decoration-neutral-400;
+		@apply decoration-neutral-300;
 		@apply dark:decoration-neutral-600;
 	}
 }

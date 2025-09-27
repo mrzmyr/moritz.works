@@ -28,6 +28,9 @@ const WorkListItem = ({
           {name}
         </div>
       </div>
+      <div className="flex-1 px-2">
+        <div className="border-b border-dashed border-neutral-200 dark:border-neutral-700" />
+      </div>
       <div className="flex flex-row gap-2">
         <div className="text-sm text-neutral-400 dark:text-neutral-400">
           {title}
@@ -44,7 +47,7 @@ const WorkListItem = ({
 
 const WorkList = () => {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <WorkListItem
         image="/static/images/1komma5-logo.jpeg"
         title="Engineering Manager"
@@ -59,7 +62,6 @@ const WorkList = () => {
         country="DE"
         name="1KOMMA5°"
         from="2023"
-        to="2024"
       />
       <WorkListItem
         image="/static/images/twain-logo.png"

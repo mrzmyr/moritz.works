@@ -1,4 +1,5 @@
 import {
+  type BundledLanguage,
   CodeBlock,
   CodeBlockBody,
   CodeBlockContent,
@@ -6,7 +7,6 @@ import {
   CodeBlockFiles,
   CodeBlockHeader,
   CodeBlockItem,
-  type BundledLanguage,
 } from "@/components/ui/kibo-ui/code-block";
 
 const code = `
@@ -44,15 +44,6 @@ export const LlmActionCodeBlock = () => {
         defaultValue={"typescript"}
         className="my-4"
       >
-        <CodeBlockHeader>
-          <CodeBlockFiles>
-            {(item) => (
-              <CodeBlockFilename key={item.language} value={item.language}>
-                {item.filename}
-              </CodeBlockFilename>
-            )}
-          </CodeBlockFiles>
-        </CodeBlockHeader>
         <CodeBlockBody>
           {(item) => (
             <CodeBlockItem

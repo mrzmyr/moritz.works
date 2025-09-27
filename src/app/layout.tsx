@@ -78,8 +78,8 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <PostStructuredData type="website" />
       </head>
-      <body className="bg-neutral-50 dark:bg-neutral-900">
-        <div className="max-w-2xl lg:max-w-3xl mx-auto pt-8 pb-12 px-4 h-full">
+      <body className="bg-neutral-50 dark:bg-[#090909]">
+        <div className="max-w-2xl lg:max-w-2xl mx-auto pt-8 pb-12 px-4 h-full">
           <PostHogProvider>{children}</PostHogProvider>
         </div>
         <Analytics />

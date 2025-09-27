@@ -28,7 +28,7 @@ export const FigureContent = ({
   return (
     <span
       className={cn(
-        "bg-white dark:bg-neutral-800/50 rounded-lg p-4 md:p-6 lg:p-8 border border-neutral-200 dark:border-neutral-800 w-full overflow-hidden block",
+        "bg-white dark:bg-neutral-900 rounded-lg p-4 border border-neutral-200 dark:border-neutral-800 w-full overflow-hidden block",
         className
       )}
     >

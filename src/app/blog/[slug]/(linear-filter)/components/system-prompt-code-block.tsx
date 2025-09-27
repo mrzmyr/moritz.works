@@ -5,21 +5,7 @@ import {
   CodeBlockContent,
   CodeBlockItem,
 } from "@/components/ui/kibo-ui/code-block";
-
-const code = `
-Parse natural language filter descriptions into structured JSON format.
-If you see multiple conditions, return an array of conditions.
-If the user asks for a filter that is not possible, return an empty array.
-
-# Examples
-- "bugs older than 3 months"  
-  (label: include, value: bug; date: before, value: 3, unit: months)  
-
-- "label not includes bug and status done"  
-  (label: not_include, value: bug; status: equals, value: done)  
-
-Today's date is \${new Date().toISOString().split("T")[0]}
-`;
+import { SYSTEM_PROMPT } from "../config";
 
 export const SystemPromptCodeBlock = () => {
   return (
@@ -29,7 +15,7 @@ export const SystemPromptCodeBlock = () => {
           {
             filename: "system-prompt.ts",
             language: "markdown",
-            code: code.trim(),
+            code: SYSTEM_PROMPT.trim(),
           },
         ]}
         defaultValue={"markdown"}

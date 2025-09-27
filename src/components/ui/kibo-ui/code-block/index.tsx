@@ -272,6 +272,11 @@ const highlight = (
       light: "github-light",
       dark: "github-dark-default",
     },
+    colorReplacements: {
+      "github-dark-default": {
+        "#0d1117": "#111",
+      },
+    },
     transformers: [
       transformerNotationDiff({
         matchAlgorithm: "v3",
@@ -334,7 +339,7 @@ export const CodeBlock = ({
     <CodeBlockContext.Provider value={{ value, onValueChange, data }}>
       <div
         className={cn(
-          "size-full overflow-hidden rounded-md border border-neutral-200 dark:border-neutral-700 h-fit text-xs",
+          "size-full overflow-hidden rounded-md border border-neutral-200 dark:border-neutral-800/50 h-fit text-xs",
           className
         )}
         {...props}

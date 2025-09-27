@@ -9,7 +9,6 @@ import { tryCatch } from "@/lib/utils";
 
 type PostModule = { default: FC };
 
-// Initialize dayjs plugins
 dayjs.extend(relativeTime);
 
 export async function generateMetadata(props: {
@@ -72,7 +71,6 @@ const PostContent = async ({ slug }: { slug: string }) => {
     notFound();
   }
 
-  // Then try a TSX component (NOT a route's page.tsx)
   const {
     success: tsxSuccess,
     data: tsxData,
@@ -85,7 +83,6 @@ const PostContent = async ({ slug }: { slug: string }) => {
     return <TsxContent />;
   }
 
-  // Try MDX first
   const {
     success,
     data,
@@ -103,7 +100,7 @@ const PostContent = async ({ slug }: { slug: string }) => {
 
 const PostContentSkeleton = () => {
   return (
-    <div className="mb-8">
+    <div className="mb-6">
       <div className="h-[24px] w-2/5 bg-neutral-200 dark:bg-neutral-700 rounded" />
       <div className="h-[20px] w-3/5 bg-neutral-200 dark:bg-neutral-700 rounded" />
     </div>

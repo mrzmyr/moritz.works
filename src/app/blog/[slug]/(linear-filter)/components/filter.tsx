@@ -36,7 +36,7 @@ export function Filter({
     try {
       const result = await parseFilterAction(q);
 
-      if (!result.success) {
+      if (!result.success || !result) {
         setShouldShake(true);
         setTimeout(() => setShouldShake(false), 500);
         return;
@@ -51,62 +51,66 @@ export function Filter({
   const hasFilters = !!parsedFilters?.conditions?.length;
 
   return (
-    <div className="flex flex-col items-start">
-      {!hasFilters && !isLoading && (
-        <FilterDropdown onSelect={parse} shouldShake={shouldShake} />
-      )}
+    <div className="flex flex-col items-start w-full">
+      <div className="w-full pt-3 px-3 min-h-10">
+        {!hasFilters && !isLoading && (
+          <FilterDropdown onSelect={parse} shouldShake={shouldShake} />
+        )}
 
-      {isLoading && (
-        <div className="flex flex-row gap-2 flex-wrap">
-          <Skeleton
-            className="w-[180px] h-7"
-            style={{ animationDelay: "0ms" }}
-          />
-          <Skeleton
-            className="w-[100px] h-7"
-            style={{ animationDelay: "120ms" }}
-          />
-          <Skeleton
-            className="w-[140px] h-7"
-            style={{ animationDelay: "240ms" }}
-          />
-        </div>
-      )}
-
-      {hasFilters && parsedFilters && (
-        <div className="flex flex-row gap-2 flex-wrap">
-          {parsedFilters.conditions.map((condition, idx) => (
-            <FilterPill
-              key={`${condition.type}-${condition.operator}-${idx}`}
-              filter={condition}
-              onChange={(updated) => {
-                const newConditions = parsedFilters?.conditions.map((c) =>
-                  c === condition ? updated : c
-                );
-
-                setParsedFilters((prev) => {
-                  if (!prev) return prev;
-                  return {
-                    ...prev,
-                    conditions: newConditions,
-                  };
-                });
-              }}
-              onRemove={(toRemove) => {
-                setParsedFilters((prev) => {
-                  if (!prev) return prev;
-                  return {
-                    ...prev,
-                    conditions: prev.conditions.filter((c) => c !== toRemove),
-                  };
-                });
-              }}
+        {isLoading && (
+          <div className="flex flex-row gap-2 flex-wrap">
+            <Skeleton
+              className="w-[180px] h-7"
+              style={{ animationDelay: "0ms" }}
             />
-          ))}
-        </div>
-      )}
+            <Skeleton
+              className="w-[100px] h-7"
+              style={{ animationDelay: "120ms" }}
+            />
+            <Skeleton
+              className="w-[140px] h-7"
+              style={{ animationDelay: "240ms" }}
+            />
+          </div>
+        )}
 
-      <div className="mt-4 w-full">
+        {hasFilters && parsedFilters && (
+          <div className="flex flex-row gap-2 flex-wrap">
+            {parsedFilters.conditions.map((condition, idx) => (
+              <FilterPill
+                key={`${condition.type}-${condition.operator}-${idx}`}
+                filter={condition}
+                onChange={(updated) => {
+                  const newConditions = parsedFilters?.conditions.map((c) =>
+                    c === condition ? updated : c
+                  );
+
+                  setParsedFilters((prev) => {
+                    if (!prev) return prev;
+                    return {
+                      ...prev,
+                      conditions: newConditions,
+                    };
+                  });
+                }}
+                onRemove={(toRemove) => {
+                  setParsedFilters((prev) => {
+                    if (!prev) return prev;
+                    return {
+                      ...prev,
+                      conditions: prev.conditions.filter((c) => c !== toRemove),
+                    };
+                  });
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="w-full h-[1px] mt-2 bg-neutral-200 dark:bg-neutral-800 rounded-sm" />
+
+      <div className="w-full">
         <IssueList filters={parsedFilters} issues={ISSUES} />
       </div>
     </div>

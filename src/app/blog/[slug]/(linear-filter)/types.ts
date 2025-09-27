@@ -37,7 +37,7 @@ const labelFilter = z.object({
 
 export type LabelFilter = z.infer<typeof labelFilter>;
 
-const statusValues = z.enum(["todo", "in_progress", "done"]);
+const statusValues = z.enum(["backlog", "todo", "in_progress", "in_review", "done"]);
 
 export type StatusValues = z.infer<typeof statusValues>;
 
@@ -50,7 +50,6 @@ const statusFilter = z.object({
 });
 
 export type StatusFilter = z.infer<typeof statusFilter>;
-
 
 const filterCondition = z.discriminatedUnion("type", [
 	dateFilter,

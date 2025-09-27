@@ -77,7 +77,7 @@ export const OPERATOR_LABELS: Record<FilterCondition["operator"], string> = {
   after: "after",
   include: "include",
   not_include: "not include",
-  equals: "equals",
+  equals: "is",
 };
 
 export const TERMS = [

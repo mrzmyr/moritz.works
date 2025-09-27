@@ -16,6 +16,7 @@ import { FilterTypeBadge } from "./components/filter-type-badge";
 import { FilterValueSelector } from "./components/filter-value-selector";
 import { DateIcon, LabelIcon, StatusIcon } from "./components/icons";
 import { LlmActionCodeBlock } from "./components/llm-action-code-block";
+import { StatusIndicator } from "./components/status-indicator";
 import { SystemPromptCodeBlock } from "./components/system-prompt-code-block";
 import { FilterType } from "./types";
 
@@ -35,10 +36,8 @@ export default function Page() {
       </p>
       <p>
         But there&apos;s one LLM capability I can&apos;t stop being fascinated
-        by: how effortlessly they handle translation. Not just from{" "}
-        <span className="font-semibold">&quot;中文 to русский</span> or{" "}
-        <span className="font-semibold">español to Deutsch&quot;</span>, but
-        from{" "}
+        by: how effortlessly they handle translation. Not just from 中文 to
+        русский or español to Deutsch, but from{" "}
         <span className="font-semibold">
           natural language to structured data
         </span>
@@ -69,9 +68,8 @@ export default function Page() {
         ).
       </p>{" "}
       <p>
-        It feels magical: instead of memorizing syntax like{" "}
-        <code>label:bug AND status:todo</code> or even needing to learn specific
-        query languages (e.g.{" "}
+        Instead of memorizing syntax like <code>label:bug AND status:todo</code>{" "}
+        or even needing to learn specific query languages (e.g.{" "}
         <a
           href="https://linear.app/help/hc/en-us/articles/600021211133-JQL"
           target="_blank"
@@ -90,7 +88,7 @@ export default function Page() {
         ), you can simply type:
       </p>
       <blockquote className="font-normal">
-        show me bugs from last week
+        show me unfinished bugs from customer support
       </blockquote>
       <p>
         The system bridges the gap between how we think and how computers
@@ -114,10 +112,11 @@ export default function Page() {
       </Figure>
       <H2>Demo</H2>
       <p>
-        Try it yourself, by typing e.g. &quot;show me bugs that need work.&quot;
+        Try it yourself, by typing e.g. &quot;show me unfinished bugs from
+        customer support.&quot;
       </p>
       <Figure>
-        <FigureContent>
+        <FigureContent className="p-0">
           <Filter onChange={() => {}} />
         </FigureContent>
       </Figure>
@@ -131,29 +130,33 @@ export default function Page() {
       <div className=" mt-6">
         <H2>Filter Schema</H2>
         <p>
-          Filters are hard, especially when they happen in conjunction. We kept
+          Filters are hard, especially when they happen in conjunction. I kept
           it simple in this example, using three filter types:
         </p>
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-1">
-            <DateIcon /> <span>Date</span>
-            <span>
-              : <code>before</code> and <code>after</code> operators
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-1">
-            <LabelIcon /> <span>Label</span>
-            <span>
-              : <code>include</code> and <code>not_include</code> operators
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-1">
-            <StatusIcon /> <span>Status</span>
-            <span>
-              : <code>equals</code> operator
-            </span>
-          </div>
-        </div>
+        <Figure className="flex justify-center">
+          <FigureContent>
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-wrap items-center gap-1">
+                <DateIcon /> <span>Date</span>
+                <span>
+                  : <code>before</code> and <code>after</code> operators
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-1">
+                <LabelIcon /> <span>Label</span>
+                <span>
+                  : <code>include</code> and <code>not_include</code> operators
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-1">
+                <StatusIcon /> <span>Status</span>
+                <span>
+                  : <code>is</code> operator
+                </span>
+              </div>
+            </div>
+          </FigureContent>
+        </Figure>
       </div>
       <p>I used Zod schema for validation and parsing the filter schema.</p>
       <div className="mt-4">
@@ -197,6 +200,14 @@ export default function Page() {
       <Figure className="mt-4">
         <FigureContent>
           <div className="grid grid-cols-2 gap-2.5 items-center">
+            <div className="text-sm">Status Indicator</div>
+            <div className="flex flex-row gap-2 px-1.5">
+              <StatusIndicator status="todo" />
+              <StatusIndicator status="in_progress" />
+              <StatusIndicator status="done" />
+              <StatusIndicator status="backlog" />
+              <StatusIndicator status="in_review" />
+            </div>
             <div className="text-sm">Filter Type Badge</div>
             <div>
               <FilterTypeBadge type={FilterType.DATE} />
@@ -209,7 +220,7 @@ export default function Page() {
                   name: "Date",
                   type: FilterType.DATE,
                   value: "2024-01-01",
-                  operator: "before",
+                  operator: "after",
                   selectedValue: ["2024-01-01"],
                   unit: "days",
                 }}
@@ -267,7 +278,7 @@ export default function Page() {
                 name: "Date",
                 type: FilterType.DATE,
                 value: "2024-01-01",
-                operator: "before",
+                operator: "after",
                 selectedValue: ["2024-01-01"],
                 unit: "days",
               }}
@@ -288,7 +299,7 @@ export default function Page() {
     name: "Date",
     type: FilterType.DATE,
     value: "2024-01-01",
-    operator: "before",
+    operator: "after",
     selectedValue: ["2024-01-01"],
     unit: "days",
   }}
@@ -317,7 +328,7 @@ export default function Page() {
         <code>FilterDropdown</code> if there are no filters.
       </p>
       <Figure>
-        <FigureContent className="flex justify-center px-2">
+        <FigureContent className="flex justify-center p-0">
           <Filter
             onChange={() => {}}
             initialFilters={{
@@ -336,26 +347,12 @@ export default function Page() {
                   value: ["bug"],
                   selectedValue: [],
                 },
-                {
-                  name: "Date",
-                  type: FilterType.DATE,
-                  operator: "before",
-                  value: "2024-01-01",
-                  selectedValue: [],
-                  unit: "days",
-                },
               ],
               raw_input: "status done",
             }}
           />
         </FigureContent>
-        <FigureCaption>Prefilled filter with status equals done</FigureCaption>
-      </Figure>
-      <Figure className="flex flex-col justify-center mt-8">
-        <FigureContent>
-          <Filter onChange={() => {}} />
-        </FigureContent>
-        <FigureCaption>Filter with no initial filters</FigureCaption>
+        <FigureCaption>Prefilled filter with status is done</FigureCaption>
       </Figure>
       <div className=" mt-6">
         <H2>Cost</H2>
