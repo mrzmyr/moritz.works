@@ -1,9 +1,11 @@
+"use client";
+
 import {
-  type BundledLanguage,
-  CodeBlock,
-  CodeBlockBody,
-  CodeBlockContent,
-  CodeBlockItem,
+	type BundledLanguage,
+	CodeBlock,
+	CodeBlockBody,
+	CodeBlockContent,
+	CodeBlockItem,
 } from "@/components/ui/kibo-ui/code-block";
 
 const code = `
@@ -32,35 +34,35 @@ export const parsedFilter = z.object({
 `;
 
 export const FilterSchemaCodeBlock = () => {
-  return (
-    <div className="not-prose">
-      <CodeBlock
-        data={[
-          {
-            filename: "types.ts",
-            language: "typescript",
-            code: code.trim(),
-          },
-        ]}
-        defaultValue={"typescript"}
-        className="my-4"
-      >
-        <CodeBlockBody>
-          {(item) => (
-            <CodeBlockItem
-              key={item.language}
-              value={item.language}
-              lineNumbers={true}
-            >
-              <CodeBlockContent language={item.language as BundledLanguage}>
-                {item.code}
-              </CodeBlockContent>
-            </CodeBlockItem>
-          )}
-        </CodeBlockBody>
-      </CodeBlock>
-    </div>
-  );
+	return (
+		<div className="not-prose">
+			<CodeBlock
+				data={[
+					{
+						filename: "types.ts",
+						language: "typescript",
+						code: code.trim(),
+					},
+				]}
+				defaultValue={"typescript"}
+				className="my-4"
+			>
+				<CodeBlockBody>
+					{(item) => (
+						<CodeBlockItem
+							key={item.language}
+							value={item.language}
+							lineNumbers={true}
+						>
+							<CodeBlockContent language={item.language as BundledLanguage}>
+								{item.code}
+							</CodeBlockContent>
+						</CodeBlockItem>
+					)}
+				</CodeBlockBody>
+			</CodeBlock>
+		</div>
+	);
 };
 
 const exampleCode = `
@@ -84,33 +86,33 @@ const exampleCode = `
 `;
 
 export const FilterSchemaExampleCodeBlock = () => {
-  return (
-    <div className="not-prose">
-      <CodeBlock
-        data={[
-          {
-            filename: "parsed_filters",
-            language: "typescript",
-            code: exampleCode.trim(),
-          },
-        ]}
-        defaultValue={"typescript"}
-        className="my-4"
-      >
-        <CodeBlockBody>
-          {(item) => (
-            <CodeBlockItem
-              key={item.language}
-              value={item.language}
-              lineNumbers={true}
-            >
-              <CodeBlockContent language={item.language as BundledLanguage}>
-                {item.code}
-              </CodeBlockContent>
-            </CodeBlockItem>
-          )}
-        </CodeBlockBody>
-      </CodeBlock>
-    </div>
-  );
+	return (
+		<div className="not-prose">
+			<CodeBlock
+				data={[
+					{
+						filename: "parsed_filters",
+						language: "typescript",
+						code: exampleCode.trim(),
+					},
+				]}
+				defaultValue={"typescript"}
+				className="my-4"
+			>
+				<CodeBlockBody>
+					{(item) => (
+						<CodeBlockItem
+							key={item.language}
+							value={item.language}
+							lineNumbers={true}
+						>
+							<CodeBlockContent language={item.language as BundledLanguage}>
+								{item.code}
+							</CodeBlockContent>
+						</CodeBlockItem>
+					)}
+				</CodeBlockBody>
+			</CodeBlock>
+		</div>
+	);
 };

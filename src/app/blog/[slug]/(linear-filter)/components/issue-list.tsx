@@ -220,7 +220,7 @@ export const IssueList = ({
   }
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col select-none">
       {_issues.map((issue) => (
         <IssueListItem key={issue.id} issue={issue} />
       ))}

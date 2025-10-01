@@ -75,5 +75,14 @@
 	},
 	"overrides": {
 		"@types/react": "19.1.2"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"@tailwindcss/oxide",
+			"canvas",
+			"core-js",
+			"sharp",
+			"unrs-resolver"
+		]
 	}
 }

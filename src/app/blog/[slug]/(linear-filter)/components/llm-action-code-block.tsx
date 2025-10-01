@@ -1,12 +1,11 @@
+"use client";
+
 import {
-  type BundledLanguage,
-  CodeBlock,
-  CodeBlockBody,
-  CodeBlockContent,
-  CodeBlockFilename,
-  CodeBlockFiles,
-  CodeBlockHeader,
-  CodeBlockItem,
+	type BundledLanguage,
+	CodeBlock,
+	CodeBlockBody,
+	CodeBlockContent,
+	CodeBlockItem,
 } from "@/components/ui/kibo-ui/code-block";
 
 const code = `
@@ -31,33 +30,33 @@ export async function parseFilterAction({ input }: { input: string }) {
 `;
 
 export const LlmActionCodeBlock = () => {
-  return (
-    <div className="not-prose">
-      <CodeBlock
-        data={[
-          {
-            filename: "actions.ts",
-            language: "typescript",
-            code: code.trim(),
-          },
-        ]}
-        defaultValue={"typescript"}
-        className="my-4"
-      >
-        <CodeBlockBody>
-          {(item) => (
-            <CodeBlockItem
-              key={item.language}
-              value={item.language}
-              lineNumbers={true}
-            >
-              <CodeBlockContent language={item.language as BundledLanguage}>
-                {item.code}
-              </CodeBlockContent>
-            </CodeBlockItem>
-          )}
-        </CodeBlockBody>
-      </CodeBlock>
-    </div>
-  );
+	return (
+		<div className="not-prose">
+			<CodeBlock
+				data={[
+					{
+						filename: "actions.ts",
+						language: "typescript",
+						code: code.trim(),
+					},
+				]}
+				defaultValue={"typescript"}
+				className="my-4"
+			>
+				<CodeBlockBody>
+					{(item) => (
+						<CodeBlockItem
+							key={item.language}
+							value={item.language}
+							lineNumbers={true}
+						>
+							<CodeBlockContent language={item.language as BundledLanguage}>
+								{item.code}
+							</CodeBlockContent>
+						</CodeBlockItem>
+					)}
+				</CodeBlockBody>
+			</CodeBlock>
+		</div>
+	);
 };
