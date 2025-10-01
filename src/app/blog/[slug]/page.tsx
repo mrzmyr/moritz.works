@@ -2,12 +2,10 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { type FC, Suspense } from "react";
+import { Suspense } from "react";
+import { PostContent } from "@/components/post-content";
 import { siteConfig } from "@/config/app";
 import { getPostMetadata, getPosts } from "@/lib/posts";
-import { tryCatch } from "@/lib/utils";
-
-type PostModule = { default: FC };
 
 dayjs.extend(relativeTime);
 
@@ -63,41 +61,6 @@ export async function generateMetadata(props: {
     },
   };
 }
-
-const PostContent = async ({ slug }: { slug: string }) => {
-  const { data: post, error } = await getPostMetadata(slug);
-
-  if (error || !post) {
-    notFound();
-  }
-
-  const {
-    success: tsxSuccess,
-    data: tsxData,
-    error: tsxError,
-  } = await tryCatch(import(`@/app/blog/[slug]/(${slug})/page.tsx`));
-
-  if (tsxSuccess && tsxData && !tsxError) {
-    const tsx: PostModule = tsxData;
-    const TsxContent = tsx.default;
-    return <TsxContent />;
-  }
-
-  const {
-    success,
-    data,
-    error: mdxError,
-  } = await tryCatch(import(`@/content/${slug}.mdx`));
-
-  if (success && data && !mdxError) {
-    const mdx: PostModule = data;
-    const MdxContent = mdx.default;
-    return <MdxContent />;
-  }
-
-  notFound();
-};
-
 const PostContentSkeleton = () => {
   return (
     <div className="mb-6">

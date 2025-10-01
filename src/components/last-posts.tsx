@@ -12,9 +12,11 @@ const Posts = async () => {
   if (error || !posts) {
     notFound();
   }
-  return posts
-    .slice(0, 3)
-    .map((post) => <PostListItem key={post.id} {...post} />);
+  return posts.slice(0, 3).map((post) => (
+    <Suspense key={post.id} fallback={<PostListItemSkeleton />}>
+      <PostListItem key={post.id} post={post} />
+    </Suspense>
+  ));
 };
 
 const LastPostsSkeleton = () => {

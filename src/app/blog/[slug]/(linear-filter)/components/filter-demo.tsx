@@ -4,9 +4,9 @@ import type { ParsedFilter } from "../types";
 import { Filter } from "./filter";
 
 export function FilterDemo({
-	initialFilters,
+  initialFilters,
 }: {
-	initialFilters?: ParsedFilter | null;
+  initialFilters?: ParsedFilter | null;
 } = {}) {
-	return <Filter onChange={() => {}} initialFilters={initialFilters} />;
+  return <Filter onChange={() => {}} initialFilters={initialFilters} />;
 }

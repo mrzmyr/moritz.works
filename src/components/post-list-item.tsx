@@ -1,40 +1,29 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import Link from "next/link";
-import type { Post } from "@/lib/posts/types";
+import { getPostPreviewFromTsx } from "@/lib/posts";
+import type { PostData } from "@/lib/posts/types";
+import { PostListItemPreviewContaienr } from "./post-list-item-preview-container";
+import {
+  PostListItemSimple,
+  PostListItemSimpleSkeleton,
+} from "./post-list-item-simple";
 
 dayjs.extend(relativeTime);
 
-export const PostListItem = ({ id, url, title, excerpt, createdAt }: Post) => {
-  return (
-    <Link
-      href={url}
-      key={id}
-      className="flex flex-col sm:flex-row justify-between group items-start hover:bg-neutral-100 dark:hover:bg-neutral-800 px-4 py-2.5 rounded-md"
-    >
-      <div className="flex flex-col gap-1">
-        <div className="dark:text-white">{title}</div>
-        {excerpt && (
-          <div className="text-neutral-400 dark:text-neutral-400 text-sm">
-            {excerpt}
-          </div>
-        )}
-      </div>
-      <div className="text-sm text-neutral-400 dark:text-neutral-400 mt-2 sm:mt-0">
-        {dayjs(createdAt).fromNow()}
-      </div>
-    </Link>
-  );
+export const PostListItem = async ({ post }: { post: PostData }) => {
+  const { data: Preview, error } = await getPostPreviewFromTsx(post.slug);
+
+  if (Preview) {
+    return (
+      <PostListItemPreviewContaienr post={post}>
+        <Preview post={post} />
+      </PostListItemPreviewContaienr>
+    );
+  }
+
+  return <PostListItemSimple post={post} />;
 };
 
 export const PostListItemSkeleton = () => {
-  return (
-    <div className="h-[68px] flex justify-between items-start px-4 py-2.5 rounded-md animate-pulse gap-4">
-      <div className="flex flex-col gap-2 flex-1">
-        <div className="h-[24px] w-2/5 bg-neutral-200 dark:bg-neutral-700 rounded" />
-        <div className="h-[20px] w-3/5 bg-neutral-200 dark:bg-neutral-700 rounded" />
-      </div>
-      <div className="h-[20px] w-20 bg-neutral-200 dark:bg-neutral-700 rounded self-start" />
-    </div>
-  );
+  return <PostListItemSimpleSkeleton />;
 };

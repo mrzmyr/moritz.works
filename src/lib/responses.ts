@@ -1,5 +1,13 @@
-export type Response<T> = {
-  success: boolean;
-  data: T | null;
-  error: string | null;
+type ErrorResponse<T> = {
+  success: false;
+  data?: T;
+  error: string;
 };
+
+type SuccessResponse<T> = {
+  success: true;
+  data: T;
+  error?: string;
+};
+
+export type Response<T> = ErrorResponse<T> | SuccessResponse<T>;
