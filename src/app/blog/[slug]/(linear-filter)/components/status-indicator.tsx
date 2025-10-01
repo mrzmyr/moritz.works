@@ -38,7 +38,7 @@ export const StatusIndicator = ({ status }: { status: StatusValues }) => {
   const color = COLOR_MAPPING[status];
 
   if (status === "done") {
-    return <DoneCircle size={size} />;
+    return <DoneCircle />;
   }
 
   function arc({
