@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import type { LabelValues } from "../types";
+import type { LabelValues } from "../schema";
 
 export const LabelBullet = ({ type }: { type: LabelValues }) => {
   const typeToColor: Record<LabelValues, string> = {

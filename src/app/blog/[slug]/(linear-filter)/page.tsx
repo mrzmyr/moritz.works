@@ -199,19 +199,11 @@ export default function Page() {
         <a href="https://github.com/tailwindlabs/tailwindcss/pull/8962">
           Tailwind removed it in V4
         </a>{" "}
-        which is even mentioning Linear explicitly). This is how you would
-        expect it from your Mac OS System Settings for example.
+        which is even mentioning Linear explicitly).
       </p>
-      <Figure>
-        <FigureContent>
-          <Image
-            src="/static/images/blog/linear-filter-macos-system-settings.gif"
-            alt="Linear Filter macOS System Settings"
-            width={1854}
-            height={468}
-          />
-        </FigureContent>
-      </Figure>
+      <p>
+        It's all the little details that make a difference, for example the{" "}
+      </p>
       <p>
         Another one is that they don&apos;t use text selection (aka{" "}
         <code>user-select: none;</code>) except on editbale fields like the
@@ -375,7 +367,6 @@ export default function Page() {
             }}
           />
         </FigureContent>
-        <FigureCaption>Prefilled filter with status is done</FigureCaption>
       </Figure>
       <div className=" mt-6">
         <H2>Cost</H2>
@@ -427,6 +418,10 @@ export default function Page() {
             $222.00 / month for 100,000 users
           </span>
           .
+        </p>
+        <p>
+          Given the potential benefits this has for users, thats a pretty good
+          price point.
         </p>
 
         <H2>Conclusion</H2>
