@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { parseFilterAction } from "../actions";
 import { EXAMPLE_ISSUES } from "../config";
-import type { ParsedFilter } from "../types";
+import type { ParsedFilter } from "../schema";
 import { FilterDropdown } from "./filter-dropdown";
 import { FilterPill } from "./filter-pill";
 import { IssueList } from "./issue-list";
@@ -109,7 +109,7 @@ export function Filter({
         )}
       </div>
 
-      <div className="w-full h-[1px] mt-2 bg-neutral-200 dark:bg-neutral-800 rounded-sm" />
+      <div className="w-full h-[1px] mt-2 bg-neutral-200 dark:bg-neutral-900 rounded-sm" />
 
       <div className="w-full">
         <IssueList filters={parsedFilters} issues={EXAMPLE_ISSUES} />

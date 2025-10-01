@@ -1,6 +1,8 @@
 import Image from "next/image";
-import { Figure, FigureCaption, FigureContent } from "@/components/figure";
+import { SiGithub } from "react-icons/si";
+import { Figure, FigureContent } from "@/components/figure";
 import { H2, H3 } from "@/components/headlines";
+import { GITHUB_REPO } from "@/config/app";
 import { FastCodeBlock } from "./components/fast-code-block";
 import { FilterClose } from "./components/filter-close";
 import { FilterDemo } from "./components/filter-demo";
@@ -17,6 +19,26 @@ import { LlmActionCodeBlock } from "./components/llm-action-code-block";
 import { StatusIndicator } from "./components/status-indicator";
 import { SystemPromptCodeBlock } from "./components/system-prompt-code-block";
 import { FilterType } from "./types";
+
+const GithubLink = ({
+  path,
+  children,
+}: {
+  path: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <a
+      href={`https://github.com/${GITHUB_REPO}/blob/main/${path}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-1"
+    >
+      <SiGithub className="text-neutral-500 dark:text-neutral-400 w-3.5 h-3.5" />
+      <span className="text-sm">{children}</span>
+    </a>
+  );
+};
 
 export default function Page() {
   return (
@@ -98,13 +120,13 @@ export default function Page() {
         <strong>LLM parser</strong>.
       </p>
       <Figure>
-        <FigureContent>
+        <FigureContent className="p-0">
           <Image
             src="/static/images/blog/linear-filter-overview.png"
             alt="Linear Filter Overview"
             width={1854}
             height={468}
-            className="rounded-lg overflow-hidden"
+            className="rounded-lg overflow-hidden dark:invert"
           />
         </FigureContent>
       </Figure>
@@ -218,8 +240,12 @@ export default function Page() {
       </p>
       <Figure className="mt-4">
         <FigureContent>
-          <div className="grid grid-cols-2 gap-2.5 items-center">
-            <div className="text-sm">Status Indicator</div>
+          <div className="grid grid-cols-2 gap-2.5 items-center text-sm">
+            <div className="text-sm">
+              <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/status-indicator.tsx">
+                Status Indicator
+              </GithubLink>
+            </div>
             <div className="flex flex-row gap-2 px-1.5">
               <StatusIndicator status="todo" />
               <StatusIndicator status="in_progress" />
@@ -227,11 +253,19 @@ export default function Page() {
               <StatusIndicator status="backlog" />
               <StatusIndicator status="in_review" />
             </div>
-            <div className="text-sm">Filter Type Badge</div>
+            <div className="text-sm">
+              <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/filter-type-badge.tsx">
+                Filter Type Badge
+              </GithubLink>
+            </div>
             <div>
               <FilterTypeBadge type={FilterType.DATE} />
             </div>
-            <div className="text-sm">Filter Value Selector</div>
+            <div className="text-sm">
+              <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/filter-value-selector.tsx">
+                Filter Value Selector
+              </GithubLink>
+            </div>
             <div>
               <FilterValueSelector
                 filter={{
@@ -244,13 +278,21 @@ export default function Page() {
                 }}
               />
             </div>
-            <div className="text-sm">Filter Operator</div>
+            <div className="text-sm">
+              <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/filter-operator.tsx">
+                Filter Operator
+              </GithubLink>
+            </div>
             <div>
               <div className="flex flex-row gap-1">
                 <FilterOperator operator="before" />
               </div>
             </div>
-            <div className="text-sm">Filter Close</div>
+            <div className="text-sm">
+              <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/filter-close.tsx">
+                Filter Close
+              </GithubLink>
+            </div>
             <div>
               <FilterClose />
             </div>
@@ -265,6 +307,7 @@ export default function Page() {
             alt="Linear Filter Pills"
             width={1854}
             height={468}
+            className="dark:invert"
           />
         </FigureContent>
       </Figure>
@@ -288,19 +331,26 @@ export default function Page() {
         </a>
         ).
       </p>
-      <Figure className="mb-4">
-        <FigureContent className="flex py-8 justify-center">
-          <div className="md:scale-150 lg:scale-200">
-            <FilterPill
-              filter={{
-                name: "Date",
-                type: FilterType.DATE,
-                value: "2024-01-01",
-                operator: "after",
-                selectedValue: ["2024-01-01"],
-                unit: "days",
-              }}
-            />
+      <Figure className="mt-4">
+        <FigureContent>
+          <div className="grid grid-cols-2 gap-2.5 items-center text-sm">
+            <div className="text-sm">
+              <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/filter-pill.tsx">
+                Filter Pill
+              </GithubLink>
+            </div>
+            <div className="flex flex-row gap-2 px-1.5">
+              <FilterPill
+                filter={{
+                  name: "Date",
+                  type: FilterType.DATE,
+                  value: "2024-01-01",
+                  operator: "after",
+                  selectedValue: ["2024-01-01"],
+                  unit: "days",
+                }}
+              />
+            </div>
           </div>
         </FigureContent>
       </Figure>
@@ -335,6 +385,7 @@ export default function Page() {
             alt="Linear Filter Pills"
             width={1854}
             height={468}
+            className="dark:invert"
           />
         </FigureContent>
       </Figure>

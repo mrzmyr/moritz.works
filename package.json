@@ -5,7 +5,9 @@
 		"dev": "next dev --experimental-https",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint",
+		"lint": "biome check ./src",
+		"lint:fix": "biome check ./src --write",
+		"lint:error": "biome check ./src --diagnostic-level=error",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

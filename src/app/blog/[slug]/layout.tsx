@@ -42,8 +42,6 @@ export default async function Layout({
         />
       </div>
       <PostContentConatiner>{children}</PostContentConatiner>
-
-      <PostComments slug={slug} />
     </>
   );
 }

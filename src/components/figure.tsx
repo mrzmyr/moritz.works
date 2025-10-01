@@ -28,8 +28,8 @@ export const FigureContent = ({
   return (
     <span
       className={cn(
-        "bg-white dark:bg-neutral-900 rounded-lg p-4 border border-neutral-200 dark:border-neutral-800 w-full overflow-hidden block",
-        className
+        "bg-white dark:bg-neutral-900/50 rounded-lg p-4 border border-neutral-200 dark:border-neutral-900 w-full overflow-hidden block",
+        className,
       )}
     >
       {children}

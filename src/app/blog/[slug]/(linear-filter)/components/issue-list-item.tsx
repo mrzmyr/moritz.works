@@ -7,7 +7,7 @@ export const IssueListItem = ({ issue }: { issue: Issue }) => {
   return (
     <div
       key={issue.id}
-      className="cursor-default flex flex-row gap-2 text-[13px] w-full h-[44px] hover:bg-neutral-50 dark:hover:bg-neutral-800/30 py-1 px-4"
+      className="cursor-default flex flex-row gap-2 text-[13px] w-full h-[44px] hover:bg-neutral-50 dark:hover:bg-neutral-800/30 py-1 px-4 dark:text-white text-neutral-800"
     >
       <div className="flex flex-row gap-2 items-center">
         <span className="text-neutral-500 dark:text-neutral-400 min-w-12">
