@@ -71,16 +71,16 @@ export default async function Page() {
         </div>
         <div className="leading-7">
           Originally I studied a combination of computer science and psychology
-          namely Usability Engineering, made a{" "}
+          namely Usability Engineering,{" "}
           <a
             href="https://www.researchgate.net/publication/335566326_Emoji_Emoji_on_the_Wall_Show_Me_One_I_Show_You_All_-_An_Exploratory_Study_on_the_Connection_Between_Traits_and_Emoji_Usage"
             target="_blank"
             rel="noopener noreferrer"
             className="underline"
           >
-            study
+            published a study
           </a>{" "}
-          if how you use emojis predicts your character, and built{" "}
+          if your emojis predict your character, and built{" "}
           <Link
             href="https://pixy.day"
             target="_blank"
