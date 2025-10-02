@@ -4,7 +4,7 @@ import { FilterDemo } from "./components/filter-demo";
 
 export default function Preview({ post }: { post: PostData }) {
   return (
-    <div className="flex flex-col gap-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 rounded-lg mx-4 max-h-[300px] overflow-hidden group transition-all duration-300 ease-out">
+    <div className="flex flex-col gap-2 hover:bg-border/50 border border-border rounded-lg mx-4 max-h-[300px] overflow-hidden group transition-all duration-300 ease-out">
       <div className="flex flex-row justify-between gap-2 pt-4 px-4">
         <div className="flex flex-col gap-1">
           <div className="dark:text-white">{post.title}</div>

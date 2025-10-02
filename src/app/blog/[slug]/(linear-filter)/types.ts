@@ -14,8 +14,8 @@ export enum FilterType {
   STATUS = "status",
 }
 
-export const FILTER_PLURAL_NAMES = {
-  [FilterType.DATE]: "dates",
-  [FilterType.LABEL]: "labels",
-  [FilterType.STATUS]: "statuses",
+export type FilterValueDropdownItem = {
+  value: string;
+  title: string;
+  icon: React.ReactNode;
 };

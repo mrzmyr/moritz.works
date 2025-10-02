@@ -14,7 +14,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { FILTER_PLURAL_NAMES, type FilterCondition } from "../types";
+import { FILTER_PLURAL_NAMES } from "../config";
+import type { FilterCondition } from "../schema";
 import { capitalize } from "../utils";
 import { MiniCheckbox } from "./mini-checkbox";
 import { ITEMS_BY_TYPE } from "./shared";
@@ -49,8 +50,11 @@ export const FilterValueDropdown = ({
         <button
           type="button"
           className={cn(
-            "px-1.5 h-5 has-[>svg]:px-1.5 font-normal hover:bg-neutral-100 dark:hover:bg-neutral-700",
-            open && "bg-neutral-100"
+            "flex flex-row gap-1.5 items-center px-1.5 py-0.5 h-5 has-[>svg]:px-1.5",
+            "bg-card/80",
+            "font-normal",
+            "dark:hover:bg-card",
+            open && "bg-card",
           )}
         >
           {children}

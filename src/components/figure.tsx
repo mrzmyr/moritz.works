@@ -26,13 +26,13 @@ export const FigureContent = ({
   className?: string;
 }) => {
   return (
-    <span
+    <div
       className={cn(
-        "bg-white dark:bg-neutral-900/50 rounded-lg p-4 border border-neutral-200 dark:border-neutral-900 w-full overflow-hidden block",
+        "bg-white dark:bg-primary-foreground rounded-lg p-4 border border-border w-full overflow-hidden block",
         className,
       )}
     >
       {children}
-    </span>
+    </div>
   );
 };

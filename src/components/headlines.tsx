@@ -29,8 +29,8 @@ const Headline = ({
       typeof children === "string"
         ? children
         : Array.isArray(children)
-        ? children.filter((c) => typeof c === "string").join(" ")
-        : ""
+          ? children.filter((c) => typeof c === "string").join(" ")
+          : "",
     );
 
   // Dynamically render as <as><a ...></a></as>

@@ -16,38 +16,52 @@ export const PostContentConatiner = ({
         "max-w-none",
         "pb-28",
         "prose-a:underline",
-        "prose-blockquote:font-serif",
         "prose-blockquote:py-2",
-        "prose-blockquote:text-2xl",
+        "prose-blockquote:text-xl",
+        "prose-blockquote:border-0",
+        "prose-blockquote:font-serif",
+
         "prose-code:after:content-['']",
         "prose-code:before:content-['']",
-        "prose-code:bg-neutral-50",
+        "prose-code:bg-muted",
         "prose-code:border",
-        "prose-code:border-neutral-200",
+        "prose-code:border-ring/30",
         "prose-code:font-normal",
         "prose-code:px-1",
         "prose-code:py-0",
         "prose-code:rounded-md",
-        "prose-code:text-neutral-900/50",
+
         "prose-figure:my-8",
+
         "prose-headings:font-semibold",
-        "prose-headings:mb-2",
-        "prose-headings:mt-6",
+        "prose-headings:mb-6",
+        "prose-headings:mt-12",
+        "prose-h1:text-2xl",
+        "prose-h2:text-xl",
+        "prose-h3:text-lg",
+        "prose-h4:text-base",
+        "prose-h5:text-base",
+        "prose-h6:text-base",
+
         "prose-hr:mb-4",
+
         "prose-img:my-0",
+
         "prose-li:my-0.5",
+
         "prose-p:leading-[1.65]",
         "prose-p:my-2",
+
         "prose-pre:after:content-['']",
         "prose-pre:before:content-['']",
         "prose-pre:bg-white",
         "prose-pre:border",
-        "prose-pre:border-neutral-200",
+        "prose-pre:border-border",
         "prose-pre:font-normal",
         "prose-pre:rounded-md",
         "prose-ul:my-1",
         "prose-ul:pl-4",
-        "text-neutral-900",
+        "text-primary",
       )}
     >
       {children}

@@ -1,5 +1,4 @@
 import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
 import type { StatusValues } from "../schema";
 
 const COLOR_MAPPING: Record<StatusValues, string> = {
@@ -18,15 +17,27 @@ const PERCENT_MAPPING: Record<StatusValues, number> = {
   done: 1,
 };
 
+const SIZE = 14;
+
 export const DoneCircle = () => {
+  const circleRadius = SIZE / 2;
+  const gap = SIZE * 0.1;
+
   return (
     <div
-      className={cn(
-        "bg-[#5F6AD3] rounded-full flex items-center justify-center",
-        `w-[14px] h-[14px]`,
-      )}
+      className={`bg-[#5F6AD3] rounded-full flex items-center justify-center relative`}
+      style={{
+        width: `${circleRadius * 2}px`,
+        height: `${circleRadius * 2}px`,
+      }}
     >
-      <Check className={`size-3 stroke-[3px] pt-[1px] text-white`} />
+      <Check
+        className={`stroke-[3px] pt-[1px] text-white dark:text-neutral-900`}
+        style={{
+          width: `${circleRadius * 2 - gap}px`,
+          height: `${circleRadius * 2 - gap}px`,
+        }}
+      />
     </div>
   );
 };
@@ -60,8 +71,6 @@ function arc({
 }
 
 export const StatusIndicator = ({ status }: { status: StatusValues }) => {
-  const size = 14;
-
   const percent = PERCENT_MAPPING[status];
   const color = COLOR_MAPPING[status];
 
@@ -70,9 +79,9 @@ export const StatusIndicator = ({ status }: { status: StatusValues }) => {
   }
 
   const d = arc({
-    cx: size / 2,
-    cy: size / 2,
-    r: size / 2 - 3,
+    cx: SIZE / 2,
+    cy: SIZE / 2,
+    r: SIZE / 2 - 3,
     percent,
   });
 
@@ -80,17 +89,17 @@ export const StatusIndicator = ({ status }: { status: StatusValues }) => {
 
   return (
     <svg
-      id={`chart-${status}`}
-      viewBox={`0 0 ${size} ${size}`}
-      width={size}
-      height={size}
+      id={`status-indicator-${status}`}
+      viewBox={`0 0 ${SIZE} ${SIZE}`}
+      width={SIZE}
+      height={SIZE}
       xmlns="http://www.w3.org/2000/svg"
       role="img"
-      aria-label="Pie chart"
+      aria-label={status}
     >
       <circle
-        cx={size / 2}
-        cy={size / 2}
+        cx={SIZE / 2}
+        cy={SIZE / 2}
         r={6}
         fill="transparent"
         stroke={fill}

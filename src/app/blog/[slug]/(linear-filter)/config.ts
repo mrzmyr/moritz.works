@@ -1,5 +1,4 @@
-export const SYSTEM_PROMPT = `
-Parse natural language filter descriptions into structured JSON format.
+export const SYSTEM_PROMPT = `Parse natural language filter descriptions into structured JSON format.
 If you see multiple conditions, return an array of conditions.
 If the user asks for a filter that is not possible, return an empty array.
 
@@ -25,7 +24,7 @@ export const LABEL_COLORS = {
   red: "#eb5757",
 };
 
-import type { Issue } from "./types";
+import { FilterType, type Issue } from "./types";
 
 const today = new Date();
 const lastWeek = new Date();
@@ -124,3 +123,9 @@ export const EXAMPLE_ISSUES: Issue[] = [
     status: "todo",
   },
 ];
+
+export const FILTER_PLURAL_NAMES = {
+  [FilterType.DATE]: "dates",
+  [FilterType.LABEL]: "labels",
+  [FilterType.STATUS]: "statuses",
+};

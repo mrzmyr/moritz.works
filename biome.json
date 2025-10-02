@@ -6,8 +6,7 @@
     "useIgnoreFile": false
   },
   "files": {
-    "ignoreUnknown": false,
-    "includes": ["src/**/*", "!src/lib/operating-system/generated"]
+    "ignoreUnknown": false
   },
   "formatter": {
     "enabled": true,

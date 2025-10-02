@@ -1,12 +1,18 @@
 "use client";
 
 import { XIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const FilterClose = ({ onClick }: { onClick?: () => void }) => {
   return (
     <button
       type="button"
-      className="px-1 py-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-foreground dark:hover:text-neutral-200"
+      className={cn(
+        "flex flex-row gap-1.5 items-center px-1.5 py-0.5",
+        "bg-white ",
+        "dark:bg-neutral-800",
+        onClick && "hover:bg-neutral-100 dark:hover:bg-neutral-700",
+      )}
       onClick={onClick ?? (() => {})}
       aria-label="Remove filter"
     >

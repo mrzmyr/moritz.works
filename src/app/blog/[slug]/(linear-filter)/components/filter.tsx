@@ -60,18 +60,9 @@ export function Filter({
 
         {isLoading && (
           <div className="flex flex-row gap-2 flex-wrap">
-            <Skeleton
-              className="w-[180px] h-7"
-              style={{ animationDelay: "0ms" }}
-            />
-            <Skeleton
-              className="w-[100px] h-7"
-              style={{ animationDelay: "120ms" }}
-            />
-            <Skeleton
-              className="w-[140px] h-7"
-              style={{ animationDelay: "240ms" }}
-            />
+            <Skeleton className="w-[180px] h-7 duration-[2s] delay-0 bg-neutral-200 dark:bg-card" />
+            <Skeleton className="w-[100px] h-7 duration-[2s] delay-500 bg-neutral-200 dark:bg-card" />
+            <Skeleton className="w-[140px] h-7 duration-[2s] delay-1000 bg-neutral-200 dark:bg-card" />
           </div>
         )}
 

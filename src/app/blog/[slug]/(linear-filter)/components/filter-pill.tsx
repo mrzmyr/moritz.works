@@ -3,9 +3,9 @@
 import type { ParsedFilter } from "../schema";
 import { Divider } from "./divider";
 import { FilterClose } from "./filter-close";
-import { FilterOperator } from "./filter-operator";
+import { FilterOperatorBagde } from "./filter-operator-badge";
 import { FilterTypeBadge } from "./filter-type-badge";
-import { FilterValueSelector } from "./filter-value-selector";
+import { FilterValueBadge } from "./filter-value-badge";
 
 export const FilterPill = ({
   filter,
@@ -17,12 +17,12 @@ export const FilterPill = ({
   onRemove?: (filter: ParsedFilter["conditions"][number]) => void;
 }) => {
   return (
-    <div className="flex flex-row text-xs items-center border border-neutral-200 dark:border-neutral-700 rounded-sm max-w-fit overflow-hidden cursor-default">
+    <div className="flex flex-row text-xs items-center rounded-sm max-w-fit overflow-hidden cursor-default border border-border dark:border-transparent select-none">
       <FilterTypeBadge type={filter.type} />
       <Divider />
-      <FilterOperator operator={filter.operator} />
+      <FilterOperatorBagde operator={filter.operator} />
       <Divider />
-      <FilterValueSelector filter={filter} onChange={onChange} />
+      <FilterValueBadge filter={filter} onChange={onChange} />
       <Divider />
       <FilterClose onClick={() => onRemove(filter)} />
     </div>

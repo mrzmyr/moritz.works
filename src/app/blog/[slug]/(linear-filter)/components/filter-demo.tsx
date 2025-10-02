@@ -1,6 +1,6 @@
 "use client";
 
-import type { ParsedFilter } from "../types";
+import type { ParsedFilter } from "../schema";
 import { Filter } from "./filter";
 
 export function FilterDemo({

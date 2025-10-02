@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { PageBack } from "@/components/page-back";
-import { PostComments } from "@/components/post-comments";
 import { PostContentConatiner } from "@/components/post-content-container";
 import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";

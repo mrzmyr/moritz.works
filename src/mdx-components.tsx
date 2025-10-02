@@ -1,7 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import { Figure, FigureCaption, FigureContent } from "@/components/figure";
 import { H1, H2, H3, H4, H5, H6 } from "@/components/headlines";
-import { PostComments } from "@/components/post-comments";
 import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";
 import { PostStructuredData } from "@/components/post-structured-data";
@@ -11,7 +10,6 @@ import { ZoomImage } from "@/components/zoom-image";
 const components: MDXComponents = {
   PostMetadata,
   PostHeadline,
-  PostComments,
   PostStructuredData,
   Figure,
   FigureCaption,

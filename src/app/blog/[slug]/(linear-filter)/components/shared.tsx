@@ -1,23 +1,17 @@
 import { CalendarIcon } from "lucide-react";
 import type React from "react";
-import type { FilterCondition } from "../types";
-import { FilterType } from "../types";
+import type { FilterCondition } from "../schema";
+import { FilterType, type FilterValueDropdownItem } from "../types";
 import {
   AssigneeIcon,
   DateIcon,
-  DoneIcon,
   InProgressIcon,
   LabelIcon,
   StatusIcon,
   TodoIcon,
 } from "./icons";
 import { LabelBullet } from "./label-bullet";
-
-export type FilterValueDropdownItem = {
-  value: string;
-  title: string;
-  icon: React.ReactNode;
-};
+import { DoneCircle } from "./status-indicator";
 
 export const ITEMS_BY_TYPE: Record<FilterType, FilterValueDropdownItem[]> = {
   date: [
@@ -45,7 +39,7 @@ export const ITEMS_BY_TYPE: Record<FilterType, FilterValueDropdownItem[]> = {
   status: [
     { value: "todo", title: "Todo", icon: <TodoIcon /> },
     { value: "in progress", title: "In Progress", icon: <InProgressIcon /> },
-    { value: "done", title: "Done", icon: <DoneIcon /> },
+    { value: "done", title: "Done", icon: <DoneCircle /> },
   ],
 };
 

@@ -1,8 +1,8 @@
 "use client";
 
 import posthog from "posthog-js";
-import { useEffect } from "react";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
+import { useEffect } from "react";
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {

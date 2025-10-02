@@ -25,8 +25,8 @@ export function PostStructuredData({
       type === "website"
         ? "WebSite"
         : type === "article"
-        ? "Article"
-        : "Person",
+          ? "Article"
+          : "Person",
     name: title || siteConfig.title,
     description: description || siteConfig.description,
     url: url || siteConfig.url,
@@ -49,7 +49,7 @@ export function PostStructuredData({
                 `https://github.com/${siteConfig.author.github}`,
                 `https://twitter.com/${siteConfig.author.twitter.replace(
                   "@",
-                  ""
+                  "",
                 )}`,
               ],
             },
@@ -122,7 +122,7 @@ export function PostStructuredData({
               `https://github.com/${siteConfig.author.github}`,
               `https://twitter.com/${siteConfig.author.twitter.replace(
                 "@",
-                ""
+                "",
               )}`,
             ],
           }),

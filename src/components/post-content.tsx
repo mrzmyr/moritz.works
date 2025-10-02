@@ -8,6 +8,7 @@ export const PostContent = async ({ slug }: { slug: string }) => {
     notFound();
   }
 
+  // @ts-expect-error used as dynamic import
   const Content = post.content as React.ComponentType;
 
   return <Content />;

@@ -16,6 +16,7 @@ export const PostListItem = async ({ post }: { post: PostData }) => {
   if (Preview) {
     return (
       <PostListItemPreviewContaienr post={post}>
+        {/* @ts-expect-error used as dynamic import */}
         <Preview post={post} />
       </PostListItemPreviewContaienr>
     );

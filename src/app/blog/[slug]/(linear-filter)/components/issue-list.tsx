@@ -1,9 +1,5 @@
-import {
-  FilterType,
-  type Issue,
-  type ParsedFilter,
-  type StatusValues,
-} from "../types";
+import type { ParsedFilter, StatusValues } from "../schema";
+import { FilterType, type Issue } from "../types";
 import { IssueListItem } from "./issue-list-item";
 
 const getStatusOrder = (status: StatusValues) => {

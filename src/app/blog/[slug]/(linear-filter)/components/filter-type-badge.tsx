@@ -1,5 +1,4 @@
-import type { FilterCondition } from "../types";
-import { PillSegment } from "./pill-segment";
+import type { FilterCondition } from "../schema";
 import { DISPLAY_MAP } from "./shared";
 
 export const FilterTypeBadge = ({
@@ -9,9 +8,9 @@ export const FilterTypeBadge = ({
 }) => {
   const { icon, label } = DISPLAY_MAP[type];
   return (
-    <PillSegment className="text-xs">
+    <div className="flex flex-row gap-1.5 items-center px-1.5 py-0.5 bg-white dark:bg-neutral-800 text-sm">
       {icon}
       <span>{label}</span>
-    </PillSegment>
+    </div>
   );
 };

@@ -1,23 +1,33 @@
+import { InfoIcon } from "lucide-react";
 import Image from "next/image";
 import { SiGithub } from "react-icons/si";
 import { Figure, FigureContent } from "@/components/figure";
 import { H2, H3 } from "@/components/headlines";
+import { SimpleCodeBlock } from "@/components/simple-code-block";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { GITHUB_REPO } from "@/config/app";
-import { FastCodeBlock } from "./components/fast-code-block";
-import { FilterClose } from "./components/filter-close";
-import { FilterDemo } from "./components/filter-demo";
-import { FilterOperator } from "./components/filter-operator";
-import { FilterPill } from "./components/filter-pill";
 import {
   FilterSchemaCodeBlock,
   FilterSchemaExampleCodeBlock,
-} from "./components/filter-schema-code-block";
+} from "./code-blocks/filter-schema-code-block";
+import { LlmActionCodeBlock } from "./code-blocks/llm-action-code-block";
+import { SystemPromptCodeBlock } from "./code-blocks/system-prompt-code-block";
+import { FigureStatusIndicatorEditor } from "./components/figure-status-indicator-editor";
+import { FilterClose } from "./components/filter-close";
+import { FilterDemo } from "./components/filter-demo";
+import { FilterDropdown } from "./components/filter-dropdown";
+import { FilterOperatorBagde } from "./components/filter-operator-badge";
+import { FilterPill } from "./components/filter-pill";
 import { FilterTypeBadge } from "./components/filter-type-badge";
-import { FilterValueSelector } from "./components/filter-value-selector";
+import { FilterValueBadge } from "./components/filter-value-badge";
 import { DateIcon, LabelIcon, StatusIcon } from "./components/icons";
-import { LlmActionCodeBlock } from "./components/llm-action-code-block";
 import { StatusIndicator } from "./components/status-indicator";
-import { SystemPromptCodeBlock } from "./components/system-prompt-code-block";
 import { FilterType } from "./types";
 
 const GithubLink = ({
@@ -32,11 +42,26 @@ const GithubLink = ({
       href={`https://github.com/${GITHUB_REPO}/blob/main/${path}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-1"
+      className="inline-block align-baseline"
     >
-      <SiGithub className="text-neutral-500 dark:text-neutral-400 w-3.5 h-3.5" />
-      <span className="text-sm">{children}</span>
+      <SiGithub className="text-neutral-500 dark:text-neutral-400 w-3.5 h-3.5 inline align-text-bottom mr-1" />
+      <span>{children}</span>
     </a>
+  );
+};
+
+const InfoTooltip = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <TooltipProvider delayDuration={0}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <InfoIcon className="w-3.5 h-3.5 hover:text-neutral-600 dark:hover:text-neutral-400 inline-block" />
+        </TooltipTrigger>
+        <TooltipContent className="max-w-xs leading-relaxed">
+          <p>{children}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
@@ -111,10 +136,6 @@ export default function Page() {
         show me unfinished bugs from customer support
       </blockquote>
       <p>
-        The system bridges the gap between how we think and how computers
-        understand data.
-      </p>
-      <p>
         And the ingredients are surprisingly simple. All we need is a{" "}
         <strong>system prompt</strong>, a <strong>filter schema</strong>, and an{" "}
         <strong>LLM parser</strong>.
@@ -180,9 +201,7 @@ export default function Page() {
         </Figure>
       </div>
       <p>I used Zod schema for validation and parsing the filter schema.</p>
-      <div className="mt-4">
-        <FilterSchemaCodeBlock />
-      </div>
+      <FilterSchemaCodeBlock />
       <div className="mt-6">
         Here&apos;s an example output of the filter schema which we will use
         later on.
@@ -212,10 +231,6 @@ export default function Page() {
         it comes to their UI.
       </p>
       <p>
-        Just to name a few, to make the web app feel more like a app than a
-        website.
-      </p>
-      <p>
         One notable one is that they don&apos;t use <code>cursor: pointer</code>{" "}
         on any elements (see also{" "}
         <a href="https://github.com/tailwindlabs/tailwindcss/pull/8962">
@@ -224,35 +239,134 @@ export default function Page() {
         which is even mentioning Linear explicitly).
       </p>
       <p>
-        It's all the little details that make a difference, for example the{" "}
+        Little details make a difference, for example how they do the inital
+        loading animation. One skeleton builds after another to indicate that
+        its <i>building up</i> and not just loading all at once, easily
+        achievable by using the <code>delay</code> and <code>duration</code> on
+        the <code>Skeleton</code> component.
+      </p>
+      <Figure>
+        <FigureContent>
+          <div className="flex flex-row gap-2">
+            <Skeleton className="w-[180px] h-7 bg-neutral-200 dark:bg-neutral-700 animate-pulse delay-0 duration-[2s]" />
+            <Skeleton className="w-[100px] h-7 bg-neutral-200 dark:bg-neutral-700 animate-pulse delay-500 duration-[2s]" />
+            <Skeleton className="w-[140px] h-7 bg-neutral-200 dark:bg-neutral-700 animate-pulse delay-1000 duration-[2s]" />
+          </div>
+        </FigureContent>
+      </Figure>
+      <SimpleCodeBlock lang="tsx">
+        {`<Skeleton className="w-[180px] h-7 animate-pulse delay-0 duration-[2s]" />
+<Skeleton className="w-[100px] h-7 animate-pulse delay-500 duration-[2s]" />
+<Skeleton className="w-[140px] h-7 animate-pulse delay-1000 duration-[2s]" />`}
+      </SimpleCodeBlock>
+      <p>
+        More of a subtle detail is that they don&apos;t use any text selection
+        (aka <code>user-select: none;</code>) except on editable fields like the
+        issue title and description. High chances this is to make the app feel
+        more native.
       </p>
       <p>
-        Another one is that they don&apos;t use text selection (aka{" "}
-        <code>user-select: none;</code>) except on editbale fields like the
-        issue title and description.
+        An element, technically not needed to create the filter UI, but still
+        nice to have, was the status indicator for the issue list items.
+      </p>
+      <Figure>
+        <FigureContent className="py-8">
+          <div className="flex flex-row gap-2 px-1.5 justify-center md:scale-[200%] lg:scale-[200%]">
+            <StatusIndicator status="todo" />
+            <StatusIndicator status="in_progress" />
+            <StatusIndicator status="done" />
+            <StatusIndicator status="backlog" />
+            <StatusIndicator status="in_review" />
+          </div>
+        </FigureContent>
+      </Figure>
+      <p>
+        Here I use a simple SVG to a a cirlce for the outline and a path for the
+        fill.
+      </p>
+      <SimpleCodeBlock lang="tsx">
+        {`<svg
+  viewBox={\`0 0 14 14\`}
+  width={14}
+  height={14}
+>
+  <circle
+    cx={14 / 2}
+    cy={14 / 2}
+    r={6}
+    fill="transparent"
+    stroke={"yellow"}
+    strokeWidth={2}
+  />
+  <path d={d} fill={"yellow"} />
+</svg>`}
+      </SimpleCodeBlock>
+      <p>
+        The <code>d</code> is then generated by the <code>arc</code> function.
+        We render a <code>DoneCircle</code> component if the status is{" "}
+        <code>done</code>. And for the <code>backlog</code> status, we use a{" "}
+        <code>strokeDasharray</code> to create a dashed line on the circle.
+      </p>
+      <FigureStatusIndicatorEditor />
+      <p>
+        Check the code here{" "}
+        <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/status-indicator.tsx">
+          Status Indicator
+        </GithubLink>
+        .
       </p>
       <H3 className="mt-4">Sub Components</H3>
       <p>
-        The filter component that is similar to Linear&apos;s. It is basically
-        built from a <code>FilterPills</code> which includes the{" "}
-        <code>FilterDropdown</code> and items from the <code>FilterPill</code>{" "}
-        component.
+        The <code>Filter</code> component includes the sub components{" "}
+        <code>FilterDropdown</code> and <code>FilterPill</code> and the{" "}
+        <code>IssueList</code> component.
       </p>
+      <H3 className="mt-4">Filter Dropdown</H3>
+      <p>
+        The <code>FilterDropdown</code> component uses shadcn's{" "}
+        <a
+          href="https://ui.shadcn.com/docs/components/popover"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <code>Popover</code>
+        </a>{" "}
+        component in conjunction with a{" "}
+        <a
+          href="https://ui.shadcn.com/docs/components/command"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <code>CommandList</code>
+        </a>{" "}
+        component to render the list of items. I only renders one item along a
+        few placeholders to call the AI filter function.
+      </p>
+      <Figure>
+        <FigureContent>
+          <FilterDropdown />
+        </FigureContent>
+      </Figure>
+      <H3 className="mt-4">Filter Pill</H3>
+      <p>
+        The <code>FilterPill</code> renders the sub components{" "}
+        <code>FilterTypeBadge</code>, <code>FilterOperatorBagde</code>,{" "}
+        <code>FilterValueBadge</code>, and <code>FilterClose</code>.
+      </p>
+      <Figure>
+        <FigureContent className="p-0">
+          <Image
+            src="/static/images/blog/linear-filter-components-filter-pill.png"
+            alt="Linear Filter Pills"
+            width={1854}
+            height={468}
+            className="dark:invert"
+          />
+        </FigureContent>
+      </Figure>
       <Figure className="mt-4">
         <FigureContent>
           <div className="grid grid-cols-2 gap-2.5 items-center text-sm">
-            <div className="text-sm">
-              <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/status-indicator.tsx">
-                Status Indicator
-              </GithubLink>
-            </div>
-            <div className="flex flex-row gap-2 px-1.5">
-              <StatusIndicator status="todo" />
-              <StatusIndicator status="in_progress" />
-              <StatusIndicator status="done" />
-              <StatusIndicator status="backlog" />
-              <StatusIndicator status="in_review" />
-            </div>
             <div className="text-sm">
               <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/filter-type-badge.tsx">
                 Filter Type Badge
@@ -267,7 +381,7 @@ export default function Page() {
               </GithubLink>
             </div>
             <div>
-              <FilterValueSelector
+              <FilterValueBadge
                 filter={{
                   name: "Date",
                   type: FilterType.DATE,
@@ -285,7 +399,7 @@ export default function Page() {
             </div>
             <div>
               <div className="flex flex-row gap-1">
-                <FilterOperator operator="before" />
+                <FilterOperatorBagde operator="before" />
               </div>
             </div>
             <div className="text-sm">
@@ -299,86 +413,8 @@ export default function Page() {
           </div>
         </FigureContent>
       </Figure>
-      <H3 className="mt-4">Filter Pill</H3>
-      <Figure className="flex justify-center not-prose p-0">
-        <FigureContent className="p-0">
-          <Image
-            src="/static/images/blog/linear-filter-components-filter-pill.png"
-            alt="Linear Filter Pills"
-            width={1854}
-            height={468}
-            className="dark:invert"
-          />
-        </FigureContent>
-      </Figure>
-      <p>
-        The filter pill renders the sub components <code>FilterTypeBadge</code>,{" "}
-        <code>FilterOperator</code>, <code>FilterValueSelector</code>, and{" "}
-        <code>FilterClose</code> (naming borrowed from{" "}
-        <a
-          href="https://x.com/haydenbleasel"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Hayden&apos;s
-        </a>{" "}
-        <a
-          href="https://www.kibo-ui.com/components/pill"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Kibo UI Pill component
-        </a>
-        ).
-      </p>
-      <Figure className="mt-4">
-        <FigureContent>
-          <div className="grid grid-cols-2 gap-2.5 items-center text-sm">
-            <div className="text-sm">
-              <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/filter-pill.tsx">
-                Filter Pill
-              </GithubLink>
-            </div>
-            <div className="flex flex-row gap-2 px-1.5">
-              <FilterPill
-                filter={{
-                  name: "Date",
-                  type: FilterType.DATE,
-                  value: "2024-01-01",
-                  operator: "after",
-                  selectedValue: ["2024-01-01"],
-                  unit: "days",
-                }}
-              />
-            </div>
-          </div>
-        </FigureContent>
-      </Figure>
-      <FastCodeBlock
-        data={[
-          {
-            filename: "filter-pill.tsx",
-            language: "tsx",
-            code: `
-<FilterPill
-  filter={{
-    name: "Date",
-    type: FilterType.DATE,
-    value: "2024-01-01",
-    operator: "after",
-    selectedValue: ["2024-01-01"],
-    unit: "days",
-  }}
-  onRemove={() => {}}
-/>
-              `,
-          },
-        ]}
-        language="tsx"
-        className="mt-4"
-      />
       <H3 className="mt-4">Filter</H3>
-      <Figure className="flex justify-center not-prose p-0">
+      <Figure className="p-0">
         <FigureContent className="p-0">
           <Image
             src="/static/images/blog/linear-filter-components-filter.png"
@@ -394,31 +430,76 @@ export default function Page() {
         iterate over the <code>FilterPill</code> components or only show the{" "}
         <code>FilterDropdown</code> if there are no filters.
       </p>
-      <Figure>
-        <FigureContent className="flex justify-center p-0">
-          <FilterDemo
-            initialFilters={{
-              conditions: [
-                {
-                  name: "Status",
-                  type: FilterType.STATUS,
-                  operator: "equals",
-                  value: ["done"],
-                  selectedValue: [],
-                },
-                {
+      <Figure className="mt-4">
+        <FigureContent>
+          <div className="grid grid-cols-2 gap-2.5 items-start text-sm">
+            <div className="text-sm">
+              <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/filter-pill.tsx">
+                Filter Pill - Date
+              </GithubLink>
+            </div>
+            <div className="flex flex-col gap-2 px-1.5">
+              <FilterPill
+                filter={{
+                  name: "Date",
+                  type: FilterType.DATE,
+                  value: "2024-01-01",
+                  operator: "after",
+                  selectedValue: ["2024-01-01"],
+                  unit: "days",
+                }}
+              />
+            </div>
+            <div className="text-sm">
+              <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/filter-pill.tsx">
+                Filter Pill - Label
+              </GithubLink>
+            </div>
+            <div className="flex flex-col gap-2 px-1.5">
+              <FilterPill
+                filter={{
                   name: "Label",
                   type: FilterType.LABEL,
-                  operator: "include",
                   value: ["bug"],
-                  selectedValue: [],
-                },
-              ],
-              raw_input: "status done",
-            }}
-          />
+                  operator: "include",
+                  selectedValue: ["bug"],
+                }}
+              />
+            </div>
+            <div className="text-sm">
+              <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/filter-pill.tsx">
+                Filter Pill - Status
+              </GithubLink>
+            </div>
+            <div className="flex flex-col gap-2 px-1.5">
+              <FilterPill
+                filter={{
+                  name: "Status",
+                  type: FilterType.STATUS,
+                  value: ["done"],
+                  operator: "equals",
+                  selectedValue: ["done"],
+                }}
+              />
+            </div>
+          </div>
         </FigureContent>
       </Figure>
+      <SimpleCodeBlock lang="tsx">
+        {`
+<FilterPill
+  filter={{
+    name: "Date",
+    type: FilterType.DATE,
+    value: "2024-01-01",
+    operator: "after",
+    selectedValue: ["2024-01-01"],
+    unit: "days",
+  }}
+  onRemove={() => {}}
+/>
+        `}
+      </SimpleCodeBlock>
       <div className=" mt-6">
         <H2>Cost</H2>
         <p>
@@ -428,51 +509,34 @@ export default function Page() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            $0.15 per 1M input tokens
-          </a>{" "}
-          (<span className="font-mono">$0.00000015</span> per input token) and
-          $0.60 per 1M output tokens (
-          <span className="font-mono">$0.00000060</span> per output token), the{" "}
+            $0.15 per 1M input tokens and $0.60 per 1M output tokens
+          </a>
+          , the{" "}
           <span className="font-semibold">
             system prompt contains 138 tokens
           </span>{" "}
           and the response JSON roughly{" "}
           <span className="font-semibold">88 tokens</span>.
         </p>
-        <H3>Cost per Request</H3>
-        <div className="text-neutral-600 dark:text-neutral-400">
-          Input: 138 × $0.00000015 = $0.0000207 (~$0.000021)
-          <br />
-          Output: 88 × $0.00000060 = $0.0000528 (~$0.000053)
-          <br />
-          <div className="pt-1">
-            <strong>Total per request:</strong> $0.0000207 + $0.0000528 ={" "}
-            <span className="font-semibold">~$0.000074 per filter parse</span>
-          </div>
-        </div>
         <p>
-          Requests per $0.10:{" "}
-          <span className="font-semibold">1,361 requests</span>
-          <br />
-          Requests per $10: <span className="font-semibold">136,054</span>
-        </p>
-        <p className="dark:text-neutral-400 mt-2">
-          Let&apos;s say you have 2,000 users per month and they each make 5 AI
-          searches per day, resulting in 300,000 requests per month.
-        </p>
-        <p className="dark:text-neutral-400 mt-2">
-          Then you spend $0.000074 x 300,000 ={" "}
-          <span className="font-semibold">$22.20 / month for 2,000 users</span>.
-          Assuming that Linear has probably more than 100,000 users, you would
-          spend $0.00000074 x 300,000 ={" "}
-          <span className="font-semibold">
-            $222.00 / month for 100,000 users
-          </span>
+          Resulting in request cost of{" "}
+          <span className="font-semibold">$0.000074</span>{" "}
+          <InfoTooltip>
+            input * token price + output * token price <br /> $0.000015 * 138 +
+            $0.000060 * 88 = $0.000074
+          </InfoTooltip>
+          . Assuming 5 requests per user per month for 100,000 users this is
+          around $1,110.00 per month{" "}
+          <InfoTooltip>
+            30 days x 5 requests x 100,000 users = 15,000,000 requests per month{" "}
+            <br /> $0.000074 * 15,000,000 = $1,110.00
+          </InfoTooltip>
           .
         </p>
         <p>
           Given the potential benefits this has for users, thats a pretty good
-          price point.
+          price point. And I'm pretty sure you can get the cost down even
+          further by using a cheaper model or tuning your own.
         </p>
 
         <H2>Conclusion</H2>
