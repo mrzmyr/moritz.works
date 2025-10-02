@@ -62,10 +62,10 @@ export const getPostContentFromTsx = async (
     success: tsxSuccess,
     data: tsxData,
     error: tsxError,
-  } = await tryCatch(import(`@/app/blog/[slug]/(${slug})/page.tsx`));
+  } = await tryCatch(import(`@/app/blog/[slug]/(${slug})/post.tsx`));
 
   if (!tsxSuccess || !tsxData || tsxError) {
-    console.warn("Failed to import TSX content", tsxError);
+    // console.warn("Failed to import TSX content", tsxError);
 
     return {
       success: false,
