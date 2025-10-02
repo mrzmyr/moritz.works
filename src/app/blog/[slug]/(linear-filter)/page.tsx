@@ -323,7 +323,7 @@ export default function Page() {
       </p>
       <H3 className="mt-4">Filter Dropdown</H3>
       <p>
-        The <code>FilterDropdown</code> component uses shadcn's{" "}
+        The <code>FilterDropdown</code> component uses shadcn&apos;s{" "}
         <a
           href="https://ui.shadcn.com/docs/components/popover"
           target="_blank"
@@ -535,7 +535,7 @@ export default function Page() {
         </p>
         <p>
           Given the potential benefits this has for users, thats a pretty good
-          price point. And I'm pretty sure you can get the cost down even
+          price point. And I&apos;m pretty sure you can get the cost down even
           further by using a cheaper model or tuning your own.
         </p>
 
