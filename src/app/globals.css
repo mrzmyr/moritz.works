@@ -80,7 +80,15 @@ a {
   --radius: 0.625rem;
 }
 
+[data-rmiz-modal-overlay="visible"] {
+  backdrop-filter: blur(2px) !important;
+}
+
 @media (prefers-color-scheme: light) {
+  [data-rmiz-modal-overlay="visible"] {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+  }
+
   ::selection {
     background-color: #d8ecfc;
     color: #008cff;
@@ -122,6 +130,10 @@ a {
 }
 
 @media (prefers-color-scheme: dark) {
+  [data-rmiz-modal-overlay="visible"] {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+  }
+
   ::selection {
     background-color: #022248;
     color: #47a8ff;

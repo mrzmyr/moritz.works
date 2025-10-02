@@ -6,6 +6,7 @@ import { PostStructuredData } from "@/components/post-structured-data";
 import { siteConfig } from "@/config/app";
 import "./globals.css";
 import { PostHogProvider } from "@/app/providers";
+import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
   title: {
@@ -81,6 +82,7 @@ export default function RootLayout({
       <body className="bg-neutral-50 dark:bg-[#090909]">
         <div className="max-w-3xl mx-auto pt-8 pb-12 px-4 h-full">
           <PostHogProvider>{children}</PostHogProvider>
+          <Footer />
         </div>
         <Analytics />
         <Toaster position="bottom-center" />
