@@ -21,7 +21,7 @@ export const SimpleCodeBlock = async ({ children, lang }: Props) => {
         "#0d1117": "#101010",
       },
     },
-    defaultColor: false,
+    // defaultColor: false,
   });
 
   return (
