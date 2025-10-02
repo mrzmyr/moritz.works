@@ -8,10 +8,11 @@ export const FilterClose = ({ onClick }: { onClick?: () => void }) => {
     <button
       type="button"
       className={cn(
-        "flex flex-row gap-1.5 items-center px-1.5 py-0.5",
-        "bg-white ",
-        "dark:bg-neutral-800",
-        onClick && "hover:bg-neutral-100 dark:hover:bg-neutral-700",
+        "flex flex-row gap-1.5 items-center px-1 py-0.5",
+        "text-neutral-500 dark:text-neutral-400",
+        "bg-white dark:bg-neutral-800",
+        onClick &&
+          "hover:bg-neutral-50 dark:hover:bg-card hover:text-neutral-800 dark:hover:text-neutral-300",
       )}
       onClick={onClick ?? (() => {})}
       aria-label="Remove filter"

@@ -16,10 +16,12 @@ export const PostContentConatiner = ({
         "max-w-none",
         "pb-28",
         "prose-a:underline",
-        "prose-blockquote:py-2",
-        "prose-blockquote:text-xl",
+
+        "prose-blockquote:p-0",
+        "prose-blockquote:text-2xl",
         "prose-blockquote:border-0",
         "prose-blockquote:font-serif",
+        "prose-blockquote:not-italic",
 
         "prose-code:after:content-['']",
         "prose-code:before:content-['']",

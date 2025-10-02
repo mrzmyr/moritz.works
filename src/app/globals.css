@@ -78,6 +78,7 @@ a {
 
 :root {
   --radius: 0.625rem;
+  --font-serif: var(--font-serif-custom);
 }
 
 [data-rmiz-modal-overlay="visible"] {
@@ -110,7 +111,7 @@ a {
     --accent: oklch(0.97 0 0);
     --accent-foreground: oklch(0.205 0 0);
     --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
+    --border: theme("colors.neutral.200");
     --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
     --chart-1: oklch(0.646 0.222 41.116);
@@ -155,7 +156,7 @@ a {
     --accent: oklch(0.269 0 0);
     --accent-foreground: oklch(0.985 0 0);
     --destructive: oklch(0.704 0.191 22.216);
-    --border: #181818;
+    --border: theme("colors.neutral.800");
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.556 0 0);
     --chart-1: oklch(0.488 0.243 264.376);

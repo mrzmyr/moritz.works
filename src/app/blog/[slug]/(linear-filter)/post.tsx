@@ -4,6 +4,7 @@ import { SiGithub } from "react-icons/si";
 import { Figure, FigureContent } from "@/components/figure";
 import { H2, H3 } from "@/components/headlines";
 import { SimpleCodeBlock } from "@/components/simple-code-block";
+import TypingText from "@/components/ui/shadcn-io/typing-text";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
@@ -132,9 +133,20 @@ export default function Page() {
         </a>
         ), you can simply type:
       </p>
-      <blockquote className="font-normal">
-        show me unfinished bugs from customer support
-      </blockquote>
+      <Figure>
+        <FigureContent>
+          <TypingText
+            text={[
+              "show me unfinished bugs from customer support",
+              "what features are still open?",
+              "whats in the backlog?",
+            ]}
+            initialDelay={1000}
+            loop={false}
+            variableSpeed={{ min: 50, max: 120 }}
+          />
+        </FigureContent>
+      </Figure>
       <p>
         And the ingredients are surprisingly simple. All we need is a{" "}
         <strong>system prompt</strong>, a <strong>filter schema</strong>, and an{" "}

@@ -8,7 +8,7 @@ export const FilterTypeBadge = ({
 }) => {
   const { icon, label } = DISPLAY_MAP[type];
   return (
-    <div className="flex flex-row gap-1.5 items-center px-1.5 py-0.5 bg-white dark:bg-neutral-800 text-sm">
+    <div className="flex flex-row gap-1.5 items-center px-1.5 bg-white dark:bg-neutral-800 text-sm">
       {icon}
       <span>{label}</span>
     </div>

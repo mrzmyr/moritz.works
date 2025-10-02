@@ -53,7 +53,7 @@ export const FilterValueDropdown = ({
             "flex flex-row gap-1.5 items-center px-1.5 py-0.5 h-5 has-[>svg]:px-1.5",
             "bg-card/80",
             "font-normal",
-            "dark:hover:bg-card",
+            "hover:bg-neutral-50 dark:hover:bg-card",
             open && "bg-card",
           )}
         >

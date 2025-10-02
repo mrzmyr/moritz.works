@@ -101,7 +101,7 @@ export const StatusIndicator = ({ status }: { status: StatusValues }) => {
         cx={SIZE / 2}
         cy={SIZE / 2}
         r={6}
-        fill="transparent"
+        className="fill-white dark:fill-neutral-800"
         stroke={fill}
         strokeWidth={2}
         strokeDasharray={status === "backlog" ? "1.5,2" : undefined}

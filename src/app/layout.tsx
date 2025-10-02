@@ -1,12 +1,18 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
+import { Noto_Serif } from "next/font/google";
 import type React from "react";
 import { Toaster } from "sonner";
+import { PostHogProvider } from "@/app/providers";
+import { Footer } from "@/components/footer";
 import { PostStructuredData } from "@/components/post-structured-data";
 import { siteConfig } from "@/config/app";
 import "./globals.css";
-import { PostHogProvider } from "@/app/providers";
-import { Footer } from "@/components/footer";
+
+const serif = Noto_Serif({
+  subsets: ["latin"],
+  variable: "--font-serif-custom",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -74,7 +80,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="antialiased" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`antialiased ${serif.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <PostStructuredData type="website" />

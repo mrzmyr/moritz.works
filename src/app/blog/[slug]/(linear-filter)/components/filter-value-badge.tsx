@@ -8,8 +8,6 @@ import { FilterType } from "../types";
 import { FilterValueDropdown } from "./filter-value-dropdown";
 import { ITEMS_BY_TYPE } from "./shared";
 
-const GIF_UFO = "https://imgur.com/e4QEwuV.gif";
-
 export const FilterValueBadge = ({
   filter,
   onChange = null,
@@ -59,7 +57,7 @@ export const FilterValueBadge = ({
     );
     return (
       <FilterValueDropdown filter={filter} onChange={onChange ?? (() => {})}>
-        <div className="flex -space-x-[0px]">
+        <div className="flex -space-x-[3px]">
           {selected.map((i) => (
             <span key={i.value} className="inline-flex">
               {i.icon}

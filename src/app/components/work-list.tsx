@@ -18,7 +18,7 @@ const WorkListItem = ({
   return (
     <div className="grayscale flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 sm:items-center w-full">
       <div className="flex flex-row items-center gap-2">
-        <div className="w-5 h-5 rounded-[3px] overflow-hidden dark:border-neutral-800 border border-neutral-200">
+        <div className="w-5 h-5 rounded-[3px] overflow-hidden  border border-border">
           {image && <Image src={image} alt={name} width={20} height={20} />}
           {!image && (
             <div className="w-5 h-5 rounded-[3px] bg-neutral-700 dark:bg-neutral-700" />

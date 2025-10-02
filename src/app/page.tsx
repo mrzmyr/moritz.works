@@ -1,6 +1,7 @@
 import { TreeDeciduous } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
+import { SiGithub } from "react-icons/si";
 import { LastPosts } from "@/components/last-posts";
 import { PostStructuredData } from "@/components/post-structured-data";
 import { Books, BooksSkeleton } from "./components/books";
@@ -11,7 +12,7 @@ const Headline = ({ children }: { children: React.ReactNode }) => {
 };
 
 const Section = ({ children }: { children: React.ReactNode }) => {
-  return <div className="flex flex-col mt-12">{children}</div>;
+  return <div className="flex flex-col mt-16">{children}</div>;
 };
 
 const QuickLink = ({
@@ -39,10 +40,20 @@ export default async function Page() {
     <div>
       <PostStructuredData type="person" />
       <div className="text-neutral-800 leading-7 space-y-6 dark:text-neutral-200">
-        <div className="flex items-center gap-6">
+        <div className="flex items-start gap-6 justify-between ">
           <div className="flex flex-col">
             <span className="font-semibold tracking-tight">Moritz Meyer</span>
             <span className="opacity-50 rounded text-sm">he/him</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://github.com/mrzmyr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              <SiGithub className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300" />
+            </a>
           </div>
         </div>
         <div className="leading-7 lg:mt-36">

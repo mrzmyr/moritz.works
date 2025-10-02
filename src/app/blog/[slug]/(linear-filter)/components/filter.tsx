@@ -100,9 +100,7 @@ export function Filter({
         )}
       </div>
 
-      <div className="w-full h-[1px] mt-2 bg-neutral-200 dark:bg-neutral-900 rounded-sm" />
-
-      <div className="w-full">
+      <div className="w-full border-t border-border mt-2">
         <IssueList filters={parsedFilters} issues={EXAMPLE_ISSUES} />
       </div>
     </div>
