@@ -25,16 +25,19 @@ h6 a {
 }
 
 a {
-  @apply decoration-neutral-200;
   @apply underline-offset-2;
-
-  @apply dark:decoration-neutral-700;
-
   @apply duration-200 ease-out;
 
+  @apply decoration-neutral-200;
+  @apply dark:decoration-neutral-700;
+
   &:hover {
-    @apply decoration-neutral-300;
+    @apply decoration-neutral-400/50;
     @apply dark:decoration-neutral-600;
+  }
+
+  & p {
+    @apply font-normal;
   }
 }
 

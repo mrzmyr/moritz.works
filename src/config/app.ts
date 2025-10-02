@@ -1,4 +1,8 @@
 export const GITHUB_REPO = "mrzmyr/moritz.works";
+export const LINKEDIN_URL =
+  "https://www.linkedin.com/in/bd40da1b5cafa74efb3c0d32ae3989b0";
+export const X_URL = "https://x.com/mrzmyr";
+export const GITHUB_URL = "https://github.com/mrzmyr";
 
 export const siteConfig = {
   name: "moritz.works",

@@ -22,9 +22,5 @@ export async function parseFilterAction({ input }: { input: string }) {
 `.trim();
 
 export const LlmActionCodeBlock = () => {
-  return (
-    <div className="not-prose">
-      <SimpleCodeBlock lang="typescript">{code}</SimpleCodeBlock>
-    </div>
-  );
+  return <SimpleCodeBlock lang="typescript">{code}</SimpleCodeBlock>;
 };

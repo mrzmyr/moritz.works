@@ -2,7 +2,7 @@ import { InfoIcon } from "lucide-react";
 import Image from "next/image";
 import { SiGithub } from "react-icons/si";
 import { Figure, FigureContent } from "@/components/figure";
-import { H2, H3 } from "@/components/headlines";
+import { H2, H3, H4 } from "@/components/headlines";
 import { SimpleCodeBlock } from "@/components/simple-code-block";
 import TypingText from "@/components/ui/shadcn-io/typing-text";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -43,9 +43,9 @@ const GithubLink = ({
       href={`https://github.com/${GITHUB_REPO}/blob/main/${path}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-block align-baseline"
+      className="inline-flex items-center group"
     >
-      <SiGithub className="text-neutral-500 dark:text-neutral-400 w-3.5 h-3.5 inline align-text-bottom mr-1" />
+      <SiGithub className="text-neutral-500 dark:text-neutral-400 w-3.5 h-3.5 inline align-middle mr-1 group-hover:text-neutral-600 dark:group-hover:text-neutral-300" />
       <span>{children}</span>
     </a>
   );
@@ -56,7 +56,7 @@ const InfoTooltip = ({ children }: { children: React.ReactNode }) => {
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <InfoIcon className="w-3.5 h-3.5 hover:text-neutral-600 dark:hover:text-neutral-400 inline-block" />
+          <InfoIcon className="w-3.5 h-3.5 hover:text-neutral-600 dark:hover:text-neutral-400 inline-block align-baseline" />
         </TooltipTrigger>
         <TooltipContent className="max-w-xs leading-relaxed">
           <p>{children}</p>
@@ -103,15 +103,7 @@ export default function Page() {
         >
           Linear
         </a>
-        , with their AI-powered filters (long before their{" "}
-        <a
-          href="https://linear.app/changelog/2025-08-14-product-intelligence-technology-preview"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Product Intelligence feature
-        </a>
-        ).
+        , with their AI-powered filters.
       </p>{" "}
       <p>
         Instead of memorizing syntax like <code>label:bug AND status:todo</code>{" "}
@@ -147,10 +139,22 @@ export default function Page() {
           />
         </FigureContent>
       </Figure>
+      <H2>Demo</H2>
       <p>
-        And the ingredients are surprisingly simple. All we need is a{" "}
+        Try it yourself, by typing e.g. &quot;show me unfinished bugs from
+        customer support.&quot;
+      </p>
+      <Figure>
+        <FigureContent className="p-0">
+          <FilterDemo />
+        </FigureContent>
+      </Figure>
+      <H2>Building Blocks</H2>
+      <p>
+        The ingredients are surprisingly simple. All we need is a{" "}
         <strong>system prompt</strong>, a <strong>filter schema</strong>, and an{" "}
-        <strong>LLM parser</strong>.
+        <strong>LLM parser</strong> and a <strong>UI</strong> to display the
+        results.
       </p>
       <Figure>
         <FigureContent className="p-0">
@@ -161,16 +165,6 @@ export default function Page() {
             height={468}
             className="rounded-lg overflow-hidden dark:invert"
           />
-        </FigureContent>
-      </Figure>
-      <H2>Demo</H2>
-      <p>
-        Try it yourself, by typing e.g. &quot;show me unfinished bugs from
-        customer support.&quot;
-      </p>
-      <Figure>
-        <FigureContent className="p-0">
-          <FilterDemo />
         </FigureContent>
       </Figure>
       <H2>System Prompt</H2>
@@ -232,15 +226,26 @@ export default function Page() {
         </a>
         . The magic here is <code>zodResponseFormat</code> which is a helper
         function that allows you to parse the response into a specific format.
-        This will guide the LLM to example format we defined in the filter
+        This guides the LLM to the example format we defined in the filter
         schema above.
       </p>
       <LlmActionCodeBlock />
+      <p>
+        Now that we know the filter schema, how to get the translation from the
+        LLM, we take a quick look how to display it.
+      </p>
       <H2>UI</H2>
       <p>
         Alongside ▲ Vercel, Linear is <i>the</i> benchmark for modern web apps,
-        from performance to design and they made some interesting decisions when
-        it comes to their UI.
+        from design simplicity to product innovations like applying reasoning
+        models to task management (see{" "}
+        <a
+          href="https://linear.app/changelog/2025-08-14-product-intelligence-technology-preview"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Product Intelligence
+        </a>
       </p>
       <p>
         One notable one is that they don&apos;t use <code>cursor: pointer</code>{" "}
@@ -278,8 +283,8 @@ export default function Page() {
         more native.
       </p>
       <p>
-        An element, technically not needed to create the filter UI, but still
-        nice to have, was the status indicator for the issue list items.
+        Another exploration was the status indicator for the issue list items,
+        technically not needed to create the filter UI, but still a nice detail.
       </p>
       <Figure>
         <FigureContent className="py-8">
@@ -333,7 +338,7 @@ export default function Page() {
         <code>FilterDropdown</code> and <code>FilterPill</code> and the{" "}
         <code>IssueList</code> component.
       </p>
-      <H3 className="mt-4">Filter Dropdown</H3>
+      <H4 className="mt-4">Filter Dropdown</H4>
       <p>
         The <code>FilterDropdown</code> component uses shadcn&apos;s{" "}
         <a
@@ -359,7 +364,7 @@ export default function Page() {
           <FilterDropdown />
         </FigureContent>
       </Figure>
-      <H3 className="mt-4">Filter Pill</H3>
+      <H4 className="mt-4">Filter Pill</H4>
       <p>
         The <code>FilterPill</code> renders the sub components{" "}
         <code>FilterTypeBadge</code>, <code>FilterOperatorBagde</code>,{" "}
@@ -425,7 +430,7 @@ export default function Page() {
           </div>
         </FigureContent>
       </Figure>
-      <H3 className="mt-4">Filter</H3>
+      <H4 className="mt-4">Filter</H4>
       <Figure className="p-0">
         <FigureContent className="p-0">
           <Image
@@ -553,13 +558,41 @@ export default function Page() {
 
         <H2>Conclusion</H2>
         <p>
-          This is a simple example of how to use an LLM to parse user input into
-          a structured format. It is a great way to add AI capabilities to your
-          products.
+          I was actually surprised how well it worked, and how easy it was to
+          implement. And the cost is pretty reasonable. This pattern works
+          beyond just filters, as you may already know, <i>but</i> the key is{" "}
+          <span className="font-medium">
+            starting simple with a well-defined schema
+          </span>
+          , then, and only then, expanding for further features.
         </p>
         <p>
-          I hope you found this example useful. If you have any questions,
-          please feel free to reach out to me.
+          As the{" "}
+          <a
+            href="https://www.forbes.com/sites/jasonsnyder/2025/08/26/mit-finds-95-of-genai-pilots-fail-because-companies-avoid-friction"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            MIT study
+          </a>{" "}
+          showed, generic tools are slick enough for demos, but die immmediately
+          in more complex workflows. Start with the{" "}
+          <a
+            href="https://youtu.be/LCEmiRjPEtQ?t=1574"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            autonomy slider
+          </a>{" "}
+          on the left.
+        </p>
+        <p>
+          <br />
+          You can find the source code on{" "}
+          <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)">
+            GitHub
+          </GithubLink>
+          .
         </p>
       </div>
     </>
