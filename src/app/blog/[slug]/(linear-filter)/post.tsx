@@ -576,7 +576,7 @@ export default function Page() {
             MIT study
           </a>{" "}
           showed, generic tools are slick enough for demos, but die immmediately
-          in more complex workflows. Start with the{" "}
+          in more complex workflows as of now. Probably we should start with the{" "}
           <a
             href="https://youtu.be/LCEmiRjPEtQ?t=1574"
             target="_blank"
