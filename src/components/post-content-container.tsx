@@ -28,7 +28,7 @@ export const PostContentConatiner = ({
         "prose-blockquote:before:-mt-2",
         "prose-blockquote:after:content-['']",
         "prose-blockquote:[&>p]:m-0",
-        // "prose-blockquote:[&>p]:font-light",
+        "prose-blockquote:[&>p]:font-normal",
         "[&_cite]:not-italic",
         "[&_cite]:text-[13px]",
         "[&_cite]:font-sans",
