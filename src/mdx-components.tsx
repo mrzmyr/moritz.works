@@ -1,4 +1,5 @@
 import type { MDXComponents } from "mdx/types";
+import { Card, CardContent, CardTitle } from "@/components/card";
 import { Figure, FigureCaption, FigureContent } from "@/components/figure";
 import { GoodBadExamples } from "@/components/good-bad-examples";
 import { H1, H2, H3, H4, H5, H6 } from "@/components/headlines";
@@ -18,6 +19,9 @@ const components: MDXComponents = {
   FigureContent,
   GoodBadExamples,
   SlackMessage,
+  Card,
+  CardContent,
+  CardTitle,
   h1: H1,
   h2: H2,
   h3: H3,

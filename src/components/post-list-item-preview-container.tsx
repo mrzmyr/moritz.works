@@ -9,7 +9,7 @@ export const PostListItemPreviewContaienr = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Link href={post.url} key={post.id} className="mb-2">
+    <Link href={post.url} key={post.id} className="mb-4 mt-2">
       {children}
     </Link>
   );

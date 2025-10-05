@@ -49,12 +49,12 @@ export const PostContentConatiner = ({
 
         "prose-figure:my-8",
 
-        "prose-headings:font-semibold",
+        "prose-headings:[&_a]:font-semibold",
         "prose-headings:mb-6",
         "prose-headings:mt-12",
-        "prose-h1:text-2xl",
-        "prose-h2:text-xl",
-        "prose-h3:text-lg",
+        "prose-h1:text-base",
+        "prose-h2:text-base",
+        "prose-h3:text-base",
         "prose-h4:text-base",
         "prose-h5:text-base",
         "prose-h6:text-base",

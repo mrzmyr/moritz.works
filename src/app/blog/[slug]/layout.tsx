@@ -33,7 +33,7 @@ export default async function Layout({
         dateModified={post.updatedAt}
         image={`${siteConfig.url}/static/og/default.png`}
       />
-      <div className="mb-6">
+      <div className="my-12">
         <PostHeadline>{post.title}</PostHeadline>
         <PostMetadata
           createdAt={new Date(post.createdAt)}
