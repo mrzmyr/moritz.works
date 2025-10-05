@@ -8,7 +8,6 @@ import { PostStructuredData } from "@/components/post-structured-data";
 import { SimpleCodeBlock } from "@/components/simple-code-block";
 import { SlackMessage } from "@/components/slack-message";
 import { ZoomImage } from "@/components/zoom-image";
-import { Magnetic } from "./components/ui/shadcn-io/magnetic";
 
 const components: MDXComponents = {
   PostMetadata,

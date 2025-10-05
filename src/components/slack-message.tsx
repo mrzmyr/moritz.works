@@ -12,7 +12,7 @@ export const SlackMessage = ({
       <div className="flex-shrink-0 py-1">
         <span
           className={cn(
-            "inline-flex h-8 w-8 items-center justify-center rounded-md bg-neutral-200 text-neutral-800 font-bold text-lg",
+            "inline-flex h-8 w-8 items-center justify-center rounded-md bg-neutral-200 text-neutral-800 font-bold text-lg dark:bg-neutral-800 dark:text-neutral-200",
           )}
         ></span>
       </div>

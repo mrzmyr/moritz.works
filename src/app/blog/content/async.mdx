@@ -25,9 +25,9 @@ As a first step, remote-first hiring opened the door to other cities. This was f
 
 Remote meetings are strange, they often miss a clear agenda, disrupt deep work, drain mental and physical energy, and at the end only one person is talking while others listen. At the end little is documented. And I mean little good documentation, not your AI transcripts that lack context outside of the meeting. 
 
-## Should we ever have sync meetings?
+## Cost
 
-Sure! As a general rule of thumb, sync meetings are great for brainstorming where wandering is required. Maybe the question is not clear yet. But if you know where to go and you know what you want to make a decision, async communication is the better choice. RFC plus a Q&A follow up have proven to be a great way to make decisions.
+We underestimate the cost of interruption. A [study showed](https://dl.acm.org/doi/abs/10.1145/1357054.1357072) that it takes roughly 23 minutes to get back to work after interruption. I'd argue that this is even higher for deep work. In addition is also opportunity cost, the time that the participants could have spent on other work.
 
 ## Benefits
 
@@ -46,13 +46,20 @@ Async communication is inclusive. Similarly to meditation and DEI programs, asyn
 - **Parents** can balance care work
 - **Night owls** can work when they’re sharpest
 
-## Writing is slower than talking
-
-When talking, the processing work is pushed to the receiver. When writing, the processing work is owned by the sender. Writing forces clarity, the foundation for Amazon's [6-pager system](https://www.google.com/search?q=Amazons+6+Pager+system).
-
 > Writing is thinking. It’s the process of figuring out what you think, and discovering gaps where you thought you understood something but didn’t.
 >
 > <cite>[Paul Graham](https://www.paulgraham.com/words.html)</cite>
+
+<Figure>
+  <FigureContent>
+    <img src="/static/images/blog/async-processing-dark.png" className='hidden dark:block' srcdark="/static/images/blog/async-processing-dark.png" alt="Processing work" />
+    <img src="/static/images/blog/async-processing.png" className='dark:hidden' srcdark="/static/images/blog/async-processing-dark.png" alt="Processing work" />
+  </FigureContent>
+</Figure>
+
+When talking, the processing work is pushed to the receiver. When writing, the processing work is owned by the sender. The processing work must be done before the message is sent to be efficient. Most meetings are 1:n communication, where one person speaks and the others listen. This is inefficient, as the receiver has to process the message while the sender is still thinking.
+
+This is one of the reasons for the Amazon's [6-pager system](https://www.google.com/search?q=Amazons+6+Pager+system) where a memo is sent to the team before a meeting.
 
 ---
 
@@ -183,6 +190,16 @@ Threads with more than 10 messages probably should be a RFC. Threads are ineffic
 
 ### 6. Irony is often low performance communication
 
+<Figure>
+  <FigureContent>
+    <SlackMessage name="Alice">
+      <p>
+          Can you take this for me? 😉
+      </p>
+    </SlackMessage>
+  </FigureContent>
+</Figure>
+
 Irony prevents honesty (it’s literally the opposite). Low honesty leads to low trust, which results in low performance. It's a form of prevention to show yourself, be vulnerable in front of each other which is the foundation for trust.
 
 Wink emojis are a high indication of irony. They are a placeholder for something that is not being said. Do not use them expcet your are sure its clearly funny for both sides.
@@ -210,3 +227,7 @@ If you are asked a question, keep the conversation going until it’s resolved. 
 ### 8. Don't use an opposite that is never true
 
 If you say something where the opposite is never true, chance are high you are not thinking clearly. Rephrase your thought. "We should not build a huge monolith that can do everything". Nobody wants to build a huge monolith that can do everything. State the opposite instead. "We should aim for a modular system with clear boundaries".
+
+## Should we ever have sync meetings?
+
+Sure! As a general rule of thumb, sync meetings are great for brainstorming where wandering is required. Maybe the question is not clear yet. But if you know where to go and you know what you want to make a decision, async communication is the better choice. RFC plus a Q&A follow up have proven to be a great way to make decisions.
