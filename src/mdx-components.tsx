@@ -9,6 +9,7 @@ import { PostMetadata } from "@/components/post-metadata";
 import { PostStructuredData } from "@/components/post-structured-data";
 import { SimpleCodeBlock } from "@/components/simple-code-block";
 import { SlackMessage } from "@/components/slack-message";
+import { StackItem } from "@/components/stack-item";
 import { ZoomImage } from "@/components/zoom-image";
 
 const components: MDXComponents = {
@@ -41,6 +42,7 @@ const components: MDXComponents = {
   },
   code: SimpleCodeBlock,
   InfoTooltip,
+  StackItem,
 };
 
 export function useMDXComponents(): MDXComponents {

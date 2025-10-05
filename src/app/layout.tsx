@@ -91,10 +91,7 @@ export default function RootLayout({
         <PostStructuredData type="website" />
       </head>
       <body className="bg-neutral-50 dark:bg-[#090909]">
-        <div className="max-w-3xl mx-auto pt-8 pb-12 px-4 h-full">
-          <PostHogProvider>{children}</PostHogProvider>
-          <Footer />
-        </div>
+        <PostHogProvider>{children}</PostHogProvider>
         <Analytics />
         <Toaster position="bottom-center" />
       </body>
