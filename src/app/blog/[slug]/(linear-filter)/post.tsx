@@ -1,17 +1,11 @@
-import { InfoIcon } from "lucide-react";
 import Image from "next/image";
 import { SiGithub } from "react-icons/si";
 import { Figure, FigureContent } from "@/components/figure";
 import { H2, H3, H4 } from "@/components/headlines";
+import { InfoTooltip } from "@/components/info-tooltip";
 import { SimpleCodeBlock } from "@/components/simple-code-block";
 import TypingText from "@/components/ui/shadcn-io/typing-text";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { GITHUB_REPO } from "@/config/app";
 import {
   FilterSchemaCodeBlock,
@@ -48,21 +42,6 @@ const GithubLink = ({
       <SiGithub className="text-neutral-500 dark:text-neutral-400 w-3.5 h-3.5 inline align-middle mr-1 group-hover:text-neutral-600 dark:group-hover:text-neutral-300" />
       <span>{children}</span>
     </a>
-  );
-};
-
-const InfoTooltip = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <TooltipProvider delayDuration={0}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <InfoIcon className="w-3.5 h-3.5 hover:text-neutral-600 dark:hover:text-neutral-400 inline-block align-baseline" />
-        </TooltipTrigger>
-        <TooltipContent className="max-w-xs leading-relaxed">
-          <p>{children}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
   );
 };
 
@@ -288,7 +267,7 @@ export default function Page() {
       </p>
       <Figure>
         <FigureContent className="py-8">
-          <div className="flex flex-row gap-2 px-1.5 justify-center md:scale-[200%] lg:scale-[200%]">
+          <div className="flex flex-row gap-2 px-1.5 justify-center scale-[200%]">
             <StatusIndicator status="todo" />
             <StatusIndicator status="in_progress" />
             <StatusIndicator status="done" />
@@ -449,7 +428,7 @@ export default function Page() {
       </p>
       <Figure className="mt-4">
         <FigureContent>
-          <div className="grid grid-cols-2 gap-2.5 items-start text-sm">
+          <div className="grid md:grid-cols-2 gap-4 md:gap-2.5 items-start text-sm">
             <div className="text-sm">
               <GithubLink path="src/app/blog/%5Bslug%5D/(linear-filter)/components/filter-pill.tsx">
                 Filter Pill - Date

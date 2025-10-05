@@ -3,6 +3,7 @@ import { Card, CardContent, CardTitle } from "@/components/card";
 import { Figure, FigureCaption, FigureContent } from "@/components/figure";
 import { GoodBadExamples } from "@/components/good-bad-examples";
 import { H1, H2, H3, H4, H5, H6 } from "@/components/headlines";
+import { InfoTooltip } from "@/components/info-tooltip";
 import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";
 import { PostStructuredData } from "@/components/post-structured-data";
@@ -39,6 +40,7 @@ const components: MDXComponents = {
     );
   },
   code: SimpleCodeBlock,
+  InfoTooltip,
 };
 
 export function useMDXComponents(): MDXComponents {
