@@ -35,6 +35,7 @@ export const PostContentConatiner = ({
         "[&_cite>a]:text-neutral-500",
         "[&_cite>a]:dark:text-neutral-400",
         "[&_cite>a]:no-underline",
+        "[&_cite>a]:font-normal",
 
         "prose-code:after:content-['']",
         "prose-code:before:content-['']",
