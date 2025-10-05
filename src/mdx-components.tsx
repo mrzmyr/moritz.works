@@ -1,11 +1,14 @@
 import type { MDXComponents } from "mdx/types";
 import { Figure, FigureCaption, FigureContent } from "@/components/figure";
+import { GoodBadExamples } from "@/components/good-bad-examples";
 import { H1, H2, H3, H4, H5, H6 } from "@/components/headlines";
 import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";
 import { PostStructuredData } from "@/components/post-structured-data";
 import { SimpleCodeBlock } from "@/components/simple-code-block";
+import { SlackMessage } from "@/components/slack-message";
 import { ZoomImage } from "@/components/zoom-image";
+import { Magnetic } from "./components/ui/shadcn-io/magnetic";
 
 const components: MDXComponents = {
   PostMetadata,
@@ -14,6 +17,8 @@ const components: MDXComponents = {
   Figure,
   FigureCaption,
   FigureContent,
+  GoodBadExamples,
+  SlackMessage,
   h1: H1,
   h2: H2,
   h3: H3,

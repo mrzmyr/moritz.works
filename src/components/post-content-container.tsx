@@ -18,10 +18,23 @@ export const PostContentConatiner = ({
         "prose-a:underline",
 
         "prose-blockquote:p-0",
+        "prose-blockquote:my-12",
         "prose-blockquote:text-2xl",
         "prose-blockquote:border-0",
         "prose-blockquote:font-serif",
         "prose-blockquote:not-italic",
+        "prose-blockquote:font-normal",
+        "prose-blockquote:before:content-['']",
+        "prose-blockquote:before:-mt-2",
+        "prose-blockquote:after:content-['']",
+        "prose-blockquote:[&>p]:m-0",
+        // "prose-blockquote:[&>p]:font-light",
+        "[&_cite]:not-italic",
+        "[&_cite]:text-[13px]",
+        "[&_cite]:font-sans",
+        "[&_cite>a]:text-neutral-500",
+        "[&_cite>a]:dark:text-neutral-400",
+        "[&_cite>a]:no-underline",
 
         "prose-code:after:content-['']",
         "prose-code:before:content-['']",
@@ -61,9 +74,10 @@ export const PostContentConatiner = ({
         "prose-pre:border-border",
         "prose-pre:font-normal",
         "prose-pre:rounded-md",
-        "prose-ul:my-1",
+        "prose-ul:my-4",
         "prose-ul:pl-4",
         "text-primary",
+        "prose-strong:font-semibold",
       )}
     >
       {children}

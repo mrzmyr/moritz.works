@@ -5,27 +5,31 @@ createdAt: 2025-05-29
 updatedAt: 2025-05-29
 ---
 
-Famously GitLab, Doist, Basecamp are companies that work ‘async first’.
-
-While remote first means you don’t assume people share the **same location**, async first means you don’t assume they share the **same time**. If people work at different times, synchronous communication (like live meetings) becomes impossible.
-
-ngl, strange concept for me as a human, growing up talking my whole life.
-
-### Why do companies work ‘async first’?
-
-Hiring **top talent is one of the top challenges** for companies. 
-
-As a first step, remote-first hiring opened the door to other cities. This was followed by async first, to become time zones independent.
 
 > You are not expected to be available all the time
 > 
 > <cite>[Posthog Handbook](https://posthog.com/handbook/company/communication#golden-rules)</cite>
 
-Remote meetings are strange, they often miss a clear agenda, disrupt deep work, drain mental and physical energy, and at the end only one person is talking while others listen. 
 
-At the end little is documented. And I mean little good documentation, not your AI transcripts that lack context outside of the meeting.
+Famously GitLab, Doist, Basecamp are companies that work async first.
 
-### Benefits of Asynchronous Communication
+While remote first means you don’t assume people share the **same location**, async first means you don’t assume they share the **same time**. If people work at different times, synchronous communication (like live meetings) becomes impossible.
+
+ngl, strange concept for me as a human, growing up talking my whole life.
+
+## Why do companies work async first?
+
+Hiring **top talent is one of the top challenges** for companies. 
+
+As a first step, remote-first hiring opened the door to other cities. This was followed by async first, to become time zones independent. 
+
+Remote meetings are strange, they often miss a clear agenda, disrupt deep work, drain mental and physical energy, and at the end only one person is talking while others listen. At the end little is documented. And I mean little good documentation, not your AI transcripts that lack context outside of the meeting. 
+
+## Should we ever have sync meetings?
+
+Sure! As a general rule of thumb, sync meetings are great for brainstorming where wandering is required. Maybe the question is not clear yet. But if you know where to go and you know what you want to make a decision, async communication is the better choice. RFC plus a Q&A follow up have proven to be a great way to make decisions.
+
+## Benefits
 
 And there a lots of other benefits that e.g. [GitLab laid out in their handbook](https://handbook.gitlab.com/handbook/company/culture/all-remote/asynchronous/).
 
@@ -36,76 +40,173 @@ And there a lots of other benefits that e.g. [GitLab laid out in their handbook]
 - Encourages **thoughtfulness**
 - Creates **context**
 
-### Writing is slower than talking
-
-When talking, the processing work is pushed to the receiver. 
-
-When writing, the processing work is owned by the sender.
-
-Writing forces clarity — certainly why Amazon uses a [6-pager system](https://www.google.com/search?q=Amazons+6+Pager+system).
-
-As Paul Graham says:
-
-> Writing is thinking. It’s the process of figuring out what you think, and discovering gaps where you thought you understood something but didn’t.
-
-### Inclusivity wins
-
-Similar to meditation, diversity, equity, and inclusion programs (DEI) show positive effects productivity ([ref](https://www.mckinsey.com/featured-insights/diversity-and-inclusion/diversity-matters-even-more-the-case-for-holistic-impact)). Almost like it would be a positive drug package leaflet.
-
-Async lets:
+Async communication is inclusive. Similarly to meditation and DEI programs, async communication shows positive effects productivity ([ref](https://www.mckinsey.com/featured-insights/diversity-and-inclusion/diversity-matters-even-more-the-case-for-holistic-impact)). Almost like it would be a positive drug package leaflet.
 
 - **Neurodivergent** people work during their focus windows
-- **Parents** balance care work
-- **Night owls** work when they’re sharpest
+- **Parents** can balance care work
+- **Night owls** can work when they’re sharpest
 
-## How to
+## Writing is slower than talking
+
+When talking, the processing work is pushed to the receiver. When writing, the processing work is owned by the sender. Writing forces clarity, the foundation for Amazon's [6-pager system](https://www.google.com/search?q=Amazons+6+Pager+system).
+
+> Writing is thinking. It’s the process of figuring out what you think, and discovering gaps where you thought you understood something but didn’t.
+>
+> <cite>[Paul Graham](https://www.paulgraham.com/words.html)</cite>
+
 ---
 
-### Clear Intention
+## Rules
 
-*Why do you communicate in the first place?*
+### 1. Clear Intention
 
-*What action do you expect to be followed by your communication?*
+Explain why you communicate in the first place, by directly stating what action do you expect to be followed by your communication.
 
 <div className="mb-4" />
 
 **Examples**: Require approval, FYI, seek understanding, seek feedback, find consensus, poll
 
-<div className="mb-4" />
+### 2. Use High Bandwidth Communication
 
-Make it clear.
+You can see, hear, smell, taste, and touch. At digital work we mostly use our sight and hearing sense to process information. Using a image often helps, as *one image says more than a thousands words*. 
 
-### Format
+A video of your desktop tells a thousand words 24 times per second (see [Loom](https://www.loom.com)). Adding your face to the bottom left, adds the information of tone and intention. This makes a **high bandwidth communication**. Adding these layers can improve communication drastically. 
 
-- You can see, hear, smell, taste, and touch. 
-- At digital work we mostly, we mostly use our sight and hearing sense to process information. 
-- Using a image often helps, as “one image says more than a thousands words”.
-- A video of your desktop tells a thousand words > 24 times per second (see [Loom](https://www.loom.com)). 
-- Adding your face to the bottom left, adds the information of tone and intention.
-- This makes a **high bandwidth communication**. 
-- Adding these layers can improve communication drastically. 
-
-<div className="mb-4" />
-
-**Rules of thumb**
-
-- Use writing or video (I saw little use for voice only)
-- Always use video when demoing work
-
-### Context
+### 3. Context
 
 Assume the reader knows *nothing*.
 
-Provide links, Linear tickets, charts, Slack threads, everything.
+Provide links, tickets, charts, Slack threads, everything.
 
-### Channel
+### 4. Conclusion, key points and support points
 
-I highly suggest the 'Public by default’ principle (similar to [Posthog’s proposal](https://posthog.com/handbook/company/communication#public-by-default)). 
+Structured your communication in a way that the reader can easily understand the message, first the conclusion, then key points and then support points.
 
-I’d redefine public here to ‘within the company’ to accommodate if your company does not comply with strong public first policies.
+<GoodBadExamples
+  className="grid-cols-1"
+  bad={
+    <SlackMessage name="Alice">
+      <p>Hi team,</p>
+      <p>
+        <span>
+          We ran a big study on user behavior and gathered lots of data.
+        </span>
+      </p>
+      <p>
+        <span>
+          <span style={{ fontWeight: "bold" }}>45%</span> of churned users mentioned confusion during setup.
+        </span>
+      </p>
+      <p>
+        <span>
+          Users who completed onboarding stayed longer.
+        </span>
+      </p>
+      <p>
+        <span>
+          Support tickets dropped in the test group.
+        </span>
+      </p>
+      <p>
+        <span>
+          We think onboarding might be important for retention. We can look into this further later.
+        </span>
+      </p>
+      <p>
+        <span>
+          Let’s discuss what to do next.
+        </span>
+      </p>
+    </SlackMessage>
+  }
+  good={
+    <SlackMessage name="Alice">
+      <p>Hi team,</p>
+      <p>
+        <span style={{ fontWeight: "medium" }}>
+          Recommendation:
+        </span>{" "}
+        Improve customer retention by redesigning the onboarding process.
+      </p>
+      <p>
+        <span style={{ fontWeight: "medium" }}>Main Findings:</span>
+      </p>
+      <ul>
+        <li>
+          <span>
+            45% of churned users mentioned confusion during setup as their main reason for leaving.
+          </span>
+        </li>
+        <li>
+          <span>
+            Customers who completed onboarding are <span style={{ fontWeight: "medium" }}>3×</span> more likely to stay beyond 6 months.
+          </span>
+        </li>
+        <li>
+          <span>
+            Support tickets from new users dropped by <span style={{ fontWeight: "medium" }}>40%</span> after guided onboarding was introduced in our test group.
+          </span>
+        </li>
+      </ul>
+      <p>
+        <span style={{ fontWeight: "medium" }}>How did we arrive at this?</span>
+      </p>
+      <ul>
+        <li>
+          <span>
+            We analyzed feedback from 120 churned users and 250 active users.
+          </span>
+        </li>
+        <li>
+          <span>
+            We tracked engagement metrics before and after introducing guided onboarding.
+          </span>
+        </li>
+        <li>
+          <span>
+            We conducted 10 usability tests showing clear drop-off during account setup steps.
+          </span>
+        </li>
+      </ul>
+      <p>
+        <span style={{ fontWeight: "medium" }}>
+          Let’s prioritize redesigning onboarding in Q1 to maximize retention impact.
+        </span>
+      </p>
+    </SlackMessage>
+  }
+/>
 
-| Type | Description | Channels |
-| --- | --- | --- |
-| **Public** | product, roadmap, strategy, decision making | Company wide accessible team-based Slack collaboration #[team]-collaboration |
-| **Internal** | Team only FYI, financial performance, security, recruitment | Internal Slack channels #[team]-internal |
-| **Private** | Compensation, disciplinary issues | 1:1s |
+### 5. Use RFC over threads
+
+Threads with more than 10 messages probably should be a RFC. Threads are inefficient, as they are linear. Two context can not be discussed at the same time without confusion. RFCs allow for in-place comments with multiple threads, which is more efficient.
+
+### 6. Irony is often low performance communication
+
+Irony prevents honesty (it’s literally the opposite). Low honesty leads to low trust, which results in low performance. It's a form of prevention to show yourself, be vulnerable in front of each other which is the foundation for trust.
+
+Wink emojis are a high indication of irony. They are a placeholder for something that is not being said. Do not use them expcet your are sure its clearly funny for both sides.
+
+
+### 7. Resolve the Conversation
+
+If you are asked a question, keep the conversation going until it’s resolved. Do not let the other person do all the work. Offer alternative options.
+
+<div className="mb-4" />
+
+<GoodBadExamples
+  bad={
+    <div className="flex flex-col gap-2">
+      <SlackMessage name="Alice">Hey do you want to grab a coffee on 11am?</SlackMessage> <SlackMessage name="Bob">11 is not working for me.</SlackMessage>
+    </div>
+  }
+  good={
+    <div className="flex flex-col gap-2">
+      <SlackMessage name="Alice">Hey do you want to grab a coffee on 11am?</SlackMessage> <SlackMessage name="Bob">I can’t make 11, can you make 9?</SlackMessage>
+    </div>
+  }
+/>
+
+### 8. Don't use an opposite that is never true
+
+If you say something where the opposite is never true, chance are high you are not thinking clearly. Rephrase your thought. "We should not build a huge monolith that can do everything". Nobody wants to build a huge monolith that can do everything. State the opposite instead. "We should aim for a modular system with clear boundaries".

@@ -1,6 +1,6 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
-import { Noto_Serif } from "next/font/google";
+import { Source_Serif_4 } from "next/font/google";
 import type React from "react";
 import { Toaster } from "sonner";
 import { PostHogProvider } from "@/app/providers";
@@ -9,9 +9,10 @@ import { PostStructuredData } from "@/components/post-structured-data";
 import { siteConfig } from "@/config/app";
 import "./globals.css";
 
-const serif = Noto_Serif({
+const serif = Source_Serif_4({
   subsets: ["latin"],
   variable: "--font-serif-custom",
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
