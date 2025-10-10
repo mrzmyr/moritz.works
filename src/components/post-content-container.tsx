@@ -16,6 +16,13 @@ export const PostContentConatiner = ({
         "max-w-none",
         "pb-28",
         "prose-a:underline",
+        "prose-a:font-medium",
+
+        "[&_.footnotes]:mt-12",
+        "[&_.footnotes]:border-t",
+        "[&_.footnotes]:border-border",
+        "[&_.footnotes]:pt-8",
+        "[&_.data-footnote-backref]:hidden",
 
         "prose-blockquote:p-0",
         "prose-blockquote:my-12",
