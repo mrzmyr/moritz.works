@@ -40,6 +40,9 @@ const components: MDXComponents = {
       </Figure>
     );
   },
+  Image: ({ ...props }) => {
+    return <ZoomImage className="w-full" {...props} />;
+  },
   code: SimpleCodeBlock,
   InfoTooltip,
   StackItem,

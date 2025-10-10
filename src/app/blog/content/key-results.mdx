@@ -1,0 +1,82 @@
+---
+title: Tracking Results
+excerpt: How to set key results
+createdAt: 2025-10-10
+updatedAt: 2025-10-10
+---
+
+Setting goals is hard. Actually, setting is not the hard part, tracking them continuously
+is. But before tracking them, it's important to understand the distinction between key results and key performance indicators.
+
+I recently learned from a great analogy for thinking about key results and key performance indicators from the great [Fabian Zeller](https://www.linkedin.com/in/fabianzeller/).
+
+## Key Performance Indicators (KPIs)
+
+Often confused with OKRs or key results, key performance indicators are long-term metrics.
+They show and tell us how we're doing. Not where we're going.
+
+<Figure>
+  <FigureContent className="p-0">
+    <Image
+      src="/static/images/blog/key-results-carplay-ultra-1.png"
+      alt="Car Play Ultra"
+      width={1854}
+      height={468}
+    />
+  </FigureContent>
+  <FigureCaption>Car Play Ultra - Speedometer</FigureCaption>
+</Figure>
+
+You can think of them as a car dashboard, you can see <span className="font-medium">how fast</span> you're going,<span className="font-medium"> how much fuel</span> you have, <span className="font-medium">how much time</span> you have left.
+
+This translate within software engineering to examples like the following.
+
+- **Uptime percentage** (e.g. "99.9% uptime")
+- **Average response time** (e.g. "API response < 250ms")
+- **Number of active users per month**
+
+## Key Results
+
+Key results themselves are about the path to the goal. They give direction in a given timeframe. They are temporary and based on key performance indicators.
+
+<Figure>
+  <FigureContent className="p-0">
+    <Image
+      src="/static/images/blog/key-results-carplay-ultra-2.png"
+      alt="Car Play Ultra"
+      width={1854}
+      height={468}
+    />
+  </FigureContent>
+  <FigureCaption>Car Play Ultra - Navigation</FigureCaption>
+</Figure>
+
+You can think of them as a route on a map, you can see how you're doing, but you can't see where you're going.
+
+When you set ambitious goals, it's essential to remember that actually achieving the goal is <span className="font-medium">not required</span>. The main purpose of defining key results is to provide direction throughout a specific timeframe. Once that period ends, the goal is archived and you start fresh, regardless of whether you fully reached the goal or not.
+
+This would translate within software engineering to examples like the following.
+
+- **Increase monthly active users by 20% until Q1 2026**
+- **Reduce average response time by 10% until Q3 2029**
+- **Reduce bug count in production by 10% until Q1 2029**
+
+## Input Metrics
+
+Another mistake we do when setting key results, is by setting key results based on output metrics, like I just mentioned. Most often it's super hard to estimate the output metrics, as you can barely control them. However, what you can control is the input metrics.
+
+So instead of setting a key result like "Increase monthly active users by 20% until Q1 2026", you can set a key result like "Increase % of new users completing onboarding by 20% until Q1 2026". Controlling the onboarding completion rate is much easier to control than the monthly active users.
+
+The following is a list of input and output metrics.
+
+| **Input Metric**                     | **Output Metric**          |
+| ------------------------------------ | -------------------------- |
+| % of new users completing onboarding | MAU (Monthly Active Users) |
+| # of notifications sent              | DAU/MAU ratio (stickiness) |
+| Avg sessions per user per week       | Retention                  |
+| Feature adoption rate                | Conversion rate            |
+| Load time / crash rate               | Revenue or ARPU            |
+
+## Adaptability
+
+If you are not able to adapt them, you already created obsolete key results. They will always change, the same way as your environment, your team, and your product changes. Be able to kill them, as soon as they are not relevant anymore, else they become a weird burden nobody wants to carry.
