@@ -225,6 +225,7 @@ export default function Page() {
         >
           Product Intelligence
         </a>
+        ).
       </p>
       <p>
         One notable one is that they don&apos;t use <code>cursor: pointer</code>{" "}
