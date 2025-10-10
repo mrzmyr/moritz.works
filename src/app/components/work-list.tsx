@@ -82,7 +82,7 @@ const WorkList = () => {
         title="Software Engineer"
         country="DE"
         name="Freelance"
-        from="2011"
+        from="2014"
         to="2019"
       />
       <WorkListItem
