@@ -267,7 +267,7 @@ export default function Page() {
         technically not needed to create the filter UI, but still a nice detail.
       </p>
       <Figure>
-        <FigureContent className="py-8">
+        <FigureContent className="py-8 overflow-hidden">
           <div className="flex flex-row gap-2 px-1.5 justify-center scale-[200%]">
             <StatusIndicator status="todo" />
             <StatusIndicator status="in_progress" />
