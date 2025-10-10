@@ -13,7 +13,7 @@ export const GoodBadExamples = ({
 }) => {
   return (
     <Figure>
-      <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-4", className)}>
+      <div className={cn("grid grid-cols-1 lg:grid-cols-2 gap-4", className)}>
         <div className="flex flex-col border border-border rounded-lg bg-white dark:bg-neutral-900/50">
           <div className="font-medium text-red-700 dark:text-red-400 px-4 py-2 rounded-tl-lg rounded-tr-lg border-b border-border flex items-center gap-1  ">
             <X className="w-4 h-4" /> <span>Bad</span>
