@@ -10,8 +10,8 @@ type Props = React.ImgHTMLAttributes<HTMLImageElement> & Partial<ImageProps>;
  * Works with both <img> and Next.js <Image>.
  * If width/height are provided, we render <Image>; otherwise we render <img>.
  */
-export function ZoomImage(props: Props) {
-  const { width, height, alt = "", ...rest } = props;
+export function ZoomImage(props: Props & { classDialog?: string }) {
+  const { width, height, classDialog, alt = "", ...rest } = props;
 
   const canUseNextImage =
     typeof width === "number" &&
@@ -20,7 +20,7 @@ export function ZoomImage(props: Props) {
     typeof (rest as any).src === "string";
 
   return (
-    <Zoom>
+    <Zoom classDialog={classDialog}>
       {canUseNextImage ? (
         <Image
           alt={alt}

@@ -34,18 +34,21 @@ export const CardContent = ({
 export const CardTitle = ({
   children,
   className,
+  suffix,
 }: {
   children: React.ReactNode;
   className?: string;
+  suffix?: React.ReactNode;
 }) => {
   return (
     <div
       className={cn(
-        "font-medium text-neutral-900 dark:text-neutral-100",
+        "font-medium text-neutral-900 dark:text-neutral-100 flex items-center justify-between gap-1",
         className,
       )}
     >
-      {children}
+      <span className="inline-block">{children}</span>
+      {suffix}
     </div>
   );
 };
