@@ -1,10 +1,9 @@
---- 
+---
 title: Asynchronous Communication
 excerpt: How to communicate effectively
 createdAt: 2025-05-29
 updatedAt: 2025-05-29
 ---
-
 
 Famously GitLab, Doist, Basecamp are companies that work async first.
 
@@ -13,16 +12,19 @@ While remote first means you don’t assume people share the **same location**, 
 ngl, strange concept for me as a human, growing up talking my whole life synchronously.
 
 > You are not expected to be available all the time
-> 
-> <cite>[Posthog Handbook](https://posthog.com/handbook/company/communication#golden-rules)</cite>
+>
+> <cite>
+>   [Posthog
+>   Handbook](https://posthog.com/handbook/company/communication#golden-rules)
+> </cite>
 
 ## Why do companies work async first?
 
-Hiring **top talent is one of the top challenges** for companies. 
+Hiring **top talent is one of the top challenges** for companies.
 
-As a first step, remote-first hiring opened the door to other cities. This was followed by async first, to become time zones independent. 
+As a first step, remote-first hiring opened the door to other cities. This was followed by async first, to become time zones independent.
 
-Remote meetings are strange, they often miss a clear agenda, disrupt deep work, drain mental and physical energy, and at the end only one person is talking while others listen. At the end little is documented. And I mean little good documentation, not your AI transcripts that lack context outside of the meeting. 
+Remote meetings are strange, they often miss a clear agenda, disrupt deep work, drain mental and physical energy, and at the end only one person is talking while others listen. At the end little is documented. And I mean little good documentation, not your AI transcripts that lack context outside of the meeting.
 
 ## Cost
 
@@ -51,10 +53,22 @@ Paul Graham famously described that you don't write because you understand, bu y
 
 <Figure>
   <FigureContent>
-    <img src="/static/images/blog/async-processing-dark.png" className='hidden dark:block' srcdark="/static/images/blog/async-processing-dark.png" alt="Processing work" />
-    <img src="/static/images/blog/async-processing.png" className='dark:hidden' srcdark="/static/images/blog/async-processing-dark.png" alt="Processing work" />
+    <img
+      src="/static/images/blog/async-processing-dark.png"
+      className="hidden dark:block"
+      srcdark="/static/images/blog/async-processing-dark.png"
+      alt="Processing work"
+    />
+    <img
+      src="/static/images/blog/async-processing.png"
+      className="dark:hidden"
+      srcdark="/static/images/blog/async-processing-dark.png"
+      alt="Processing work"
+    />
   </FigureContent>
-  <FigureCaption>Processing work needs to be done before the message is sent to be efficient.</FigureCaption>
+  <FigureCaption>
+    Processing work needs to be done before the message is sent to be efficient.
+  </FigureCaption>
 </Figure>
 
 The processing work must be done before the message is sent to be efficient. Most meetings are 1:n communication, where one person speaks and the others listen. This is inefficient, as the receiver has to process the message while the sender is still thinking.
@@ -71,17 +85,23 @@ Explain why you communicate in the first place, by directly stating what action 
 
 <div className="mb-4" />
 
-**Examples**: Require approval, FYI, seek understanding, seek feedback, find consensus, poll
+**Examples**:
+
+- I require approval here
+- I only want to share this with you
+- Can you provide feedback on this?
+- I want to make a decision on this until tomorrow EOD
+- I want to poll the team on this
 
 ### 2. Use High Bandwidth Communication
 
-You can see, hear, smell, taste, and touch. At digital work we mostly use our sight and hearing sense to process information. Using a image often helps, as *one image says more than a thousands words*. 
+You can see, hear, smell, taste, and touch. At digital work we mostly use our sight and hearing sense to process information. Using a image often helps, as _one image says more than a thousands words_.
 
-A video of your desktop tells a thousand words 24 times per second (see [Loom](https://www.loom.com)). Adding your face to the bottom left, adds the information of tone and intention. This makes a **high bandwidth communication**. Adding these layers can improve communication drastically. 
+A video of your desktop tells a thousand words 24 times per second (see [Loom](https://www.loom.com)). Adding your face to the bottom left, adds the information of tone and intention. This makes a **high bandwidth communication**. Adding these layers can improve communication drastically.
 
 ### 3. Context
 
-Assume the reader knows *nothing*.
+Assume the reader knows _nothing_.
 
 Provide links, tickets, charts, Slack threads, everything.
 
@@ -101,28 +121,24 @@ Structured your communication in a way that the reader can easily understand the
       </p>
       <p>
         <span>
-          <span className="font-bold">45%</span> of churned users mentioned confusion during setup.
+          <span className="font-bold">45%</span> of churned users mentioned
+          confusion during setup.
         </span>
       </p>
       <p>
-        <span>
-          Users who completed onboarding stayed longer.
-        </span>
+        <span>Users who completed onboarding stayed longer.</span>
+      </p>
+      <p>
+        <span>Support tickets dropped in the test group.</span>
       </p>
       <p>
         <span>
-          Support tickets dropped in the test group.
+          We think onboarding might be important for retention. We can look into
+          this further later.
         </span>
       </p>
       <p>
-        <span>
-          We think onboarding might be important for retention. We can look into this further later.
-        </span>
-      </p>
-      <p>
-        <span>
-          Let’s discuss what to do next.
-        </span>
+        <span>Let’s discuss what to do next.</span>
       </p>
     </SlackMessage>
   }
@@ -130,10 +146,8 @@ Structured your communication in a way that the reader can easily understand the
     <SlackMessage name="Alice">
       <p>Hi team,</p>
       <p>
-        <span className="font-medium">
-          Recommendation:
-        </span>{" "}
-        Improve customer retention by redesigning the onboarding process.
+        <span className="font-medium">Recommendation:</span> Improve customer
+        retention by redesigning the onboarding process.
       </p>
       <p>
         <span className="font-medium">Main Findings:</span>
@@ -141,17 +155,22 @@ Structured your communication in a way that the reader can easily understand the
       <ul>
         <li>
           <span>
-            45% of churned users mentioned confusion during setup as their main reason for leaving.
+            45% of churned users mentioned confusion during setup as their main
+            reason for leaving.
           </span>
         </li>
         <li>
           <span>
-            Customers who completed onboarding are <span className="font-medium">3×</span> more likely to stay beyond 6 months.
+            Customers who completed onboarding are{" "}
+            <span className="font-medium">3×</span> more likely to stay beyond 6
+            months.
           </span>
         </li>
         <li>
           <span>
-            Support tickets from new users dropped by <span className="font-medium">40%</span> after guided onboarding was introduced in our test group.
+            Support tickets from new users dropped by{" "}
+            <span className="font-medium">40%</span> after guided onboarding was
+            introduced in our test group.
           </span>
         </li>
       </ul>
@@ -166,18 +185,21 @@ Structured your communication in a way that the reader can easily understand the
         </li>
         <li>
           <span>
-            We tracked engagement metrics before and after introducing guided onboarding.
+            We tracked engagement metrics before and after introducing guided
+            onboarding.
           </span>
         </li>
         <li>
           <span>
-            We conducted 10 usability tests showing clear drop-off during account setup steps.
+            We conducted 10 usability tests showing clear drop-off during
+            account setup steps.
           </span>
         </li>
       </ul>
       <p>
         <span className="font-medium">
-          Let’s prioritize redesigning onboarding in Q1 to maximize retention impact.
+          Let’s prioritize redesigning onboarding in Q1 to maximize retention
+          impact.
         </span>
       </p>
     </SlackMessage>
@@ -193,9 +215,7 @@ Threads with more than 10 messages probably should be a RFC. Threads are ineffic
 <Figure>
   <FigureContent>
     <SlackMessage name="Alice">
-      <p>
-          Can you take this for me? 😉
-      </p>
+      <p>Can you take this for me? 😉</p>
     </SlackMessage>
   </FigureContent>
 </Figure>
@@ -203,7 +223,6 @@ Threads with more than 10 messages probably should be a RFC. Threads are ineffic
 Irony prevents honesty (it’s literally the opposite). Low honesty leads to low trust, which results in low performance. It's a form of prevention to show yourself, be vulnerable in front of each other which is the foundation for trust.
 
 Wink emojis are a high indication of irony. They are a placeholder for something that is not being said. Do not use them expcet your are sure its clearly funny for both sides.
-
 
 ### 7. Resolve the Conversation
 
@@ -214,12 +233,18 @@ If you are asked a question, keep the conversation going until it’s resolved. 
 <GoodBadExamples
   bad={
     <div className="flex flex-col gap-2">
-      <SlackMessage name="Alice">Hey do you want to grab a coffee on 11am?</SlackMessage> <SlackMessage name="Bob">11 is not working for me.</SlackMessage>
+      <SlackMessage name="Alice">
+        Hey do you want to grab a coffee on 11am?
+      </SlackMessage>{" "}
+      <SlackMessage name="Bob">11 is not working for me.</SlackMessage>
     </div>
   }
   good={
     <div className="flex flex-col gap-2">
-      <SlackMessage name="Alice">Hey do you want to grab a coffee on 11am?</SlackMessage> <SlackMessage name="Bob">I can’t make 11, can you make 9?</SlackMessage>
+      <SlackMessage name="Alice">
+        Hey do you want to grab a coffee on 11am?
+      </SlackMessage>{" "}
+      <SlackMessage name="Bob">I can’t make 11, can you make 9?</SlackMessage>
     </div>
   }
 />
