@@ -109,9 +109,8 @@ Provide links, tickets, charts, Slack threads, everything.
 
 Structured your communication in a way that the reader can easily understand the message, first the conclusion, then key points and then support points.
 
-<GoodBadExamples
-  className="lg:grid-cols-1"
-  bad={
+<ExampleGroup className="lg:grid-cols-1">
+  <BadExample>
     <SlackMessage name="Alice">
       <p>Hi team,</p>
       <p>
@@ -141,16 +140,16 @@ Structured your communication in a way that the reader can easily understand the
         <span>Let’s discuss what to do next.</span>
       </p>
     </SlackMessage>
-  }
-  good={
+  </BadExample>
+  <GoodExample>
     <SlackMessage name="Alice">
       <p>Hi team,</p>
       <p>
-        <span className="font-medium">Recommendation:</span> Improve customer
+        <span className="font-semibold">Recommendation:</span> Improve customer
         retention by redesigning the onboarding process.
       </p>
       <p>
-        <span className="font-medium">Main Findings:</span>
+        <span className="font-semibold">Main Findings:</span>
       </p>
       <ul>
         <li>
@@ -162,20 +161,20 @@ Structured your communication in a way that the reader can easily understand the
         <li>
           <span>
             Customers who completed onboarding are{" "}
-            <span className="font-medium">3×</span> more likely to stay beyond 6
+            <span className="font-semi">3×</span> more likely to stay beyond 6
             months.
           </span>
         </li>
         <li>
           <span>
             Support tickets from new users dropped by{" "}
-            <span className="font-medium">40%</span> after guided onboarding was
+            <span className="font-semi">40%</span> after guided onboarding was
             introduced in our test group.
           </span>
         </li>
       </ul>
       <p>
-        <span className="font-medium">How did we arrive at this?</span>
+        <span className="font-semi">How did we arrive at this?</span>
       </p>
       <ul>
         <li>
@@ -197,20 +196,54 @@ Structured your communication in a way that the reader can easily understand the
         </li>
       </ul>
       <p>
-        <span className="font-medium">
+        <span className="font-semi">
           Let’s prioritize redesigning onboarding in Q1 to maximize retention
           impact.
         </span>
       </p>
     </SlackMessage>
-  }
-/>
+  </GoodExample>
+</ExampleGroup>
 
-### 5. Use RFC over threads
+### 5. Leverage Threads
+
+Use threads for use cases like <span className="font-medium">discussing a topic with multiple replies</span> or <span className="font-medium">sharing multiple messages on the same topic</span>.
+
+<ExampleGroup>
+  <BadExample>
+    <SlackMessage name="Alice">
+      <p>Hi team, does anyone have a good idea for the onboarding process?</p>
+    </SlackMessage>
+    <SlackMessage name="Bob">
+      <p>Yes, you can find the onboarding process in the docs.</p>
+    </SlackMessage>
+    <SlackMessage name="Bob">
+      <p>If you want, we can discuss this in the meeting.</p>
+    </SlackMessage>
+    <SlackMessage name="Bob">
+      <p>I just also found a great article about it.</p>
+    </SlackMessage>
+  </BadExample>
+  <GoodExample>
+    <SlackMessage name="Alice">
+      <p>Hi team, does anyone have a good idea for the onboarding process?</p>
+    </SlackMessage>
+    <SlackMessageReply
+      replies={[
+        { name: "Bob", date: "2025-05-29" },
+        { name: "Bob", date: "2025-05-29" },
+        { name: "Bob", date: "2025-05-29" },
+      ]}
+    />
+
+  </GoodExample>
+</ExampleGroup>
+
+### 6. Use RFC over threads
 
 Threads with more than 10 messages probably should be a RFC. Threads are inefficient, as they are linear. Two context can not be discussed at the same time without confusion. RFCs allow for in-place comments with multiple threads, which is more efficient.
 
-### 6. Irony is often low performance communication
+### 7. Irony is often low performance communication
 
 <Figure>
   <FigureContent>
@@ -224,32 +257,34 @@ Irony prevents honesty (it’s literally the opposite). Low honesty leads to low
 
 Wink emojis are a high indication of irony. They are a placeholder for something that is not being said. Do not use them expcet your are sure its clearly funny for both sides.
 
-### 7. Resolve the Conversation
+### 8. Resolve the Conversation
 
 If you are asked a question, keep the conversation going until it’s resolved. Do not let the other person do all the work. Offer alternative options.
 
 <div className="mb-4" />
 
-<GoodBadExamples
-  bad={
+<ExampleGroup>
+  <BadExample>
     <div className="flex flex-col gap-2">
       <SlackMessage name="Alice">
         Hey do you want to grab a coffee on 11am?
       </SlackMessage>{" "}
       <SlackMessage name="Bob">11 is not working for me.</SlackMessage>
     </div>
-  }
-  good={
+  </BadExample>
+  <GoodExample>
     <div className="flex flex-col gap-2">
       <SlackMessage name="Alice">
         Hey do you want to grab a coffee on 11am?
       </SlackMessage>{" "}
-      <SlackMessage name="Bob">I can’t make 11, can you make 9?</SlackMessage>
+      <SlackMessage name="Bob">
+        I can’t make 11, <span className="bg-amber-50">can you make 9?</span>
+      </SlackMessage>
     </div>
-  }
-/>
+  </GoodExample>
+</ExampleGroup>
 
-### 8. Don't use an opposite that is never true
+### 9. Don't use an opposite that is never true
 
 If you say something where the opposite is never true, chance are high you are not thinking clearly. Rephrase your thought. "We should not build a huge monolith that can do everything". Nobody wants to build a huge monolith that can do everything. State the opposite instead. "We should aim for a modular system with clear boundaries".
 

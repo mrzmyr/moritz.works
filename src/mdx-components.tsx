@@ -2,7 +2,11 @@ import type { MDXComponents } from "mdx/types";
 import { AiButton } from "@/components/ai-button";
 import { Card, CardContent, CardTitle } from "@/components/card";
 import { Figure, FigureCaption, FigureContent } from "@/components/figure";
-import { GoodBadExamples } from "@/components/good-bad-examples";
+import {
+  BadExample,
+  ExampleGroup,
+  GoodExample,
+} from "@/components/good-bad-examples";
 import { Grid, GridItem } from "@/components/grid";
 import { H1, H2, H3, H4, H5, H6 } from "@/components/headlines";
 import { InfoTooltip } from "@/components/info-tooltip";
@@ -10,7 +14,8 @@ import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";
 import { PostStructuredData } from "@/components/post-structured-data";
 import { SimpleCodeBlock } from "@/components/simple-code-block";
-import { SlackMessage } from "@/components/slack-message";
+import { SlackMessage } from "@/components/slack-message/slack-message";
+import { SlackMessageReply } from "@/components/slack-message/slack-message-reply";
 import { StackItem } from "@/components/stack-item";
 import { ZoomImage } from "@/components/zoom-image";
 
@@ -21,8 +26,11 @@ const components: MDXComponents = {
   Figure,
   FigureCaption,
   FigureContent,
-  GoodBadExamples,
+  ExampleGroup,
+  GoodExample,
+  BadExample,
   SlackMessage,
+  SlackMessageReply,
   Card,
   CardContent,
   CardTitle,
