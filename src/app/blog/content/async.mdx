@@ -52,14 +52,14 @@ Async communication is inclusive. Similarly to meditation and DEI programs, asyn
 Paul Graham famously described that you don't write because you understand, bu you understand because you write" in [his essay from 2005](https://www.paulgraham.com/writing44.html). When talking, the processing work is pushed to the receiver. This is the usual setting in a synchronous meeting. When writing, the processing work is owned by the sender.
 
 <Figure>
-  <FigureContent>
-    <img
+  <FigureContent className="p-0">
+    <Image
       src="/static/images/blog/async-processing-dark.png"
       className="hidden dark:block"
       srcdark="/static/images/blog/async-processing-dark.png"
       alt="Processing work"
     />
-    <img
+    <Image
       src="/static/images/blog/async-processing.png"
       className="dark:hidden"
       srcdark="/static/images/blog/async-processing-dark.png"
@@ -277,9 +277,7 @@ If you are asked a question, keep the conversation going until it’s resolved. 
       <SlackMessage name="Alice">
         Hey do you want to grab a coffee on 11am?
       </SlackMessage>{" "}
-      <SlackMessage name="Bob">
-        I can’t make 11, <span className="bg-amber-50">can you make 9?</span>
-      </SlackMessage>
+      <SlackMessage name="Bob">I can’t make 11, can you make 9?</SlackMessage>
     </div>
   </GoodExample>
 </ExampleGroup>
