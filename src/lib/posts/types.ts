@@ -6,6 +6,7 @@ export type PostData = {
   url: string;
   createdAt: string;
   updatedAt: string;
+  content: string;
 };
 
 export type PostModule = { default: React.ReactNode };

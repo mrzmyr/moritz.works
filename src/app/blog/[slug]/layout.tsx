@@ -4,8 +4,10 @@ import { PostContentConatiner } from "@/components/post-content-container";
 import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";
 import { PostStructuredData } from "@/components/post-structured-data";
+import { PostCopyMarkdown } from "@/components/ui/post-copy-markdown";
 import { siteConfig } from "@/config/app";
 import { getPostMetadata } from "@/lib/posts";
+import { getAbsolutePostUrl } from "@/lib/urls";
 
 export default async function Layout({
   children,
@@ -34,11 +36,21 @@ export default async function Layout({
         image={`${siteConfig.url}/static/og/default.png`}
       />
       <div className="my-12">
-        <PostHeadline>{post.title}</PostHeadline>
-        <PostMetadata
-          createdAt={new Date(post.createdAt)}
-          updatedAt={new Date(post.updatedAt)}
-        />
+        <div className="flex justify-between items-start">
+          <div>
+            <PostHeadline>{post.title}</PostHeadline>
+            <PostMetadata
+              createdAt={new Date(post.createdAt)}
+              updatedAt={new Date(post.updatedAt)}
+            />
+          </div>
+          {post.content && (
+            <PostCopyMarkdown
+              content={post.content}
+              url={getAbsolutePostUrl({ slug: post.slug })}
+            />
+          )}
+        </div>
       </div>
       <PostContentConatiner>{children}</PostContentConatiner>
     </>

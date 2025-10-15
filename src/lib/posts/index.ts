@@ -17,10 +17,10 @@ export const getPostMetadata = async (
   }
 
   const fileContents = await fs.promises.readFile(fullPath, "utf8");
-  const { data: metadata } = matter(fileContents);
+  const { data: metadata, content } = matter(fileContents);
   const url = getPostUrl({ slug: metadata.slug });
 
-  return { success: true, data: { ...metadata, url } as PostData };
+  return { success: true, data: { ...metadata, url, content } as PostData };
 };
 
 export async function getPosts(): Promise<Response<PostData[]>> {
