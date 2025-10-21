@@ -29,8 +29,8 @@ export type Book = {
 
 export async function getBooks() {
   return tryCatch<{ books: Book[] }>(
-    fetch(
-      "https://oku.club/api/collections/user/jadann/reading?format=json",
-    ).then((res) => res.json()),
+    fetch("https://oku.club/api/collections/user/jadann/reading?format=json", {
+      cache: "no-store",
+    }).then((res) => res.json()),
   );
 }
