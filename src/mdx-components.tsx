@@ -1,3 +1,12 @@
+import {
+  ArrowRightIcon,
+  BlendIcon,
+  GlobeIcon,
+  HandshakeIcon,
+  SpeechIcon,
+  TargetIcon,
+  UserIcon,
+} from "lucide-react";
 import type { MDXComponents } from "mdx/types";
 import { AiButton } from "@/components/ai-button";
 import { Card, CardContent, CardTitle } from "@/components/card";
@@ -59,6 +68,13 @@ const components: MDXComponents = {
   Grid,
   GridItem,
   AiButton,
+  SpeechIcon,
+  UserIcon,
+  GlobeIcon,
+  TargetIcon,
+  HandshakeIcon,
+  ArrowRightIcon,
+  BlendIcon,
 };
 
 export function useMDXComponents(): MDXComponents {
