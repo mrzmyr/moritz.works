@@ -58,7 +58,7 @@ const WorkList = () => {
       />
       <WorkListItem
         image="/static/images/1komma5-logo.jpeg"
-        title="Software Engineer"
+        title="Lead Software Engineer"
         country="DE"
         name="1KOMMA5°"
         from="2023"
