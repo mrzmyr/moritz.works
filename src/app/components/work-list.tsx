@@ -58,14 +58,14 @@ const WorkList = () => {
       />
       <WorkListItem
         image="/static/images/1komma5-logo.jpeg"
-        title="Lead Software Engineer"
+        title="Software Engineer"
         country="DE"
         name="1KOMMA5°"
         from="2023"
       />
       <WorkListItem
         image="/static/images/twain-logo.png"
-        title="Lead Engineer"
+        title="Software Engineer"
         country="DE"
         name="Twain"
         from="2022"
