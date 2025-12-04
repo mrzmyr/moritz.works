@@ -108,7 +108,7 @@ export const getPostContentFromMdx = async (
     success: mdxSuccess,
     data: mdxData,
     error: mdxError,
-  } = await tryCatch(import(`@/content/${slug}.mdx`));
+  } = await tryCatch(import(`../../app/blog/content/${slug}.mdx`));
 
   if (!mdxSuccess || !mdxData || mdxError) {
     console.warn("Failed to import MDX content", mdxError);
