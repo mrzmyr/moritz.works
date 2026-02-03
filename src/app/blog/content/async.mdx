@@ -93,19 +93,55 @@ Explain why you communicate in the first place, by directly stating what action 
 - I want to make a decision on this until tomorrow EOD
 - I want to poll the team on this
 
-### 2. Use High Bandwidth Communication
+### 2. Be deterministic
+
+Language is highly ambiguous, resulting in misunderstandings.
+
+Imagine a lifecycle system where people casually say "completed".
+
+Now different teams interpret this differently:
+
+- Ops thinks _installed_
+- Finance thinks _invoiced_
+- Tech thinks _provisioned_
+- Support thinks _handed over_
+
+You want to restrict synonyms to a set of constants (also known as enums).
+
+Deterministic communication has many benefits:
+
+- Searchable
+- Auditable
+- Automatable
+
+<ExampleGroup>
+  <BadExample>
+    <SlackMessage name="Bob">
+      <p>The order has been completed.</p>
+    </SlackMessage>
+  </BadExample>
+  <GoodExample>
+    <SlackMessage name="Bob">
+      <p>
+        The order moved from <code>in delivery</code> to <code>installed</code>.
+      </p>
+    </SlackMessage>
+  </GoodExample>
+</ExampleGroup>
+
+### 3. Use High Bandwidth Communication
 
 You can see, hear, smell, taste, and touch. At digital work we mostly use our sight and hearing sense to process information. Using a image often helps, as _one image says more than a thousands words_.
 
 A video of your desktop tells a thousand words 24 times per second (see [Loom](https://www.loom.com)). Adding your face to the bottom left, adds the information of tone and intention. This makes a **high bandwidth communication**. Adding these layers can improve communication drastically.
 
-### 3. Context
+### 4. Context
 
 Assume the reader knows _nothing_.
 
 Provide links, tickets, charts, Slack threads, everything.
 
-### 4. Conclusion, key points and support points
+### 5. Conclusion, key points and support points
 
 Structured your communication in a way that the reader can easily understand the message, first the conclusion, then key points and then support points.
 
@@ -205,7 +241,7 @@ Structured your communication in a way that the reader can easily understand the
   </GoodExample>
 </ExampleGroup>
 
-### 5. Leverage Threads
+### 6. Leverage Threads
 
 Use threads for use cases like <span className="font-medium">discussing a topic with multiple replies</span> or <span className="font-medium">sharing multiple messages on the same topic</span>.
 
@@ -239,11 +275,11 @@ Use threads for use cases like <span className="font-medium">discussing a topic 
   </GoodExample>
 </ExampleGroup>
 
-### 6. Use RFC over threads
+### 7. Use RFC over threads
 
 Threads with more than 10 messages probably should be a RFC. Threads are inefficient, as they are linear. Two context can not be discussed at the same time without confusion. RFCs allow for in-place comments with multiple threads, which is more efficient.
 
-### 7. Irony is often low performance communication
+### 8. Irony is often low performance communication
 
 <Figure>
   <FigureContent>
@@ -257,7 +293,7 @@ Irony prevents honesty (it’s literally the opposite). Low honesty leads to low
 
 Wink emojis are a high indication of irony. They are a placeholder for something that is not being said. Do not use them expcet your are sure its clearly funny for both sides.
 
-### 8. Resolve the Conversation
+### 9. Resolve the Conversation
 
 If you are asked a question, keep the conversation going until it’s resolved. Do not let the other person do all the work. Offer alternative options.
 
@@ -282,7 +318,7 @@ If you are asked a question, keep the conversation going until it’s resolved. 
   </GoodExample>
 </ExampleGroup>
 
-### 9. Don't use an opposite that is never true
+### 10. Don't use an opposite that is never true
 
 If you say something where the opposite is never true, chance are high you are not thinking clearly. Rephrase your thought. "We should not build a huge monolith that can do everything". Nobody wants to build a huge monolith that can do everything. State the opposite instead. "We should aim for a modular system with clear boundaries".
 
