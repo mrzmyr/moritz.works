@@ -90,7 +90,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <PostStructuredData type="website" />
       </head>
-      <body className="bg-neutral-50 dark:bg-[#090909]">
+      <body className="bg-neutral-50 dark:bg-[#090909] overflow-x-hidden">
         <PostHogProvider>{children}</PostHogProvider>
         <Analytics />
         <Toaster position="bottom-center" />
