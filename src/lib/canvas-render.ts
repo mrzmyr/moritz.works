@@ -10,7 +10,7 @@ type Stroke = {
   color: string;
   size: number;
   isEraser: boolean;
-  side: "left" | "right";
+  side: "left" | "right" | "top";
 };
 
 /**
@@ -36,10 +36,14 @@ function toAbsolute({
 }: {
   x: number;
   y: number;
-  side: "left" | "right";
+  side: "left" | "right" | "top";
   yOffset: number;
 }): { ax: number; ay: number } {
   const ay = y - yOffset + PADDING_Y;
+
+  if (side === "top") {
+    return { ax: CONTENT_LEFT + x, ay };
+  }
 
   if (side === "left") {
     return { ax: CONTENT_LEFT - x, ay };

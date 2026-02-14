@@ -1,15 +1,15 @@
 "use client";
 
+import { LiveObject } from "@liveblocks/client";
 import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
-import { LiveObject } from "@liveblocks/client";
-import { useMutation, useStorage, type Stroke } from "@/lib/liveblocks";
+import { type Stroke, useMutation, useStorage } from "@/lib/liveblocks";
 
 const BRUSH_SIZES = [10, 20, 36] as const;
 type BrushSize = (typeof BRUSH_SIZES)[number];
@@ -109,7 +109,7 @@ type DrawingContextValue = {
   startStroke: (params: {
     x: number;
     y: number;
-    side: "left" | "right";
+    side: "left" | "right" | "top";
     color: string;
   }) => void;
   continueStroke: (params: { x: number; y: number }) => void;
@@ -123,7 +123,9 @@ const DrawingContext = createContext<DrawingContextValue | null>(null);
 export function useDrawingContext(): DrawingContextValue {
   const ctx = useContext(DrawingContext);
   if (!ctx) {
-    throw new Error("useDrawingContext must be used within a DrawingContextProvider");
+    throw new Error(
+      "useDrawingContext must be used within a DrawingContextProvider",
+    );
   }
   return ctx;
 }
@@ -144,16 +146,13 @@ export function DrawingContextProvider({ children }: { children: ReactNode }) {
 
   const strokes = useStorage((root) => root.strokes);
 
-  const addStroke = useMutation(
-    ({ storage }, stroke: Stroke) => {
-      const list = storage.get("strokes");
-      list.push(new LiveObject(stroke));
-      while (list.length > MAX_STROKES) {
-        list.delete(0);
-      }
-    },
-    [],
-  );
+  const addStroke = useMutation(({ storage }, stroke: Stroke) => {
+    const list = storage.get("strokes");
+    list.push(new LiveObject(stroke));
+    while (list.length > MAX_STROKES) {
+      list.delete(0);
+    }
+  }, []);
 
   const appendPoints = useMutation(
     (
@@ -176,22 +175,19 @@ export function DrawingContextProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const deleteStrokeMutation = useMutation(
-    ({ storage }, strokeId: string) => {
-      const strokesList = storage.get("strokes");
-      const length = strokesList.length;
+  const deleteStrokeMutation = useMutation(({ storage }, strokeId: string) => {
+    const strokesList = storage.get("strokes");
+    const length = strokesList.length;
 
-      for (let i = length - 1; i >= 0; i--) {
-        const s = strokesList.get(i);
-        if (!s) continue;
-        if (s.get("id") === strokeId) {
-          strokesList.delete(i);
-          break;
-        }
+    for (let i = length - 1; i >= 0; i--) {
+      const s = strokesList.get(i);
+      if (!s) continue;
+      if (s.get("id") === strokeId) {
+        strokesList.delete(i);
+        break;
       }
-    },
-    [],
-  );
+    }
+  }, []);
 
   const startStroke = useCallback(
     ({
@@ -202,7 +198,7 @@ export function DrawingContextProvider({ children }: { children: ReactNode }) {
     }: {
       x: number;
       y: number;
-      side: "left" | "right";
+      side: "left" | "right" | "top";
       color: string;
     }) => {
       const now = Date.now();

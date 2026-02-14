@@ -1,13 +1,14 @@
+import type { LiveList, LiveObject } from "@liveblocks/client";
 import { createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
-import type { LiveList, LiveObject } from "@liveblocks/client";
 
 /**
  * A single brush/eraser stroke on the collaborative canvas.
  *
  * Coordinates are stored relative to the content edges:
- *   - x: pixel offset from the nearest content edge (positive = outward toward viewport edge)
- *   - y: pixel offset from the top of the post content
+ *   - x: pixel offset from the nearest content edge (positive = outward toward viewport edge).
+ *        For "top" strokes, x is offset from content left edge.
+ *   - y: pixel offset from the top of the post content (negative = above content)
  *
  * This keeps strokes anchored to the margins regardless of viewport width.
  */
@@ -21,8 +22,8 @@ export type Stroke = {
   size: number;
   /** Whether this stroke erases underlying content */
   isEraser: boolean;
-  /** Which side of the content: "left" | "right" */
-  side: "left" | "right";
+  /** Which region of the canvas: "left" | "right" | "top" */
+  side: "left" | "right" | "top";
 };
 
 type Presence = Record<string, never>;
@@ -41,10 +42,5 @@ const client = createClient({
   publicApiKey: apiKey ?? "",
 });
 
-export const {
-  RoomProvider,
-  useStorage,
-  useMutation,
-  useSelf,
-  useOthers,
-} = createRoomContext<Presence, Storage>(client);
+export const { RoomProvider, useStorage, useMutation, useSelf, useOthers } =
+  createRoomContext<Presence, Storage>(client);
