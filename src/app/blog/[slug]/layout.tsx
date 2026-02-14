@@ -33,7 +33,7 @@ export default async function Layout({
 
         {/* Content layer: opaque background, above canvas */}
         <div
-          className="relative z-10 bg-neutral-50 dark:bg-[#090909] pt-[150px] md:pt-0 pb-[150px] md:pb-0"
+          className="relative z-10 bg-neutral-50 dark:bg-[#090909] pt-12 pb-12"
           data-drawing-content
         >
           <PageBack href="/blog" />

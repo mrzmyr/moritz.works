@@ -1,13 +1,18 @@
 "use client";
 
 import {
+  type PointerEvent as ReactPointerEvent,
   useCallback,
   useEffect,
   useRef,
-  type PointerEvent as ReactPointerEvent,
+  useState,
 } from "react";
-import { useDrawingContext, LIGHT_COLORS, DARK_COLORS } from "./drawing-context";
 import type { Stroke } from "@/lib/liveblocks";
+import {
+  DARK_COLORS,
+  LIGHT_COLORS,
+  useDrawingContext,
+} from "./drawing-context";
 
 /**
  * Virtual canvas configuration.
@@ -19,6 +24,9 @@ const BUFFER_PX = 1000;
 
 /** Minimum distance from the content edge before drawing activates (px). */
 const GUTTER_PX = 16;
+
+/** Minimum distance above the content top before the top drawing area begins (px). */
+const TOP_MARGIN_PX = 32;
 
 function isDarkMode(): boolean {
   if (typeof window === "undefined") return false;
@@ -51,15 +59,23 @@ function getContentRect(): {
 /**
  * Convert a page-space pointer position to content-relative coordinates.
  * Returns null if the pointer is within the content area (+ gutter).
+ *
+ * Detection order: top area first (full-width strip above content),
+ * then left/right margins beside the content.
  */
 function pageToContentRelative(
   pageX: number,
   pageY: number,
-): { x: number; y: number; side: "left" | "right" } | null {
+): { x: number; y: number; side: "left" | "right" | "top" } | null {
   const content = getContentRect();
   if (!content) return null;
 
   const y = pageY - content.top;
+
+  // Top area: full-width strip above the content
+  if (pageY < content.top - TOP_MARGIN_PX) {
+    return { x: pageX - content.left, y, side: "top" };
+  }
 
   if (pageX < content.left - GUTTER_PX) {
     return { x: content.left - pageX, y, side: "left" };
@@ -78,12 +94,16 @@ function pageToContentRelative(
 function contentRelativeToPage(
   x: number,
   y: number,
-  side: "left" | "right",
+  side: "left" | "right" | "top",
 ): { pageX: number; pageY: number } | null {
   const content = getContentRect();
   if (!content) return null;
 
   const pageY = y + content.top;
+
+  if (side === "top") {
+    return { pageX: content.left + x, pageY };
+  }
 
   if (side === "left") {
     return { pageX: content.left - x, pageY };
@@ -141,6 +161,8 @@ export function DrawingCanvas() {
   const scrollTopRef = useRef(0);
   const rafRef = useRef<number>(0);
 
+  const [loaded, setLoaded] = useState(false);
+
   const {
     strokes,
     colorIndex,
@@ -150,6 +172,16 @@ export function DrawingCanvas() {
     endStroke,
     currentStrokeIdRef,
   } = useDrawingContext();
+
+  /** Track which side the active stroke belongs to for correct coord mapping. */
+  const currentStrokeSideRef = useRef<"left" | "right" | "top" | null>(null);
+
+  // Mark as loaded once strokes have been fetched from storage
+  useEffect(() => {
+    if (strokes === null) return;
+    // Small delay to ensure the first paint renders at opacity 0
+    requestAnimationFrame(() => setLoaded(true));
+  }, [strokes]);
 
   const updateCanvasPosition = useCallback(() => {
     const container = containerRef.current;
@@ -268,6 +300,7 @@ export function DrawingCanvas() {
       const palette = getColorPalette();
       const color = palette[colorIndex] ?? palette[10];
 
+      currentStrokeSideRef.current = rel.side;
       startStroke({ x: rel.x, y: rel.y, side: rel.side, color });
       e.currentTarget.setPointerCapture(e.pointerId);
     },
@@ -281,10 +314,13 @@ export function DrawingCanvas() {
       const content = getContentRect();
       if (!content) return;
 
+      const side = currentStrokeSideRef.current;
       const y = e.pageY - content.top;
       let x: number;
 
-      if (e.pageX <= (content.left + content.right) / 2) {
+      if (side === "top") {
+        x = e.pageX - content.left;
+      } else if (e.pageX <= (content.left + content.right) / 2) {
         x = content.left - e.pageX;
       } else {
         x = e.pageX - content.right;
@@ -296,14 +332,19 @@ export function DrawingCanvas() {
   );
 
   const handlePointerUp = useCallback(() => {
+    currentStrokeSideRef.current = null;
     endStroke();
   }, [endStroke]);
 
   return (
     <div
       ref={containerRef}
-      className="absolute top-0 left-[calc(-50vw+50%)] w-screen pointer-events-none"
-      style={{ height: `${CANVAS_MAX_HEIGHT}px`, zIndex: 0 }}
+      className="absolute top-0 left-[calc(-50vw+50%)] w-screen pointer-events-none transition-opacity duration-300"
+      style={{
+        height: `${CANVAS_MAX_HEIGHT}px`,
+        zIndex: 0,
+        opacity: loaded ? 1 : 0,
+      }}
     >
       <canvas
         ref={canvasRef}
