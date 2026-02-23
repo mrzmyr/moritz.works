@@ -12,12 +12,12 @@ import { ChevronDown, ChevronRight, GripVertical } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { updateNode, updateNodeSize } from "./actions";
-import { useHistoryContext } from "./history-context";
-import { DynamicLucideIcon, IconPicker } from "./icon-picker";
-import { ImageDropzone } from "./image-dropzone";
-import { MarkdownEditor } from "./markdown-editor";
-import type { AgentNodeData, AgentNodeType } from "./types";
+import { updateNode, updateNodeSize } from "../llm-ops/actions";
+import { useHistoryContext } from "../llm-ops/history-context";
+import { DynamicLucideIcon, IconPicker } from "../llm-ops/icon-picker";
+import { ImageDropzone } from "../llm-ops/image-dropzone";
+import { MarkdownEditor } from "../llm-ops/markdown-editor";
+import type { AgentNodeData, AgentNodeType } from "../llm-ops/types";
 
 export const AgentNode = memo(function AgentNode({
   id,
