@@ -10,6 +10,7 @@ interface ImageDropzoneProps {
   onUpload: (url: string) => void;
   onRemove: () => void;
   className?: string;
+  readOnly?: boolean;
 }
 
 export function ImageDropzone({
@@ -17,6 +18,7 @@ export function ImageDropzone({
   onUpload,
   onRemove,
   className,
+  readOnly = false,
 }: ImageDropzoneProps) {
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);

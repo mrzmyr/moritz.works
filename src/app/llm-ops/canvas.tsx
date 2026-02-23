@@ -15,7 +15,7 @@ import {
   useReactFlow,
   type XYPosition,
 } from "@xyflow/react";
-import { ArrowLeft, Check, ChevronRight, Loader2, MousePointerClick } from "lucide-react";
+import { ArrowLeft, Check, ChevronRight, Loader2, MousePointerClick, Newspaper } from "lucide-react";
 import Link from "next/link";
 import {
   useCallback,
@@ -27,6 +27,7 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import type { PostData } from "@/lib/posts/types";
 import type { DbNode } from "@/lib/db/schema";
 import {
   createNode,
@@ -139,9 +140,10 @@ type ContextMenuState = {
 
 interface CanvasProps {
   initialNodes: DbNode[];
+  initialPosts: PostData[];
 }
 
-export function Canvas({ initialNodes }: CanvasProps) {
+export function Canvas({ initialNodes, initialPosts }: CanvasProps) {
   const isDev = process.env.NODE_ENV === "development";
   const isDark = useIsDark();
 

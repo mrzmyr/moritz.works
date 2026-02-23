@@ -139,6 +139,26 @@ export default async function Page() {
             </Suspense>
           </div>
         </Section>
+
+        <Section>
+          <Headline>Apps</Headline>
+
+          <div className="mt-4">
+            <Link
+              href="/llm-ops"
+              className="group flex flex-col gap-1 p-4 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors"
+            >
+              <span className="font-medium text-neutral-800 dark:text-neutral-200 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                LLM Ops Foundation
+              </span>
+              <span className="text-sm text-neutral-400 dark:text-neutral-500">
+                A visual canvas mapping the concepts and tools of LLM
+                operations
+              </span>
+            </Link>
+          </div>
+        </Section>
+
         <Footer />
       </div>
     </>
