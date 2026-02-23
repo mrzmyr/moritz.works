@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1771874156587,
+      "tag": "0000_light_manta",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771883620416,
+      "tag": "0001_lethal_korg",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771887600563,
+      "tag": "0002_ancient_jubilee",
+      "breakpoints": true
+    }
+  ]
+}

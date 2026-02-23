@@ -84,6 +84,25 @@ a {
   --font-serif: var(--font-serif-custom);
 }
 
+/* ---- Canvas cursor feedback ---- */
+.react-flow__node {
+  cursor: grab;
+}
+/* Remove React Flow's default dotted selection outline — the node component handles its own ring */
+.react-flow__node.selected,
+.react-flow__node:focus-visible {
+  outline: none !important;
+}
+.react-flow__node.dragging,
+.react-flow__node.dragging * {
+  cursor: grabbing !important;
+}
+[data-panning="true"],
+[data-panning="true"] * {
+  cursor: grabbing !important;
+}
+/* ---- End canvas cursor feedback ---- */
+
 [data-rmiz-modal-overlay="visible"] {
   backdrop-filter: blur(2px) !important;
 }

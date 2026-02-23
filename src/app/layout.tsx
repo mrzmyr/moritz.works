@@ -89,6 +89,11 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <PostStructuredData type="website" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var d=document.documentElement,m=window.matchMedia('(prefers-color-scheme: dark)');function apply(e){d.classList.toggle('dark',e.matches);}apply(m);m.addEventListener('change',apply);})();`,
+          }}
+        />
       </head>
       <body className="bg-neutral-50 dark:bg-[#090909]">
         <PostHogProvider>{children}</PostHogProvider>
