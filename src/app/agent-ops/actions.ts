@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import type { DbNode } from "@/lib/db/schema";
 import { nodes } from "@/lib/db/schema";
 
-const CANVAS = "llm-ops";
+const CANVAS = "agent-ops";
 
 export async function getNodes(): Promise<DbNode[]> {
   return await db
@@ -13,6 +13,14 @@ export async function getNodes(): Promise<DbNode[]> {
     .from(nodes)
     .where(eq(nodes.canvas, CANVAS))
     .orderBy(nodes.createdAt);
+}
+
+export async function getNodeById(id: string): Promise<DbNode | null> {
+  const [node] = await db
+    .select()
+    .from(nodes)
+    .where(and(eq(nodes.id, id), eq(nodes.canvas, CANVAS)));
+  return node ?? null;
 }
 
 export async function createNode(input: {

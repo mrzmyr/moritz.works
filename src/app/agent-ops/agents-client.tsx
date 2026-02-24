@@ -20,8 +20,8 @@ export function AgentsClient({ initialNodes }: AgentsClientProps) {
     <Suspense>
       <Canvas
         initialNodes={initialNodes}
-        title="LLM Operations"
-        canvasSlug="llm-ops"
+        title="Agent Operations"
+        canvasSlug="agent-ops"
         actions={{
           createNode,
           deleteNode,

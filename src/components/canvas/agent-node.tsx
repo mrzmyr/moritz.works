@@ -2,6 +2,11 @@
 
 import { cn } from "@/lib/utils";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Handle,
   NodeResizeControl,
   Position,
@@ -9,15 +14,38 @@ import {
   useReactFlow,
   type NodeProps,
 } from "@xyflow/react";
-import { ChevronDown, ChevronRight, GripVertical } from "lucide-react";
+import { ChevronDown, ChevronRight, GripVertical, Share2 } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { updateNode, updateNodeSize } from "./actions";
+import { siteConfig } from "@/config/app";
+import { useCanvasActions } from "./canvas-actions-context";
 import { useHistoryContext } from "./history-context";
 import { DynamicLucideIcon, IconPicker } from "./icon-picker";
 import { ImageDropzone } from "./image-dropzone";
 import { MarkdownEditor } from "./markdown-editor";
 import type { AgentNodeData, AgentNodeType } from "./types";
+
+function agentNodePropsAreEqual(
+  prev: NodeProps<AgentNodeType>,
+  next: NodeProps<AgentNodeType>,
+): boolean {
+  return (
+    prev.id === next.id &&
+    prev.selected === next.selected &&
+    prev.draggable === next.draggable &&
+    prev.data.title === next.data.title &&
+    prev.data.icon === next.data.icon &&
+    prev.data.description === next.data.description &&
+    prev.data.imageUrl === next.data.imageUrl &&
+    prev.data.cardType === next.data.cardType &&
+    prev.data.hasChildren === next.data.hasChildren &&
+    prev.data.collapsed === next.data.collapsed &&
+    prev.data.openIconPicker === next.data.openIconPicker &&
+    prev.data.autoFocusTitle === next.data.autoFocusTitle &&
+    prev.data.autoFocusDescription === next.data.autoFocusDescription &&
+    prev.data.isLinked === next.data.isLinked
+  );
+}
 
 export const AgentNode = memo(function AgentNode({
   id,
@@ -27,6 +55,7 @@ export const AgentNode = memo(function AgentNode({
 }: NodeProps<AgentNodeType>) {
   const { updateNodeData, setNodes } = useReactFlow();
   const { pushHistory, focusPendingRef, toggleCollapse } = useHistoryContext();
+  const { updateNode, updateNodeSize } = useCanvasActions();
   const titleRef = useRef<HTMLSpanElement>(null);
   const saveDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTitleFocused, setIsTitleFocused] = useState(false);
@@ -34,8 +63,21 @@ export const AgentNode = memo(function AgentNode({
   const [descriptionForceEdit, setDescriptionForceEdit] = useState(false);
   const [isDraggingOverCard, setIsDraggingOverCard] = useState(false);
   const [iconPickerOpen, setIconPickerOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const dragCounterCard = useRef(0);
+
+  const handleShare = (platform: "x" | "linkedin") => {
+    const title = data.title ?? "";
+    const permalink = `${siteConfig.url}/agent-ops/${id}`;
+
+    const url =
+      platform === "x"
+        ? `https://x.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(permalink)}`
+        : `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(permalink)}`;
+
+    window.open(url, "_blank", "noopener,noreferrer");
+    setIsShareOpen(false);
+  };
 
   // Sync title DOM content only when not focused (prevents overwriting while typing)
   useEffect(() => {
@@ -45,9 +87,6 @@ export const AgentNode = memo(function AgentNode({
   }, [data.title, isTitleFocused]);
 
   // Auto-enter title edit mode when the node is freshly created (e.g. via Tab).
-  // We read from a ref rather than node data so we don't fight React Flow's
-  // state management. setTimeout(0) ensures all React effects — including
-  // React Flow's internal ones — have finished before we steal focus.
   useEffect(() => {
     if (focusPendingRef.current !== id) return;
     focusPendingRef.current = null;
@@ -350,23 +389,96 @@ export const AgentNode = memo(function AgentNode({
         )}
       />
 
-      {draggable && (
-        <GripVertical
-          size={14}
-          className="absolute top-2 right-2 z-10 text-neutral-400 dark:text-neutral-500 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
-        />
-      )}
+      <div className="absolute top-2 right-2 z-10 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        {data.hasChildren && (
+          <button
+            type="button"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleCollapse(id);
+            }}
+            className="w-5 h-5 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-400 dark:text-neutral-500"
+            title={data.collapsed ? "Expand children" : "Collapse children"}
+          >
+            {data.collapsed ? (
+              <ChevronRight size={12} />
+            ) : (
+              <ChevronDown size={12} />
+            )}
+          </button>
+        )}
+
+        <Popover open={isShareOpen} onOpenChange={setIsShareOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+              className="w-5 h-5 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-400 dark:text-neutral-500"
+              title="Share"
+            >
+              <Share2 size={12} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-auto p-1.5"
+            side="bottom"
+            align="end"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col gap-0.5">
+              <button
+                type="button"
+                onClick={() => handleShare("x")}
+                className="flex items-center gap-2 px-2.5 py-1.5 rounded text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors w-full text-left"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="w-3.5 h-3.5 fill-current shrink-0"
+                  aria-hidden="true"
+                >
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+                Share on X
+              </button>
+              <button
+                type="button"
+                onClick={() => handleShare("linkedin")}
+                className="flex items-center gap-2 px-2.5 py-1.5 rounded text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors w-full text-left"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="w-3.5 h-3.5 fill-current shrink-0"
+                  aria-hidden="true"
+                >
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                </svg>
+                Share on LinkedIn
+              </button>
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        {draggable && (
+          <GripVertical
+            size={14}
+            className="text-neutral-400 dark:text-neutral-500 cursor-grab active:cursor-grabbing"
+          />
+        )}
+      </div>
 
       {/* Card visual container — overflow-hidden must be on an inner div so handles aren't clipped */}
       <div
         className={cn(
           "w-full h-full flex flex-col overflow-hidden bg-white dark:bg-neutral-900 rounded-xl transition-all border border-border",
           selected
-            ? "ring-2 ring-neutral-900/20 dark:ring-white/20 outline-2 outline outline-neutral-100 dark:outline-neutral-900 shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
+            ? "ring-neutral-900/25 dark:ring-white/25 outline-2 outline outline-neutral-100 dark:outline-neutral-900 shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
             : "outline-2 outline outline-neutral-100 dark:outline-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.06)]",
+          data.isLinked && !selected && "ring-blue-500/40",
+          isTitleCard && "bg-neutral-50 dark:bg-neutral-950",
         )}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
         onDragEnter={handleCardDragEnter}
         onDragLeave={handleCardDragLeave}
         onDragOver={(e) => e.preventDefault()}
@@ -430,36 +542,12 @@ export const AgentNode = memo(function AgentNode({
                 >
                   <button
                     type="button"
-                    className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-500 dark:text-neutral-400"
+                    className="flex-shrink-0 w-5 h-6 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-500 dark:text-neutral-500"
                     title="Change icon"
                   >
                     <DynamicLucideIcon name={data.icon} size={14} />
                   </button>
                 </IconPicker>
-              )}
-
-              {data.hasChildren && (
-                <button
-                  type="button"
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleCollapse(id);
-                  }}
-                  className={cn(
-                    "flex-shrink-0 w-5 h-5 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-[opacity,colors] text-neutral-400 dark:text-neutral-500",
-                    isHovered ? "opacity-100" : "opacity-0",
-                  )}
-                  title={
-                    data.collapsed ? "Expand children" : "Collapse children"
-                  }
-                >
-                  {data.collapsed ? (
-                    <ChevronRight size={12} />
-                  ) : (
-                    <ChevronDown size={12} />
-                  )}
-                </button>
               )}
 
               <span
@@ -479,6 +567,8 @@ export const AgentNode = memo(function AgentNode({
                 className={cn(
                   "flex-1 text-sm font-medium text-neutral-900 dark:text-neutral-100 outline-none empty:before:content-['Untitled'] empty:before:text-neutral-400 dark:empty:before:text-neutral-500 min-w-0 break-words",
                   isEditingTitle ? "nodrag cursor-text" : "select-none",
+                  isTitleCard &&
+                    "text-base font-semibold tracking-tight text-neutral-700 dark:text-neutral-200",
                 )}
                 data-placeholder="Untitled"
               />
@@ -494,4 +584,4 @@ export const AgentNode = memo(function AgentNode({
       </div>
     </div>
   );
-});
+}, agentNodePropsAreEqual);

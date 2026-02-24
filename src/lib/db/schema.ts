@@ -17,6 +17,7 @@ export const nodes = pgTable("agent_nodes", {
   cardType: text("card_type"),
   parentSourceHandle: text("parent_source_handle"),
   parentTargetHandle: text("parent_target_handle"),
+  canvas: text("canvas").notNull().default("llm-ops"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

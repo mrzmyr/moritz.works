@@ -18,6 +18,8 @@ export type AgentNodeData = {
   hasChildren?: boolean;
   /** Transient — true when this node's children are hidden. */
   collapsed?: boolean;
+  /** Transient — true when this node was navigated to via a shared link (?node=<id>). */
+  isLinked?: boolean;
 };
 
 export type AgentNodeType = Node<AgentNodeData, "agent">;

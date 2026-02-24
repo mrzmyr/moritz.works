@@ -23,11 +23,13 @@ import {
   ChevronRight,
   Crop,
   Download,
+  Link2,
   Loader2,
   MousePointerClick,
   X,
 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   useCallback,
   useEffect,
@@ -37,23 +39,18 @@ import {
   useSyncExternalStore,
 } from "react";
 import { toast } from "sonner";
-import {
-  createNode,
-  deleteNode,
-  updateNode,
-  updateNodePositions,
-  updateNodeSize,
-} from "./actions";
+import { SiLinkedin } from "react-icons/si";
 import { AgentNode } from "./agent-node";
+import {
+  CanvasActionsContext,
+  type CanvasActions,
+} from "./canvas-actions-context";
 import { CANVAS_COLORS } from "./canvas-config";
 import { HistoryContext, type HistoryEntry } from "./history-context";
 import type { AgentNodeData, AgentNodeType, CardType } from "./types";
-import { SiLinkedin } from "react-icons/si";
 
 const nodeTypes = { agent: AgentNode };
 
-// Captures screenToFlowPosition from inside the ReactFlow context and writes
-// it to a shared ref so the parent Canvas component can use it.
 function FlowUtils({
   screenToFlowRef,
 }: {
@@ -64,7 +61,7 @@ function FlowUtils({
   const { screenToFlowPosition } = useReactFlow();
   useEffect(() => {
     screenToFlowRef.current = screenToFlowPosition;
-  });
+  }, [screenToFlowPosition, screenToFlowRef]);
   return null;
 }
 
@@ -81,6 +78,25 @@ function ZoomResetHandler() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [zoomTo]);
+  return null;
+}
+
+function FocusNodeOnMount({ nodeId }: { nodeId: string | null }) {
+  const { fitView } = useReactFlow();
+  const didFocus = useRef(false);
+  useEffect(() => {
+    if (!nodeId || didFocus.current) return;
+    const t = setTimeout(() => {
+      fitView({
+        nodes: [{ id: nodeId }],
+        duration: 600,
+        padding: 0.4,
+        maxZoom: 1,
+      });
+      didFocus.current = true;
+    }, 150);
+    return () => clearTimeout(t);
+  }, [nodeId, fitView]);
   return null;
 }
 
@@ -150,10 +166,28 @@ type ContextMenuState = {
 
 interface CanvasProps {
   initialNodes: DbNode[];
+  title: string;
+  canvasSlug: string;
+  actions: CanvasActions;
 }
 
-export function Canvas({ initialNodes }: CanvasProps) {
+export function Canvas({
+  initialNodes,
+  title,
+  canvasSlug,
+  actions,
+}: CanvasProps) {
+  const {
+    createNode,
+    deleteNode,
+    updateNode,
+    updateNodePositions,
+    updateNodeSize,
+  } = actions;
+
   const isDev = process.env.NODE_ENV === "development";
+  const searchParams = useSearchParams();
+  const focusNodeId = searchParams.get("node");
   const isDark = useIsDark();
 
   const [rfNodes, setNodes, onNodesChange] = useNodesState<AgentNodeType>(
@@ -167,21 +201,17 @@ export function Canvas({ initialNodes }: CanvasProps) {
   const [cardTypeSubmenuOpen, setCardTypeSubmenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Undo/redo stacks
   const undoStack = useRef<HistoryEntry[]>([]);
   const redoStack = useRef<HistoryEntry[]>([]);
 
-  // ID of the node whose title should be auto-focused on its next mount
   const focusPendingRef = useRef<string | null>(null);
 
-  // Track flow position for new nodes (set via ref from react-flow internals)
   const flowWrapper = useRef<HTMLDivElement>(null);
 
   const screenToFlowRef = useRef<((pos: XYPosition) => XYPosition) | null>(
     null,
   );
 
-  // Prevent SSR of React Flow (it requires browser APIs on init)
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -206,7 +236,6 @@ export function Canvas({ initialNodes }: CanvasProps) {
     });
   }, []);
 
-  // Parent → children map derived from edges
   const childrenMap = useMemo(() => {
     const map = new Map<string, Set<string>>();
     for (const edge of rfEdges) {
@@ -216,7 +245,6 @@ export function Canvas({ initialNodes }: CanvasProps) {
     return map;
   }, [rfEdges]);
 
-  // Full set of node IDs that should be hidden (all descendants of collapsed nodes)
   const hiddenNodeIds = useMemo(() => {
     const hidden = new Set<string>();
     function collect(nodeId: string) {
@@ -233,7 +261,6 @@ export function Canvas({ initialNodes }: CanvasProps) {
     return hidden;
   }, [collapsedNodeIds, childrenMap]);
 
-  // Nodes with hidden flag + transient hasChildren/collapsed data
   const displayedNodes = useMemo(
     () =>
       rfNodes.map((n) => ({
@@ -243,12 +270,12 @@ export function Canvas({ initialNodes }: CanvasProps) {
           ...n.data,
           hasChildren: (childrenMap.get(n.id)?.size ?? 0) > 0,
           collapsed: collapsedNodeIds.has(n.id),
+          isLinked: n.id === focusNodeId,
         },
       })),
-    [rfNodes, hiddenNodeIds, childrenMap, collapsedNodeIds],
+    [rfNodes, hiddenNodeIds, childrenMap, collapsedNodeIds, focusNodeId],
   );
 
-  // Edges with hidden flag when either endpoint is hidden
   const displayedEdges = useMemo(
     () =>
       rfEdges.map((e) => ({
@@ -273,14 +300,11 @@ export function Canvas({ initialNodes }: CanvasProps) {
     return () => window.removeEventListener("beforeunload", handler);
   }, [isSyncing]);
 
-  // Fade-in: show background immediately, cards after first paint
   const [nodesReady, setNodesReady] = useState(false);
   useEffect(() => {
     const t = requestAnimationFrame(() => setNodesReady(true));
     return () => cancelAnimationFrame(t);
   }, []);
-
-  // ---------- area select & share (read-only mode) ----------
 
   type SelectionRect = {
     startX: number;
@@ -378,17 +402,26 @@ export function Canvas({ initialNodes }: CanvasProps) {
   useEffect(() => {
     if (!isSelectMode) return;
 
+    let rafId: number | null = null;
+
     const handleMouseMove = (e: MouseEvent) => {
       if (!selectStartRef.current || !flowWrapper.current) return;
-      const rect = flowWrapper.current.getBoundingClientRect();
-      const sr: SelectionRect = {
-        startX: selectStartRef.current.x,
-        startY: selectStartRef.current.y,
-        endX: e.clientX - rect.left,
-        endY: e.clientY - rect.top,
-      };
-      selectionRectRef.current = sr;
-      setSelectionRect(sr);
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        if (!selectStartRef.current || !flowWrapper.current) return;
+        const rect = flowWrapper.current.getBoundingClientRect();
+        const sr: SelectionRect = {
+          startX: selectStartRef.current.x,
+          startY: selectStartRef.current.y,
+          endX: clientX - rect.left,
+          endY: clientY - rect.top,
+        };
+        selectionRectRef.current = sr;
+        setSelectionRect(sr);
+      });
     };
 
     const handleMouseUp = async () => {
@@ -419,6 +452,7 @@ export function Canvas({ initialNodes }: CanvasProps) {
     window.addEventListener("mouseup", handleMouseUp);
     window.addEventListener("keydown", handleKeyDown);
     return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("keydown", handleKeyDown);
@@ -429,8 +463,6 @@ export function Canvas({ initialNodes }: CanvasProps) {
     undoStack.current = [...undoStack.current.slice(-49), entry];
     redoStack.current = [];
   }, []);
-
-  // ---------- node operations ----------
 
   const addNodeToState = useCallback(
     (dbNode: DbNode) => {
@@ -485,7 +517,7 @@ export function Canvas({ initialNodes }: CanvasProps) {
         setSyncCount((c) => c - 1);
       }
     },
-    [addNodeToState, pushHistory],
+    [createNode, addNodeToState, pushHistory],
   );
 
   const handleTabCreate = useCallback(async () => {
@@ -500,7 +532,6 @@ export function Canvas({ initialNodes }: CanvasProps) {
     };
     const newNode = await handleCreateNode(newPos, node.id);
     if (!newNode) return;
-    // Signal AgentNode to focus its title as soon as it mounts
     focusPendingRef.current = newNode.id;
     setNodes((prev) =>
       prev.map((n) => ({
@@ -532,6 +563,7 @@ export function Canvas({ initialNodes }: CanvasProps) {
         cardType: nodeToDelete.data.cardType ?? null,
         parentSourceHandle: incomingEdge?.sourceHandle ?? null,
         parentTargetHandle: incomingEdge?.targetHandle ?? null,
+        canvas: canvasSlug,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -555,10 +587,16 @@ export function Canvas({ initialNodes }: CanvasProps) {
         setSyncCount((c) => c - 1);
       }
     },
-    [rfNodes, rfEdges, removeNodeFromState, addNodeToState, pushHistory],
+    [
+      canvasSlug,
+      rfNodes,
+      rfEdges,
+      removeNodeFromState,
+      addNodeToState,
+      pushHistory,
+      deleteNode,
+    ],
   );
-
-  // ---------- undo / redo ----------
 
   const performUndo = useCallback(async () => {
     const entry = undoStack.current[undoStack.current.length - 1];
@@ -688,7 +726,17 @@ export function Canvas({ initialNodes }: CanvasProps) {
     } finally {
       setSyncCount((c) => c - 1);
     }
-  }, [isDark, removeNodeFromState, addNodeToState, setNodes, setEdges]);
+  }, [
+    isDark,
+    createNode,
+    deleteNode,
+    updateNode,
+    updateNodePositions,
+    removeNodeFromState,
+    addNodeToState,
+    setNodes,
+    setEdges,
+  ]);
 
   const performRedo = useCallback(async () => {
     const entry = redoStack.current[redoStack.current.length - 1];
@@ -783,98 +831,72 @@ export function Canvas({ initialNodes }: CanvasProps) {
     } finally {
       setSyncCount((c) => c - 1);
     }
-  }, [isDark, removeNodeFromState, addNodeToState, setNodes, setEdges]);
+  }, [
+    isDark,
+    createNode,
+    deleteNode,
+    updateNode,
+    updateNodePositions,
+    removeNodeFromState,
+    addNodeToState,
+    setNodes,
+    setEdges,
+  ]);
 
-  // Keyboard shortcuts (undo/redo still work via keyboard)
   useEffect(() => {
     if (!isDev) return;
     const handleKeyDown = (e: KeyboardEvent) => {
+      const active = document.activeElement;
+      const isEditing =
+        active instanceof HTMLElement &&
+        (active.isContentEditable ||
+          active.tagName === "INPUT" ||
+          active.tagName === "TEXTAREA");
+
       const isMac = navigator.platform.toLowerCase().includes("mac");
       const modifier = isMac ? e.metaKey : e.ctrlKey;
-      if (!modifier) return;
 
-      if (e.key === "z" && !e.shiftKey) {
+      if (modifier && e.key === "z" && !e.shiftKey) {
         e.preventDefault();
         performUndo();
-      } else if ((e.key === "z" && e.shiftKey) || e.key === "y") {
+      } else if (modifier && ((e.key === "z" && e.shiftKey) || e.key === "y")) {
         e.preventDefault();
         performRedo();
+      } else if (e.key === "Tab" && !isEditing) {
+        e.preventDefault();
+        handleTabCreate();
+      } else if (e.key === "Enter" && !isEditing) {
+        const selected = rfNodes.filter((n) => n.selected);
+        if (selected.length === 1) {
+          e.preventDefault();
+          const nodeId = selected[0].id;
+          setNodes((prev) =>
+            prev.map((n) =>
+              n.id === nodeId
+                ? { ...n, data: { ...n.data, autoFocusTitle: true } }
+                : n,
+            ),
+          );
+        }
+      } else if ((e.key === "Delete" || e.key === "Backspace") && !isEditing) {
+        e.preventDefault();
+        const selected = rfNodes.filter((n) => n.selected);
+        for (const node of selected) {
+          handleDeleteNode(node.id);
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [performUndo, performRedo]);
+  }, [
+    performUndo,
+    performRedo,
+    handleTabCreate,
+    rfNodes,
+    setNodes,
+    handleDeleteNode,
+  ]);
 
-  // Tab → create a new card to the right of the single selected node
-  useEffect(() => {
-    if (!isDev) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Tab") return;
-      const active = document.activeElement;
-      const isEditing =
-        active instanceof HTMLElement &&
-        (active.isContentEditable ||
-          active.tagName === "INPUT" ||
-          active.tagName === "TEXTAREA");
-      if (isEditing) return;
-      e.preventDefault();
-      handleTabCreate();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleTabCreate]);
-
-  // Enter → enter title edit mode on the single selected node
-  useEffect(() => {
-    if (!isDev) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Enter") return;
-      const active = document.activeElement;
-      const isEditing =
-        active instanceof HTMLElement &&
-        (active.isContentEditable ||
-          active.tagName === "INPUT" ||
-          active.tagName === "TEXTAREA");
-      if (isEditing) return;
-      const selected = rfNodes.filter((n) => n.selected);
-      if (selected.length !== 1) return;
-      e.preventDefault();
-      const nodeId = selected[0].id;
-      setNodes((prev) =>
-        prev.map((n) =>
-          n.id === nodeId
-            ? { ...n, data: { ...n.data, autoFocusTitle: true } }
-            : n,
-        ),
-      );
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [rfNodes, setNodes]);
-
-  // Delete / Backspace → delete selected nodes
-  useEffect(() => {
-    if (!isDev) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Delete" && e.key !== "Backspace") return;
-      const active = document.activeElement;
-      const isEditing =
-        active instanceof HTMLElement &&
-        (active.isContentEditable ||
-          active.tagName === "INPUT" ||
-          active.tagName === "TEXTAREA");
-      if (isEditing) return;
-      e.preventDefault();
-      const selected = rfNodes.filter((n) => n.selected);
-      for (const node of selected) {
-        handleDeleteNode(node.id);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [rfNodes, handleDeleteNode]);
-
-  // Middle mouse button pan → show grabbing cursor
   useEffect(() => {
     const wrapper = flowWrapper.current;
     if (!wrapper) return;
@@ -892,16 +914,10 @@ export function Canvas({ initialNodes }: CanvasProps) {
     };
   }, []);
 
-  // ---------- drag → persist positions ----------
-
-  // Positions captured at the start of a drag, keyed by node id
   const dragStartPositions = useRef<Map<string, XYPosition>>(new Map());
-
-  // ---------- OPTION drag → copy node ----------
 
   const handleNodeDragStart = useCallback(
     (e: React.MouseEvent, node: Node, nodes: Node[]) => {
-      // Capture "before" positions for all nodes involved in this drag
       const movedNodes = nodes.length > 1 ? nodes : [node];
       dragStartPositions.current = new Map(
         movedNodes.map((n) => [n.id, { x: n.position.x, y: n.position.y }]),
@@ -915,14 +931,10 @@ export function Canvas({ initialNodes }: CanvasProps) {
       const sourceHeight = (source.style?.height as number | undefined) ?? null;
       const data = source.data;
 
-      // Collect edges connected to the source node so the copy inherits them
       const incomingEdges = rfEdges.filter((edge) => edge.target === source.id);
       const outgoingEdges = rfEdges.filter((edge) => edge.source === source.id);
-      // The DB parentId is the source of the first incoming edge (if any)
       const parentId = incomingEdges[0]?.source ?? null;
 
-      // Optimistically add the "stay-behind" original immediately so it
-      // appears under the cursor before the DB round-trip completes.
       const newId = crypto.randomUUID();
       const optimisticNode: AgentNodeType = {
         id: newId,
@@ -941,7 +953,6 @@ export function Canvas({ initialNodes }: CanvasProps) {
         selected: false,
       };
 
-      // Build copied edges: incoming edges point to newId, outgoing edges originate from newId
       const copiedEdges: Edge[] = [
         ...incomingEdges.map((edge) => ({
           ...edge,
@@ -962,7 +973,6 @@ export function Canvas({ initialNodes }: CanvasProps) {
         setEdges((prev) => [...prev, ...copiedEdges]);
       }
 
-      // Persist to DB in the background
       setSyncCount((c) => c + 1);
       createNode({ id: newId, parentId, positionX: pos.x, positionY: pos.y })
         .then(async (dbNode) => {
@@ -1015,10 +1025,17 @@ export function Canvas({ initialNodes }: CanvasProps) {
         })
         .finally(() => setSyncCount((c) => c - 1));
     },
-    [isDark, pushHistory, rfEdges, setNodes, setEdges],
+    [
+      isDark,
+      createNode,
+      updateNode,
+      updateNodeSize,
+      pushHistory,
+      rfEdges,
+      setNodes,
+      setEdges,
+    ],
   );
-
-  // ---------- drag-stop → persist positions ----------
 
   const handleNodeDragStop = useCallback(
     (_: React.MouseEvent, node: Node, nodes: Node[]) => {
@@ -1040,10 +1057,8 @@ export function Canvas({ initialNodes }: CanvasProps) {
         .catch(() => toast.error("Failed to save positions"))
         .finally(() => setSyncCount((c) => c - 1));
     },
-    [pushHistory],
+    [pushHistory, updateNodePositions],
   );
-
-  // ---------- context menu ----------
 
   const closeMenu = useCallback(() => {
     setContextMenu(null);
@@ -1055,7 +1070,6 @@ export function Canvas({ initialNodes }: CanvasProps) {
       e.preventDefault();
       const rect = flowWrapper.current?.getBoundingClientRect();
       if (!rect) return;
-      // Center the node horizontally under the cursor
       setContextMenu({
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
@@ -1075,7 +1089,6 @@ export function Canvas({ initialNodes }: CanvasProps) {
       setContextMenu({
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
-        // Place child node below the parent
         flowPos: { x: node.position.x, y: node.position.y + 260 },
         targetNodeId: node.id,
         targetEdgeId: null,
@@ -1100,7 +1113,6 @@ export function Canvas({ initialNodes }: CanvasProps) {
     [],
   );
 
-  // Close menu when clicking elsewhere
   const handlePaneClick = useCallback(() => closeMenu(), [closeMenu]);
 
   const onConnect: OnConnect = useCallback(
@@ -1159,7 +1171,7 @@ export function Canvas({ initialNodes }: CanvasProps) {
         })
         .finally(() => setSyncCount((c) => c - 1));
     },
-    [isDark, rfEdges, pushHistory, setEdges],
+    [isDark, rfEdges, pushHistory, updateNode, setEdges],
   );
 
   const handleDeleteEdge = useCallback(
@@ -1189,8 +1201,21 @@ export function Canvas({ initialNodes }: CanvasProps) {
         setSyncCount((c) => c - 1);
       }
     },
-    [rfEdges, pushHistory, setEdges],
+    [rfEdges, pushHistory, updateNode, setEdges],
   );
+
+  const handleMenuCopyLink = () => {
+    if (!contextMenu?.targetNodeId) return;
+    const id = contextMenu.targetNodeId;
+    closeMenu();
+    const base =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://moritz.works";
+    const url = `${base}/${canvasSlug}?node=${id}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link copied");
+  };
 
   const handleMenuAddNode = () => {
     if (!contextMenu) return;
@@ -1256,383 +1281,425 @@ export function Canvas({ initialNodes }: CanvasProps) {
     );
   };
 
-  return (
-    <HistoryContext.Provider
-      value={{ pushHistory, focusPendingRef, toggleCollapse }}
-    >
-      <div
-        ref={flowWrapper}
-        onMouseDown={handleFlowMouseDown}
-        className={cn(
-          "w-screen h-screen relative bg-neutral-50 dark:bg-neutral-black transition-opacity duration-200",
-          nodesReady ? "opacity-100" : "opacity-0",
-          !isDev && !isSelectMode && "[&_*]:!cursor-default",
-          isSelectMode && "!cursor-crosshair [&_*]:!cursor-crosshair",
-        )}
-      >
-        {mounted && (
-          <>
-            <ReactFlow
-              colorMode={isDark ? "dark" : "light"}
-              nodes={displayedNodes}
-              edges={displayedEdges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              nodeTypes={nodeTypes}
-              connectionMode={ConnectionMode.Loose}
-              fitView
-              fitViewOptions={{ padding: 0.3, maxZoom: 1 }}
-              minZoom={0.2}
-              maxZoom={2}
-              deleteKeyCode={null}
-              proOptions={{ hideAttribution: false }}
-              snapToGrid={isDev}
-              snapGrid={[20, 20]}
-              nodesDraggable={isDev}
-              nodesConnectable={isDev}
-              panOnDrag={[1]}
-              selectionOnDrag={isDev}
-              multiSelectionKeyCode={isDev ? "Shift" : null}
-              {...(isDev && {
-                onConnect,
-                onNodeDragStart: handleNodeDragStart,
-                onNodeDragStop: handleNodeDragStop,
-                onPaneContextMenu: handlePaneContextMenu,
-                onNodeContextMenu: handleNodeContextMenu,
-                onEdgeContextMenu: handleEdgeContextMenu,
-                onPaneClick: handlePaneClick,
-              })}
-            >
-              <ZoomResetHandler />
-              <FlowUtils screenToFlowRef={screenToFlowRef} />
-              <Background
-                variant={BackgroundVariant.Dots}
-                gap={20}
-                size={1}
-                color={isDark ? CANVAS_COLORS.DOT_DARK : CANVAS_COLORS.DOT_LIGHT}
-                bgColor={isDark ? CANVAS_COLORS.BG_DARK : CANVAS_COLORS.BG_LIGHT}
-              />
-            </ReactFlow>
+  const shareUrl = `https://moritz.works/${canvasSlug}`;
 
-            {/* Title */}
-            <div className="absolute top-0 left-0 right-0 z-50 select-none flex justify-center">
-              <div
-                className="w-full flex flex-col items-center relative"
-                style={{
-                  background: isDark
-                    ? "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)"
-                    : "linear-gradient(to bottom, rgba(245,245,244,0.95) 0%, rgba(245,245,244,0.6) 50%, transparent 100%)",
-                  paddingTop: "1.5rem",
-                  paddingBottom: "5rem",
-                }}
+  const historyContextValue = useMemo(
+    () => ({ pushHistory, focusPendingRef, toggleCollapse }),
+    [pushHistory, toggleCollapse],
+  );
+
+  return (
+    <CanvasActionsContext.Provider value={actions}>
+      <HistoryContext.Provider value={historyContextValue}>
+        <div
+          ref={flowWrapper}
+          onMouseDown={handleFlowMouseDown}
+          className={cn(
+            "w-screen h-screen relative bg-neutral-50 dark:bg-neutral-black transition-opacity duration-200",
+            nodesReady ? "opacity-100" : "opacity-0",
+            !isDev && !isSelectMode && "[&_*]:!cursor-default",
+            isSelectMode && "!cursor-crosshair [&_*]:!cursor-crosshair",
+          )}
+        >
+          {mounted && (
+            <>
+              <ReactFlow
+                colorMode={isDark ? "dark" : "light"}
+                nodes={displayedNodes}
+                edges={displayedEdges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                nodeTypes={nodeTypes}
+                connectionMode={ConnectionMode.Loose}
+                fitView
+                fitViewOptions={{ padding: 0.3, maxZoom: 1 }}
+                minZoom={0.2}
+                maxZoom={2}
+                deleteKeyCode={null}
+                proOptions={{ hideAttribution: false }}
+                snapToGrid={isDev}
+                snapGrid={[20, 20]}
+                nodesDraggable={isDev}
+                nodesConnectable={isDev}
+                panOnDrag={[1]}
+                selectionOnDrag={isDev}
+                multiSelectionKeyCode={isDev ? "Shift" : null}
+                onNodeContextMenu={handleNodeContextMenu}
+                {...(isDev && {
+                  onConnect,
+                  onNodeDragStart: handleNodeDragStart,
+                  onNodeDragStop: handleNodeDragStop,
+                  onPaneContextMenu: handlePaneContextMenu,
+                  onEdgeContextMenu: handleEdgeContextMenu,
+                  onPaneClick: handlePaneClick,
+                })}
               >
-                {/* Back link */}
-                <div className="absolute top-4 left-4 pointer-events-auto">
-                  <Link
-                    href="/"
+                <ZoomResetHandler />
+                <FlowUtils screenToFlowRef={screenToFlowRef} />
+                <FocusNodeOnMount nodeId={focusNodeId} />
+                <Background
+                  variant={BackgroundVariant.Dots}
+                  gap={20}
+                  size={1}
+                  color={
+                    isDark ? CANVAS_COLORS.DOT_DARK : CANVAS_COLORS.DOT_LIGHT
+                  }
+                  bgColor={
+                    isDark ? CANVAS_COLORS.BG_DARK : CANVAS_COLORS.BG_LIGHT
+                  }
+                />
+              </ReactFlow>
+
+              {/* Title */}
+              <div className="absolute top-0 left-0 right-0 z-50 select-none flex justify-center">
+                <div
+                  className="w-full flex flex-col items-center relative"
+                  style={{
+                    background: isDark
+                      ? "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)"
+                      : "linear-gradient(to bottom, rgba(245,245,244,0.95) 0%, rgba(245,245,244,0.6) 50%, transparent 100%)",
+                    paddingTop: "1.5rem",
+                    paddingBottom: "5rem",
+                  }}
+                >
+                  <div className="absolute top-4 left-4 pointer-events-auto">
+                    <Link
+                      href="/"
+                      className={cn(
+                        "flex items-center gap-1.5 text-sm font-medium transition-colors",
+                        isDark
+                          ? "text-white/70 hover:text-white"
+                          : "text-neutral-500 hover:text-neutral-900",
+                      )}
+                    >
+                      <ArrowLeft size={14} />
+                      Back
+                    </Link>
+                  </div>
+                  <span
                     className={cn(
-                      "flex items-center gap-1.5 text-sm font-medium transition-colors",
-                      isDark
-                        ? "text-white/70 hover:text-white"
-                        : "text-neutral-500 hover:text-neutral-900",
+                      "text-lg font-medium",
+                      isDark ? "text-white/80" : "text-neutral-800",
                     )}
                   >
-                    <ArrowLeft size={14} />
-                    Back
-                  </Link>
-                </div>
-                <span
-                  className={cn(
-                    "text-lg font-medium",
-                    isDark ? "text-white/80" : "text-neutral-800",
-                  )}
-                >
-                  LLM Operations
-                </span>
-                <span
-                  className={cn(
-                    "text-xs mt-0.5",
-                    isDark ? "text-white/40" : "text-neutral-400",
-                  )}
-                >
-                  by mrzmyr
-                </span>
-              </div>
-            </div>
-
-            {/* Sync indicator */}
-            {isSyncing && (
-              <div className="absolute top-4 right-4 z-50 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm px-2.5 py-1.5 rounded-full shadow-sm border border-neutral-200/60 dark:border-neutral-700/60 pointer-events-none select-none">
-                <Loader2 size={12} className="animate-spin" />
-                <span>Syncing</span>
-              </div>
-            )}
-
-            {/* Empty state */}
-            {isDev && rfNodes.length === 0 && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="flex flex-col items-center gap-2 text-neutral-400">
-                  <MousePointerClick size={24} strokeWidth={1.5} />
-                  <p className="text-sm">Right-click to add your first node</p>
+                    {title}
+                  </span>
+                  <span
+                    className={cn(
+                      "text-xs mt-0.5",
+                      isDark ? "text-white/40" : "text-neutral-400",
+                    )}
+                  >
+                    by mrzmyr
+                  </span>
                 </div>
               </div>
-            )}
 
-            {/* Share / capture button (read-only mode) */}
-            {!isDev && (
-              <div
-                data-skip-capture="true"
-                className="absolute top-4 right-4 z-50"
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsSelectMode((v) => !v);
-                    setSelectionRect(null);
-                    selectStartRef.current = null;
-                    selectionRectRef.current = null;
-                  }}
-                  className={cn(
-                    "flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full transition-all duration-150 select-none",
-                    isSelectMode
-                      ? "bg-white text-neutral-900 shadow-md"
-                      : isDark
-                        ? "text-white/70 hover:text-white bg-black/25 hover:bg-black/40 backdrop-blur-sm"
-                        : "text-neutral-600 hover:text-neutral-900 bg-white/70 hover:bg-white/90 backdrop-blur-sm shadow-sm border border-neutral-200/60",
-                  )}
-                >
-                  <Crop size={13} />
-                  <span>{isSelectMode ? "Drag to select area" : "Share"}</span>
-                  {isSelectMode && (
-                    <span className="text-neutral-400 text-xs ml-0.5">
-                      · Esc to cancel
-                    </span>
-                  )}
-                </button>
-              </div>
-            )}
-
-            {/* Selection rectangle overlay */}
-            {isSelectMode &&
-              normalizedSelection &&
-              normalizedSelection.width > 4 && (
-                <div
-                  data-skip-capture="true"
-                  className="absolute pointer-events-none z-[60]"
-                  style={{
-                    left: normalizedSelection.x,
-                    top: normalizedSelection.y,
-                    width: normalizedSelection.width,
-                    height: normalizedSelection.height,
-                    outline: "2px solid rgba(255,255,255,0.9)",
-                    boxShadow: "0 0 0 9999px rgba(0,0,0,0.35)",
-                  }}
-                />
+              {/* Sync indicator */}
+              {isSyncing && (
+                <div className="absolute top-4 right-4 z-50 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm px-2.5 py-1.5 rounded-full shadow-sm border border-neutral-200/60 dark:border-neutral-700/60 pointer-events-none select-none">
+                  <Loader2 size={12} className="animate-spin" />
+                  <span>Syncing</span>
+                </div>
               )}
 
-            {/* Capturing overlay */}
-            {isCapturing && (
-              <div
-                data-skip-capture="true"
-                className="absolute inset-0 z-[70] flex items-center justify-center bg-black/30 backdrop-blur-sm"
-              >
-                <Loader2 size={28} className="animate-spin text-white" />
-              </div>
-            )}
-
-            {/* Share modal */}
-            {showShareModal && capturedImage && (
-              <div
-                data-skip-capture="true"
-                className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-                onClick={(e) => {
-                  if (e.target === e.currentTarget) {
-                    setShowShareModal(false);
-                    setCapturedImage(null);
-                  }
-                }}
-              >
-                <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-neutral-800">
-                    <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                      Share snapshot
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowShareModal(false);
-                        setCapturedImage(null);
-                      }}
-                      className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-
-                  <div className="p-4">
-                    <img
-                      src={capturedImage}
-                      alt="Selected area snapshot"
-                      className="w-full rounded-lg border border-neutral-200 dark:border-neutral-800"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-2 px-4 pb-4 flex-wrap">
-                    <a
-                      href={capturedImage}
-                      download="llm-ops-snapshot.png"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-                    >
-                      <Download size={13} />
-                      Download
-                    </a>
-                    <a
-                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("LLM Ops Foundation by @mrzmyr\n\nhttps://moritz.works/llm-ops")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black text-white text-sm hover:bg-neutral-800 transition-colors"
-                    >
-                      <span
-                        className="font-bold leading-none"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        𝕏
-                      </span>
-                      Share on X
-                    </a>
-                    <a
-                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://moritz.works/llm-ops")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0A66C2] text-white text-sm hover:bg-[#0958a8] transition-colors"
-                    >
-                      <SiLinkedin className="w-3.5 h-3.5" />
-                      Share on LinkedIn
-                    </a>
+              {/* Empty state */}
+              {isDev && rfNodes.length === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="flex flex-col items-center gap-2 text-neutral-400">
+                    <MousePointerClick size={24} strokeWidth={1.5} />
+                    <p className="text-sm">
+                      Right-click to add your first node
+                    </p>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Context menu */}
-            {isDev && contextMenu && (
-              <div
-                ref={menuRef}
-                className="absolute z-50 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-40 text-sm"
-                style={{ left: contextMenu.x, top: contextMenu.y }}
-                onContextMenu={(e) => e.preventDefault()}
-              >
-                {contextMenu.targetEdgeId ? (
+              {/* Share / capture button (read-only mode) */}
+              {!isDev && (
+                <div
+                  data-skip-capture="true"
+                  className="absolute top-4 right-4 z-50"
+                >
                   <button
                     type="button"
-                    onClick={handleMenuDeleteEdge}
-                    className="w-full text-left px-3 py-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                    onClick={() => {
+                      setIsSelectMode((v) => !v);
+                      setSelectionRect(null);
+                      selectStartRef.current = null;
+                      selectionRectRef.current = null;
+                    }}
+                    className={cn(
+                      "flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full transition-all duration-150 select-none",
+                      isSelectMode
+                        ? "bg-white text-neutral-900 shadow-md"
+                        : isDark
+                          ? "text-white/70 hover:text-white bg-black/25 hover:bg-black/40 backdrop-blur-sm"
+                          : "text-neutral-600 hover:text-neutral-900 bg-white/70 hover:bg-white/90 backdrop-blur-sm shadow-sm border border-neutral-200/60",
+                    )}
                   >
-                    Delete connection
+                    <Crop size={13} />
+                    <span>
+                      {isSelectMode ? "Drag to select area" : "Share"}
+                    </span>
+                    {isSelectMode && (
+                      <span className="text-neutral-400 text-xs ml-0.5">
+                        · Esc to cancel
+                      </span>
+                    )}
                   </button>
-                ) : contextMenu.targetNodeId ? (
-                  <>
-                    {!rfNodes.find((n) => n.id === contextMenu.targetNodeId)
-                      ?.data.icon && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={handleMenuAddIcon}
-                          className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                        >
-                          Add icon
-                        </button>
-                        <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
-                      </>
-                    )}
-                    {!rfNodes.find((n) => n.id === contextMenu.targetNodeId)
-                      ?.data.description && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={handleMenuAddDescription}
-                          className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                        >
-                          Add description
-                        </button>
-                        <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
-                      </>
-                    )}
-                    <div
-                      className="relative"
-                      onMouseEnter={() => setCardTypeSubmenuOpen(true)}
-                      onMouseLeave={() => setCardTypeSubmenuOpen(false)}
-                    >
+                </div>
+              )}
+
+              {/* Selection rectangle overlay */}
+              {isSelectMode &&
+                normalizedSelection &&
+                normalizedSelection.width > 4 && (
+                  <div
+                    data-skip-capture="true"
+                    className="absolute pointer-events-none z-[60]"
+                    style={{
+                      left: normalizedSelection.x,
+                      top: normalizedSelection.y,
+                      width: normalizedSelection.width,
+                      height: normalizedSelection.height,
+                      outline: "2px solid rgba(255,255,255,0.9)",
+                      boxShadow: "0 0 0 9999px rgba(0,0,0,0.35)",
+                    }}
+                  />
+                )}
+
+              {/* Capturing overlay */}
+              {isCapturing && (
+                <div
+                  data-skip-capture="true"
+                  className="absolute inset-0 z-[70] flex items-center justify-center bg-black/30 backdrop-blur-sm"
+                >
+                  <Loader2 size={28} className="animate-spin text-white" />
+                </div>
+              )}
+
+              {/* Share modal */}
+              {showShareModal && capturedImage && (
+                <div
+                  data-skip-capture="true"
+                  className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                  onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                      setShowShareModal(false);
+                      setCapturedImage(null);
+                    }
+                  }}
+                >
+                  <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-neutral-800">
+                      <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                        Share snapshot
+                      </span>
                       <button
                         type="button"
-                        className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between"
+                        onClick={() => {
+                          setShowShareModal(false);
+                          setCapturedImage(null);
+                        }}
+                        className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
                       >
-                        <span>Card type</span>
-                        <ChevronRight size={12} className="text-neutral-400" />
+                        <X size={16} />
                       </button>
-                      {cardTypeSubmenuOpen && (
-                        <div className="absolute left-full top-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-40 ml-1 z-50">
-                          {(["standard", "title"] as const).map((type) => {
-                            const current = rfNodes.find(
-                              (n) => n.id === contextMenu?.targetNodeId,
-                            )?.data.cardType;
-                            const isActive =
-                              type === "title"
-                                ? current === "title"
-                                : current !== "title";
-                            return (
-                              <button
-                                key={type}
-                                type="button"
-                                onClick={() => handleMenuSetCardType(type)}
-                                className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center gap-2"
-                              >
-                                <Check
-                                  size={12}
-                                  className={cn(
-                                    isActive ? "opacity-100" : "opacity-0",
-                                  )}
-                                />
-                                {type === "standard"
-                                  ? "Standard Card"
-                                  : "Title Card"}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
                     </div>
-                    <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
+
+                    <div className="p-4">
+                      <img
+                        src={capturedImage}
+                        alt="Selected area snapshot"
+                        className="w-full rounded-lg border border-neutral-200 dark:border-neutral-800"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2 px-4 pb-4 flex-wrap">
+                      <a
+                        href={capturedImage}
+                        download={`${canvasSlug}-snapshot.png`}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                      >
+                        <Download size={13} />
+                        Download
+                      </a>
+                      <a
+                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${title} by @mrzmyr\n\n${shareUrl}`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black text-white text-sm hover:bg-neutral-800 transition-colors"
+                      >
+                        <span
+                          className="font-bold leading-none"
+                          style={{ fontFamily: "serif" }}
+                        >
+                          𝕏
+                        </span>
+                        Share on X
+                      </a>
+                      <a
+                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0A66C2] text-white text-sm hover:bg-[#0958a8] transition-colors"
+                      >
+                        <SiLinkedin className="w-3.5 h-3.5" />
+                        Share on LinkedIn
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Context menu */}
+              {contextMenu && (
+                <div
+                  ref={menuRef}
+                  className="absolute z-50 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-40 text-sm"
+                  style={{ left: contextMenu.x, top: contextMenu.y }}
+                  onContextMenu={(e) => e.preventDefault()}
+                >
+                  {contextMenu.targetEdgeId ? (
                     <button
                       type="button"
-                      onClick={handleMenuAddChild}
-                      className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                    >
-                      Add child node
-                    </button>
-                    <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
-                    <button
-                      type="button"
-                      onClick={handleMenuDelete}
+                      onClick={handleMenuDeleteEdge}
                       className="w-full text-left px-3 py-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                     >
-                      Delete node
+                      Delete connection
                     </button>
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleMenuAddNode}
-                    className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                  >
-                    Add node here
-                  </button>
-                )}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </HistoryContext.Provider>
+                  ) : contextMenu.targetNodeId ? (
+                    <>
+                      {isDev && (
+                        <>
+                          {!rfNodes.find(
+                            (n) => n.id === contextMenu.targetNodeId,
+                          )?.data.icon && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={handleMenuAddIcon}
+                                className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                              >
+                                Add icon
+                              </button>
+                              <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
+                            </>
+                          )}
+                          {!rfNodes.find(
+                            (n) => n.id === contextMenu.targetNodeId,
+                          )?.data.description && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={handleMenuAddDescription}
+                                className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                              >
+                                Add description
+                              </button>
+                              <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
+                            </>
+                          )}
+                          <div
+                            className="relative"
+                            onMouseEnter={() => setCardTypeSubmenuOpen(true)}
+                            onMouseLeave={() => setCardTypeSubmenuOpen(false)}
+                          >
+                            <button
+                              type="button"
+                              className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between"
+                            >
+                              <span>Card type</span>
+                              <ChevronRight
+                                size={12}
+                                className="text-neutral-400"
+                              />
+                            </button>
+                            {cardTypeSubmenuOpen && (
+                              <div className="absolute left-full top-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-40 ml-1 z-50">
+                                {(["standard", "title"] as const).map(
+                                  (type) => {
+                                    const current = rfNodes.find(
+                                      (n) => n.id === contextMenu?.targetNodeId,
+                                    )?.data.cardType;
+                                    const isActive =
+                                      type === "title"
+                                        ? current === "title"
+                                        : current !== "title";
+                                    return (
+                                      <button
+                                        key={type}
+                                        type="button"
+                                        onClick={() =>
+                                          handleMenuSetCardType(type)
+                                        }
+                                        className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center gap-2"
+                                      >
+                                        <Check
+                                          size={12}
+                                          className={cn(
+                                            isActive
+                                              ? "opacity-100"
+                                              : "opacity-0",
+                                          )}
+                                        />
+                                        {type === "standard"
+                                          ? "Standard Card"
+                                          : "Title Card"}
+                                      </button>
+                                    );
+                                  },
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
+                        </>
+                      )}
+                      <button
+                        type="button"
+                        onClick={handleMenuCopyLink}
+                        className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center gap-2"
+                      >
+                        Copy link to node
+                      </button>
+                      {isDev && (
+                        <>
+                          <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
+                          <button
+                            type="button"
+                            onClick={handleMenuAddChild}
+                            className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                          >
+                            Add child node
+                          </button>
+                          <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
+                          <button
+                            type="button"
+                            onClick={handleMenuDelete}
+                            className="w-full text-left px-3 py-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                          >
+                            Delete node
+                          </button>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleMenuAddNode}
+                      className="w-full text-left px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                    >
+                      Add node here
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </HistoryContext.Provider>
+    </CanvasActionsContext.Provider>
   );
 }

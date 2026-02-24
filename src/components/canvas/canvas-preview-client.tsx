@@ -13,8 +13,17 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { DbNode } from "@/lib/db/schema";
 import { CANVAS_COLORS } from "./canvas-config";
 import { AgentNode } from "./agent-node";
+import { CanvasActionsContext, type CanvasActions } from "./canvas-actions-context";
 import { HistoryContext } from "./history-context";
 import type { AgentNodeType, CardType } from "./types";
+
+const noopActions: CanvasActions = {
+  createNode: async () => { throw new Error("read-only canvas"); },
+  deleteNode: async () => {},
+  updateNode: async () => { throw new Error("read-only canvas"); },
+  updateNodePositions: async () => {},
+  updateNodeSize: async () => {},
+};
 
 const nodeTypes = { agent: AgentNode };
 
@@ -72,10 +81,16 @@ function deriveEdges(dbNodes: DbNode[], isDark: boolean): Edge[] {
     }));
 }
 
-export function CanvasPreviewClient({ initialNodes }: { initialNodes: DbNode[] }) {
+export function CanvasPreviewClient({
+  initialNodes,
+}: {
+  initialNodes: DbNode[];
+}) {
   const isDark = useIsDark();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [rfNodes] = useNodesState<AgentNodeType>(
     initialNodes.map(dbNodeToRfNode),
@@ -87,6 +102,7 @@ export function CanvasPreviewClient({ initialNodes }: { initialNodes: DbNode[] }
   if (!mounted) return null;
 
   return (
+    <CanvasActionsContext.Provider value={noopActions}>
     <HistoryContext.Provider
       value={{
         pushHistory: () => {},
@@ -94,33 +110,34 @@ export function CanvasPreviewClient({ initialNodes }: { initialNodes: DbNode[] }
         toggleCollapse: () => {},
       }}
     >
-    <ReactFlow
-      nodes={rfNodes}
-      edges={rfEdges}
-      nodeTypes={nodeTypes}
-      fitView
-      fitViewOptions={{ padding: 0.2 }}
-      nodesDraggable={false}
-      nodesConnectable={false}
-      nodesFocusable={false}
-      edgesFocusable={false}
-      elementsSelectable={false}
-      panOnDrag={false}
-      panOnScroll={false}
-      zoomOnScroll={false}
-      zoomOnPinch={false}
-      zoomOnDoubleClick={false}
-      preventScrolling={false}
-      proOptions={{ hideAttribution: true }}
-      style={{ background: "transparent" }}
-    >
-      <Background
-        variant={BackgroundVariant.Dots}
-        gap={20}
-        size={1}
-        color={isDark ? CANVAS_COLORS.DOT_DARK : CANVAS_COLORS.DOT_LIGHT}
-      />
-    </ReactFlow>
+      <ReactFlow
+        nodes={rfNodes}
+        edges={rfEdges}
+        nodeTypes={nodeTypes}
+        fitView
+        fitViewOptions={{ padding: 0.2 }}
+        nodesDraggable={false}
+        nodesConnectable={false}
+        nodesFocusable={false}
+        edgesFocusable={false}
+        elementsSelectable={false}
+        panOnDrag={false}
+        panOnScroll={false}
+        zoomOnScroll={false}
+        zoomOnPinch={false}
+        zoomOnDoubleClick={false}
+        preventScrolling={false}
+        proOptions={{ hideAttribution: true }}
+        style={{ background: "transparent" }}
+      >
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={20}
+          size={1}
+          color={isDark ? CANVAS_COLORS.DOT_DARK : CANVAS_COLORS.DOT_LIGHT}
+        />
+      </ReactFlow>
     </HistoryContext.Provider>
+    </CanvasActionsContext.Provider>
   );
 }
