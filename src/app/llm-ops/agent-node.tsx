@@ -1,17 +1,17 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import {
   Handle,
   NodeResizeControl,
-  type NodeProps,
   Position,
   ResizeControlVariant,
   useReactFlow,
+  type NodeProps,
 } from "@xyflow/react";
 import { ChevronDown, ChevronRight, GripVertical } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { updateNode, updateNodeSize } from "./actions";
 import { useHistoryContext } from "./history-context";
 import { DynamicLucideIcon, IconPicker } from "./icon-picker";
@@ -299,7 +299,9 @@ export const AgentNode = memo(function AgentNode({
         className={cn(
           "!bg-neutral-300 dark:!bg-neutral-600 !border-neutral-300 dark:!border-neutral-500",
           "!w-5 !h-2 !rounded-t-full !rounded-b-none !border-b-0",
-          "opacity-0 group-hover:opacity-100 transition-opacity",
+          draggable
+            ? "opacity-0 group-hover:opacity-100 transition-opacity"
+            : "!opacity-0 !pointer-events-none",
         )}
       />
       {/* Left handle — half circle flush against left edge */}
@@ -312,7 +314,9 @@ export const AgentNode = memo(function AgentNode({
         className={cn(
           "!bg-neutral-300 dark:!bg-neutral-600 !border-neutral-300 dark:!border-neutral-500",
           "!w-2 !h-5 !rounded-l-full !rounded-r-none !border-r-0",
-          "opacity-0 group-hover:opacity-100 transition-opacity",
+          draggable
+            ? "opacity-0 group-hover:opacity-100 transition-opacity"
+            : "!opacity-0 !pointer-events-none",
         )}
       />
       {/* Right handle — half circle flush against right edge */}
@@ -325,7 +329,9 @@ export const AgentNode = memo(function AgentNode({
         className={cn(
           "!bg-neutral-300 dark:!bg-neutral-600 !border-neutral-300 dark:!border-neutral-500",
           "!w-2 !h-5 !rounded-r-full !rounded-l-none !border-l-0",
-          "opacity-0 group-hover:opacity-100 transition-opacity",
+          draggable
+            ? "opacity-0 group-hover:opacity-100 transition-opacity"
+            : "!opacity-0 !pointer-events-none",
         )}
       />
       {/* Bottom handle — half circle flush against bottom edge */}
@@ -338,9 +344,18 @@ export const AgentNode = memo(function AgentNode({
         className={cn(
           "!bg-neutral-300 dark:!bg-neutral-600 !border-neutral-300 dark:!border-neutral-500",
           "!w-5 !h-2 !rounded-b-full !rounded-t-none !border-t-0",
-          "opacity-0 group-hover:opacity-100 transition-opacity",
+          draggable
+            ? "opacity-0 group-hover:opacity-100 transition-opacity"
+            : "!opacity-0 !pointer-events-none",
         )}
       />
+
+      {draggable && (
+        <GripVertical
+          size={14}
+          className="absolute top-2 right-2 z-10 text-neutral-400 dark:text-neutral-500 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+        />
+      )}
 
       {/* Card visual container — overflow-hidden must be on an inner div so handles aren't clipped */}
       <div
@@ -369,6 +384,7 @@ export const AgentNode = memo(function AgentNode({
               onUpload={(url) => handleFieldChange("imageUrl", url)}
               onRemove={() => handleFieldChange("imageUrl", null)}
               className="flex-1 w-full h-full"
+              readOnly={!draggable}
             />
           </div>
         )}
@@ -379,7 +395,32 @@ export const AgentNode = memo(function AgentNode({
             !showDropzone && "flex-1 justify-center",
           )}
         >
-          <div className="flex flex-col gap-0.5">
+          {/* Invisible anchor for icon picker triggered via context menu */}
+          {!data.icon && (
+            <IconPicker
+              value={null}
+              onSelect={(icon) => {
+                if (icon) handleFieldChange("icon", icon);
+                setIconPickerOpen(false);
+              }}
+              open={iconPickerOpen}
+              onOpenChange={setIconPickerOpen}
+            >
+              <span
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: 0,
+                  height: 0,
+                  pointerEvents: "none",
+                }}
+                aria-hidden="true"
+              />
+            </IconPicker>
+          )}
+
+          <div className="flex flex-col">
             {/* Header: icon (only when set) + editable title + drag handle */}
             <div className="flex gap-1 items-center">
               {data.icon && (
@@ -396,52 +437,6 @@ export const AgentNode = memo(function AgentNode({
                   </button>
                 </IconPicker>
               )}
-
-              {/* Invisible anchor for icon picker triggered via context menu */}
-              {!data.icon && (
-                <IconPicker
-                  value={null}
-                  onSelect={(icon) => {
-                    if (icon) handleFieldChange("icon", icon);
-                    setIconPickerOpen(false);
-                  }}
-                  open={iconPickerOpen}
-                  onOpenChange={setIconPickerOpen}
-                >
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: 0,
-                      height: 0,
-                      pointerEvents: "none",
-                    }}
-                    aria-hidden="true"
-                  />
-                </IconPicker>
-              )}
-
-              <span
-                ref={(el) => {
-                  titleRef.current = el;
-                  if (el && !isTitleFocused) {
-                    el.textContent = data.title ?? "";
-                  }
-                }}
-                contentEditable={isEditingTitle}
-                suppressContentEditableWarning
-                onDoubleClick={handleTitleDoubleClick}
-                onFocus={() => setIsTitleFocused(true)}
-                onBlur={handleTitleBlur}
-                onKeyDown={handleTitleKeyDown}
-                onMouseDown={(e) => isEditingTitle && e.stopPropagation()}
-                className={cn(
-                  "flex-1 text-sm font-medium text-neutral-900 dark:text-neutral-100 outline-none empty:before:content-['Untitled'] empty:before:text-neutral-400 dark:empty:before:text-neutral-500 min-w-0 break-words",
-                  isEditingTitle ? "nodrag cursor-text" : "select-none",
-                )}
-                data-placeholder="Untitled"
-              />
 
               {data.hasChildren && (
                 <button
@@ -467,12 +462,26 @@ export const AgentNode = memo(function AgentNode({
                 </button>
               )}
 
-              {draggable && (
-                <GripVertical
-                  size={14}
-                  className="flex-shrink-0 text-neutral-400 dark:text-neutral-500 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
-                />
-              )}
+              <span
+                ref={(el) => {
+                  titleRef.current = el;
+                  if (el && !isTitleFocused) {
+                    el.textContent = data.title ?? "";
+                  }
+                }}
+                contentEditable={isEditingTitle}
+                suppressContentEditableWarning
+                onDoubleClick={handleTitleDoubleClick}
+                onFocus={() => setIsTitleFocused(true)}
+                onBlur={handleTitleBlur}
+                onKeyDown={handleTitleKeyDown}
+                onMouseDown={(e) => isEditingTitle && e.stopPropagation()}
+                className={cn(
+                  "flex-1 text-sm font-medium text-neutral-900 dark:text-neutral-100 outline-none empty:before:content-['Untitled'] empty:before:text-neutral-400 dark:empty:before:text-neutral-500 min-w-0 break-words",
+                  isEditingTitle ? "nodrag cursor-text" : "select-none",
+                )}
+                data-placeholder="Untitled"
+              />
             </div>
             <MarkdownEditor
               value={data.description ?? null}

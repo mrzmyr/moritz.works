@@ -1,6 +1,7 @@
 "use client";
 
-import "@xyflow/react/dist/style.css";
+import type { DbNode } from "@/lib/db/schema";
+import { cn } from "@/lib/utils";
 import {
   addEdge,
   Background,
@@ -15,7 +16,17 @@ import {
   useReactFlow,
   type XYPosition,
 } from "@xyflow/react";
-import { ArrowLeft, Check, ChevronRight, Loader2, MousePointerClick, Newspaper } from "lucide-react";
+import "@xyflow/react/dist/style.css";
+import {
+  ArrowLeft,
+  Check,
+  ChevronRight,
+  Crop,
+  Download,
+  Loader2,
+  MousePointerClick,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import {
   useCallback,
@@ -26,9 +37,6 @@ import {
   useSyncExternalStore,
 } from "react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import type { PostData } from "@/lib/posts/types";
-import type { DbNode } from "@/lib/db/schema";
 import {
   createNode,
   deleteNode,
@@ -37,8 +45,10 @@ import {
   updateNodeSize,
 } from "./actions";
 import { AgentNode } from "./agent-node";
+import { CANVAS_COLORS } from "./canvas-config";
 import { HistoryContext, type HistoryEntry } from "./history-context";
 import type { AgentNodeData, AgentNodeType, CardType } from "./types";
+import { SiLinkedin } from "react-icons/si";
 
 const nodeTypes = { agent: AgentNode };
 
@@ -92,7 +102,7 @@ function useIsDark() {
 const DEFAULT_NODE_WIDTH = 288;
 
 const getEdgeStyle = (isDark: boolean) => ({
-  stroke: isDark ? "#525252" : "#d4d4d4",
+  stroke: isDark ? CANVAS_COLORS.EDGE_DARK : CANVAS_COLORS.EDGE_LIGHT,
   strokeWidth: 1.5,
 });
 
@@ -140,10 +150,9 @@ type ContextMenuState = {
 
 interface CanvasProps {
   initialNodes: DbNode[];
-  initialPosts: PostData[];
 }
 
-export function Canvas({ initialNodes, initialPosts }: CanvasProps) {
+export function Canvas({ initialNodes }: CanvasProps) {
   const isDev = process.env.NODE_ENV === "development";
   const isDark = useIsDark();
 
@@ -270,6 +279,151 @@ export function Canvas({ initialNodes, initialPosts }: CanvasProps) {
     const t = requestAnimationFrame(() => setNodesReady(true));
     return () => cancelAnimationFrame(t);
   }, []);
+
+  // ---------- area select & share (read-only mode) ----------
+
+  type SelectionRect = {
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+  };
+
+  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [selectionRect, setSelectionRect] = useState<SelectionRect | null>(
+    null,
+  );
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
+
+  const selectionRectRef = useRef<SelectionRect | null>(null);
+  const selectStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const normalizedSelection = useMemo(() => {
+    if (!selectionRect) return null;
+    return {
+      x: Math.min(selectionRect.startX, selectionRect.endX),
+      y: Math.min(selectionRect.startY, selectionRect.endY),
+      width: Math.abs(selectionRect.endX - selectionRect.startX),
+      height: Math.abs(selectionRect.endY - selectionRect.startY),
+    };
+  }, [selectionRect]);
+
+  const captureArea = useCallback(
+    async (x: number, y: number, width: number, height: number) => {
+      if (!flowWrapper.current || width < 10 || height < 10) return;
+      setIsCapturing(true);
+      try {
+        const { toPng } = await import("html-to-image");
+        const pixelRatio = 2;
+        const fullDataUrl = await toPng(flowWrapper.current, {
+          pixelRatio,
+          filter: (node) => {
+            if (!(node instanceof HTMLElement)) return true;
+            return node.dataset.skipCapture !== "true";
+          },
+        });
+
+        const img = new Image();
+        img.src = fullDataUrl;
+        await new Promise<void>((resolve) => {
+          img.onload = () => resolve();
+        });
+
+        const offscreen = document.createElement("canvas");
+        offscreen.width = width * pixelRatio;
+        offscreen.height = height * pixelRatio;
+        const ctx = offscreen.getContext("2d")!;
+        ctx.drawImage(
+          img,
+          x * pixelRatio,
+          y * pixelRatio,
+          width * pixelRatio,
+          height * pixelRatio,
+          0,
+          0,
+          width * pixelRatio,
+          height * pixelRatio,
+        );
+
+        setCapturedImage(offscreen.toDataURL("image/png"));
+        setShowShareModal(true);
+      } catch {
+        toast.error("Failed to capture area");
+      } finally {
+        setIsCapturing(false);
+      }
+    },
+    [],
+  );
+
+  const handleFlowMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (!isSelectMode || e.button !== 0) return;
+      const target = e.target as HTMLElement;
+      if (target.closest("a, button")) return;
+      e.preventDefault();
+      const rect = flowWrapper.current!.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      selectStartRef.current = { x, y };
+      const sr: SelectionRect = { startX: x, startY: y, endX: x, endY: y };
+      selectionRectRef.current = sr;
+      setSelectionRect(sr);
+    },
+    [isSelectMode],
+  );
+
+  useEffect(() => {
+    if (!isSelectMode) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!selectStartRef.current || !flowWrapper.current) return;
+      const rect = flowWrapper.current.getBoundingClientRect();
+      const sr: SelectionRect = {
+        startX: selectStartRef.current.x,
+        startY: selectStartRef.current.y,
+        endX: e.clientX - rect.left,
+        endY: e.clientY - rect.top,
+      };
+      selectionRectRef.current = sr;
+      setSelectionRect(sr);
+    };
+
+    const handleMouseUp = async () => {
+      if (!selectStartRef.current) return;
+      const finalRect = selectionRectRef.current;
+      selectStartRef.current = null;
+      selectionRectRef.current = null;
+      setSelectionRect(null);
+      if (finalRect) {
+        const x = Math.min(finalRect.startX, finalRect.endX);
+        const y = Math.min(finalRect.startY, finalRect.endY);
+        const w = Math.abs(finalRect.endX - finalRect.startX);
+        const h = Math.abs(finalRect.endY - finalRect.startY);
+        await captureArea(x, y, w, h);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        selectStartRef.current = null;
+        selectionRectRef.current = null;
+        setSelectionRect(null);
+        setIsSelectMode(false);
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isSelectMode, captureArea]);
 
   const pushHistory = useCallback((entry: HistoryEntry) => {
     undoStack.current = [...undoStack.current.slice(-49), entry];
@@ -1108,9 +1262,12 @@ export function Canvas({ initialNodes, initialPosts }: CanvasProps) {
     >
       <div
         ref={flowWrapper}
+        onMouseDown={handleFlowMouseDown}
         className={cn(
           "w-screen h-screen relative bg-neutral-50 dark:bg-neutral-black transition-opacity duration-200",
           nodesReady ? "opacity-100" : "opacity-0",
+          !isDev && !isSelectMode && "[&_*]:!cursor-default",
+          isSelectMode && "!cursor-crosshair [&_*]:!cursor-crosshair",
         )}
       >
         {mounted && (
@@ -1152,29 +1309,54 @@ export function Canvas({ initialNodes, initialPosts }: CanvasProps) {
                 variant={BackgroundVariant.Dots}
                 gap={20}
                 size={1}
-                color={isDark ? "#222" : "#222"}
-                bgColor={isDark ? "#09090B" : "#d4d4d4"}
+                color={isDark ? CANVAS_COLORS.DOT_DARK : CANVAS_COLORS.DOT_LIGHT}
+                bgColor={isDark ? CANVAS_COLORS.BG_DARK : CANVAS_COLORS.BG_LIGHT}
               />
             </ReactFlow>
 
-            {/* Back link */}
-            <div className="absolute top-4 left-4 z-50">
-              <Link
-                href="/"
-                className="flex items-center gap-1.5 text-sm text-white/60 hover:text-white/90 transition-colors"
-              >
-                <ArrowLeft size={14} />
-                Back
-              </Link>
-            </div>
-
             {/* Title */}
-            <div className="absolute top-0 left-0 right-0 z-50 pointer-events-none select-none flex justify-center">
-              <div className="w-full flex flex-col items-center" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)", paddingTop: "1.5rem", paddingBottom: "5rem" }}>
-                <span className="text-lg font-medium text-white/80">
-                  LLM Ops Foundation
+            <div className="absolute top-0 left-0 right-0 z-50 select-none flex justify-center">
+              <div
+                className="w-full flex flex-col items-center relative"
+                style={{
+                  background: isDark
+                    ? "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)"
+                    : "linear-gradient(to bottom, rgba(245,245,244,0.95) 0%, rgba(245,245,244,0.6) 50%, transparent 100%)",
+                  paddingTop: "1.5rem",
+                  paddingBottom: "5rem",
+                }}
+              >
+                {/* Back link */}
+                <div className="absolute top-4 left-4 pointer-events-auto">
+                  <Link
+                    href="/"
+                    className={cn(
+                      "flex items-center gap-1.5 text-sm font-medium transition-colors",
+                      isDark
+                        ? "text-white/70 hover:text-white"
+                        : "text-neutral-500 hover:text-neutral-900",
+                    )}
+                  >
+                    <ArrowLeft size={14} />
+                    Back
+                  </Link>
+                </div>
+                <span
+                  className={cn(
+                    "text-lg font-medium",
+                    isDark ? "text-white/80" : "text-neutral-800",
+                  )}
+                >
+                  LLM Operations
                 </span>
-                <span className="text-xs text-white/40 mt-0.5">by mrzmyr</span>
+                <span
+                  className={cn(
+                    "text-xs mt-0.5",
+                    isDark ? "text-white/40" : "text-neutral-400",
+                  )}
+                >
+                  by mrzmyr
+                </span>
               </div>
             </div>
 
@@ -1192,6 +1374,142 @@ export function Canvas({ initialNodes, initialPosts }: CanvasProps) {
                 <div className="flex flex-col items-center gap-2 text-neutral-400">
                   <MousePointerClick size={24} strokeWidth={1.5} />
                   <p className="text-sm">Right-click to add your first node</p>
+                </div>
+              </div>
+            )}
+
+            {/* Share / capture button (read-only mode) */}
+            {!isDev && (
+              <div
+                data-skip-capture="true"
+                className="absolute top-4 right-4 z-50"
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSelectMode((v) => !v);
+                    setSelectionRect(null);
+                    selectStartRef.current = null;
+                    selectionRectRef.current = null;
+                  }}
+                  className={cn(
+                    "flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full transition-all duration-150 select-none",
+                    isSelectMode
+                      ? "bg-white text-neutral-900 shadow-md"
+                      : isDark
+                        ? "text-white/70 hover:text-white bg-black/25 hover:bg-black/40 backdrop-blur-sm"
+                        : "text-neutral-600 hover:text-neutral-900 bg-white/70 hover:bg-white/90 backdrop-blur-sm shadow-sm border border-neutral-200/60",
+                  )}
+                >
+                  <Crop size={13} />
+                  <span>{isSelectMode ? "Drag to select area" : "Share"}</span>
+                  {isSelectMode && (
+                    <span className="text-neutral-400 text-xs ml-0.5">
+                      · Esc to cancel
+                    </span>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* Selection rectangle overlay */}
+            {isSelectMode &&
+              normalizedSelection &&
+              normalizedSelection.width > 4 && (
+                <div
+                  data-skip-capture="true"
+                  className="absolute pointer-events-none z-[60]"
+                  style={{
+                    left: normalizedSelection.x,
+                    top: normalizedSelection.y,
+                    width: normalizedSelection.width,
+                    height: normalizedSelection.height,
+                    outline: "2px solid rgba(255,255,255,0.9)",
+                    boxShadow: "0 0 0 9999px rgba(0,0,0,0.35)",
+                  }}
+                />
+              )}
+
+            {/* Capturing overlay */}
+            {isCapturing && (
+              <div
+                data-skip-capture="true"
+                className="absolute inset-0 z-[70] flex items-center justify-center bg-black/30 backdrop-blur-sm"
+              >
+                <Loader2 size={28} className="animate-spin text-white" />
+              </div>
+            )}
+
+            {/* Share modal */}
+            {showShareModal && capturedImage && (
+              <div
+                data-skip-capture="true"
+                className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                onClick={(e) => {
+                  if (e.target === e.currentTarget) {
+                    setShowShareModal(false);
+                    setCapturedImage(null);
+                  }
+                }}
+              >
+                <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-neutral-800">
+                    <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                      Share snapshot
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowShareModal(false);
+                        setCapturedImage(null);
+                      }}
+                      className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+
+                  <div className="p-4">
+                    <img
+                      src={capturedImage}
+                      alt="Selected area snapshot"
+                      className="w-full rounded-lg border border-neutral-200 dark:border-neutral-800"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2 px-4 pb-4 flex-wrap">
+                    <a
+                      href={capturedImage}
+                      download="llm-ops-snapshot.png"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                    >
+                      <Download size={13} />
+                      Download
+                    </a>
+                    <a
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("LLM Ops Foundation by @mrzmyr\n\nhttps://moritz.works/llm-ops")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black text-white text-sm hover:bg-neutral-800 transition-colors"
+                    >
+                      <span
+                        className="font-bold leading-none"
+                        style={{ fontFamily: "serif" }}
+                      >
+                        𝕏
+                      </span>
+                      Share on X
+                    </a>
+                    <a
+                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://moritz.works/llm-ops")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0A66C2] text-white text-sm hover:bg-[#0958a8] transition-colors"
+                    >
+                      <SiLinkedin className="w-3.5 h-3.5" />
+                      Share on LinkedIn
+                    </a>
+                  </div>
                 </div>
               </div>
             )}

@@ -7,6 +7,7 @@ import { LastPosts } from "@/components/last-posts";
 import { PostStructuredData } from "@/components/post-structured-data";
 import { Books, BooksSkeleton } from "../components/books";
 import WorkList from "../components/work-list";
+import { LlmOpsPreview } from "../llm-ops/preview";
 
 const Headline = ({ children }: { children: React.ReactNode }) => {
   return <div className="font-medium dark:text-white">{children}</div>;
@@ -94,12 +95,33 @@ export default async function Page() {
             .
           </div>
           <div className="leading-7">
-            I{" "}
-            <Link href="/blog" className="underline">
-              write
-            </Link>{" "}
-            down little realizations I make on my way.
+            Currently I'm obsessing on LLMs, here you can find{" "}
+            <a href="/llm-ops" className="underline">
+              my overview of LLM operations
+            </a>
+            .
           </div>
+
+          <Link
+            href="/llm-ops"
+            className="flex flex-col mt-4 rounded-xl border border-border bg-white dark:bg-neutral-900 p-0.5 outline-2 outline outline-neutral-100 dark:outline-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-300 group"
+          >
+            <div className="bg-neutral-50 dark:bg-black rounded-xl border border-border/60 overflow-hidden max-h-[280px] pointer-events-none">
+              <div className="translate-x-2 translate-y-2 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform">
+                <Suspense fallback={<div className="h-[220px]" />}>
+                  <LlmOpsPreview />
+                </Suspense>
+              </div>
+            </div>
+            <div className="flex items-center justify-between gap-px px-3 py-2.5">
+              <h3 className="text-foreground text-base font-medium tracking-tight">
+                LLM Operations
+              </h3>
+              <span className="text-muted-foreground text-xs font-normal">
+                All components to run LLMs in production
+              </span>
+            </div>
+          </Link>
         </div>
 
         <Section>
@@ -137,25 +159,6 @@ export default async function Page() {
             <Suspense fallback={<BooksSkeleton />}>
               <Books />
             </Suspense>
-          </div>
-        </Section>
-
-        <Section>
-          <Headline>Apps</Headline>
-
-          <div className="mt-4">
-            <Link
-              href="/llm-ops"
-              className="group flex flex-col gap-1 p-4 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors"
-            >
-              <span className="font-medium text-neutral-800 dark:text-neutral-200 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
-                LLM Ops Foundation
-              </span>
-              <span className="text-sm text-neutral-400 dark:text-neutral-500">
-                A visual canvas mapping the concepts and tools of LLM
-                operations
-              </span>
-            </Link>
           </div>
         </Section>
 
