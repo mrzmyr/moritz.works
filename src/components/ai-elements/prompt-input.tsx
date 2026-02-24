@@ -185,7 +185,7 @@ export const PromptInputProvider = ({
   const openRef = useRef<() => void>(() => {});
 
   const add = useCallback((files: File[] | FileList) => {
-    const incoming = [...files];
+    const incoming = Array.from(files);
     if (incoming.length === 0) {
       return;
     }
@@ -454,7 +454,7 @@ export const PromptInput = ({
 
   const addLocal = useCallback(
     (fileList: File[] | FileList) => {
-      const incoming = [...fileList];
+      const incoming = Array.from(fileList);
       const accepted = incoming.filter((f) => matchesAccept(f));
       if (incoming.length && accepted.length === 0) {
         onError?.({
@@ -518,7 +518,7 @@ export const PromptInput = ({
   // Wrapper that validates files before calling provider's add
   const addWithProviderValidation = useCallback(
     (fileList: File[] | FileList) => {
-      const incoming = [...fileList];
+      const incoming = Array.from(fileList);
       const accepted = incoming.filter((f) => matchesAccept(f));
       if (incoming.length && accepted.length === 0) {
         onError?.({

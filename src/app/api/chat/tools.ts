@@ -1,4 +1,4 @@
-import { tool, type Tool } from "ai";
+import { type Tool } from "ai";
 import { z } from "zod";
 
 export interface ExaResult {
@@ -40,8 +40,7 @@ export function createChatTools(exaClient: ExaClient): {
   webSearch: Tool<any, any>;
   addCard: Tool<any, never>;
 } {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const webSearch: Tool<any, any> = tool({
+  const webSearch = {
     description: "Search the web for up-to-date information",
     inputSchema: z.object({
       query: z.string().min(1).describe("The search query"),
@@ -58,10 +57,9 @@ export function createChatTools(exaClient: ExaClient): {
         publishedDate: r.publishedDate,
       }));
     },
-  } as Parameters<typeof tool>[0]);
+  } as unknown as Tool<any, any>;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const addCard: Tool<any, never> = tool({
+  const addCard = {
     description:
       "Add one or more cards to the canvas. If a card is currently selected, the new cards will be added as its children. You can create multiple cards at once.",
     inputSchema: z.object({
@@ -71,7 +69,7 @@ export function createChatTools(exaClient: ExaClient): {
         .describe("One or more cards to add to the canvas"),
     }),
     // No execute — handled client-side via onToolCall
-  } as Parameters<typeof tool>[0]);
+  } as unknown as Tool<any, never>;
 
   return { webSearch, addCard };
 }
