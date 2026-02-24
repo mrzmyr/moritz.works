@@ -483,6 +483,7 @@ export const AgentNode = memo(function AgentNode({
         onDragLeave={handleCardDragLeave}
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleCardDrop}
+        onContextMenu={!draggable ? (e) => e.preventDefault() : undefined}
       >
         {showDropzone && (
           <div
@@ -536,18 +537,24 @@ export const AgentNode = memo(function AgentNode({
             {/* Header: icon (only when set) + editable title + drag handle */}
             <div className="flex gap-1 items-center">
               {data.icon && (
-                <IconPicker
-                  value={data.icon}
-                  onSelect={(icon) => handleFieldChange("icon", icon)}
-                >
-                  <button
-                    type="button"
-                    className="flex-shrink-0 w-5 h-6 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-500 dark:text-neutral-500"
-                    title="Change icon"
+                draggable ? (
+                  <IconPicker
+                    value={data.icon}
+                    onSelect={(icon) => handleFieldChange("icon", icon)}
                   >
+                    <button
+                      type="button"
+                      className="flex-shrink-0 w-5 h-6 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-500 dark:text-neutral-500"
+                      title="Change icon"
+                    >
+                      <DynamicLucideIcon name={data.icon} size={14} />
+                    </button>
+                  </IconPicker>
+                ) : (
+                  <span className="flex-shrink-0 w-5 h-6 flex items-center justify-center text-neutral-500 dark:text-neutral-500">
                     <DynamicLucideIcon name={data.icon} size={14} />
-                  </button>
-                </IconPicker>
+                  </span>
+                )
               )}
 
               <span
