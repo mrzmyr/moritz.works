@@ -6,9 +6,10 @@
     "dev": "next dev --experimental-https",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check ./src",
-    "lint:fix": "biome check ./src --write",
-    "lint:error": "biome check ./src --diagnostic-level=error",
+    "lint": "oxlint ./src && biome check ./src",
+    "lint:fix": "oxlint --fix ./src && biome check ./src --write",
+    "lint:error": "oxlint ./src && biome check ./src --diagnostic-level=error",
+    "lint:oxlint": "oxlint ./src",
     "typecheck": "bunx tsc --noEmit",
     "test": "bun test",
     "test:watch": "bun test --watch"
@@ -106,6 +107,7 @@
     "eslint": "^9.39.3",
     "eslint-config-next": "^16.1.6",
     "husky": "^9.1.7",
+    "oxlint": "^1.50.0",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3"
   },

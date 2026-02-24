@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import {
+  Check,
   ChevronDown,
   ChevronRight,
+  Copy,
   ExternalLink,
   GripVertical,
   Share2,
@@ -32,6 +34,17 @@ export function NodeToolbar({
   toggleCollapse,
 }: NodeToolbarProps) {
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  const handleCopyLink = () => {
+    const permalink = `${siteConfig.url}/agent-ops/${id}`;
+    navigator.clipboard.writeText(permalink);
+    setLinkCopied(true);
+    setTimeout(() => {
+      setLinkCopied(false);
+      setIsShareOpen(false);
+    }, 1500);
+  };
 
   const handleShare = (platform: "x" | "linkedin") => {
     const title = data.title ?? "";
@@ -95,6 +108,19 @@ export function NodeToolbar({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex flex-col gap-0.5">
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors w-full text-left"
+            >
+              {linkCopied ? (
+                <Check className="w-3.5 h-3.5 shrink-0" />
+              ) : (
+                <Copy className="w-3.5 h-3.5 shrink-0" />
+              )}
+              {linkCopied ? "Copied!" : "Copy link"}
+            </button>
+            <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-0.5" />
             <button
               type="button"
               onClick={() => handleShare("x")}
