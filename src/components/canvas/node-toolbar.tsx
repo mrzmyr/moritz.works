@@ -36,8 +36,9 @@ export function NodeToolbar({
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
 
+  const permalink = `${siteConfig.url}/agent-ops?node=${id}`;
+
   const handleCopyLink = () => {
-    const permalink = `${siteConfig.url}/agent-ops/${id}`;
     navigator.clipboard.writeText(permalink);
     setLinkCopied(true);
     setTimeout(() => {
@@ -48,7 +49,6 @@ export function NodeToolbar({
 
   const handleShare = (platform: "x" | "linkedin") => {
     const title = data.title ?? "";
-    const permalink = `${siteConfig.url}/agent-ops/${id}`;
     const url =
       platform === "x"
         ? `https://x.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(permalink)}`
