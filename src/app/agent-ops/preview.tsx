@@ -1,18 +1,15 @@
-import { db } from "@/lib/db";
-import { nodes } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
-import { CanvasPreviewClient } from "@/components/canvas/canvas-preview-client";
+import Image from "next/image";
 
-export async function AgentOpsPreview() {
-  const initialNodes = await db
-    .select()
-    .from(nodes)
-    .where(eq(nodes.canvas, "agent-ops"))
-    .orderBy(nodes.createdAt);
-
+export function AgentOpsPreview() {
   return (
     <div className="w-full h-[220px] overflow-hidden rounded-lg">
-      <CanvasPreviewClient initialNodes={initialNodes} />
+      <Image
+        src="/agent-ops-preview.png"
+        alt="Agent Ops canvas preview"
+        width={1012}
+        height={504}
+        className="w-full h-full object-cover object-left-top"
+      />
     </div>
   );
 }
