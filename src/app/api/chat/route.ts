@@ -1,5 +1,4 @@
-import { convertToModelMessages, stepCountIs, streamText, type UIMessage } from "ai";
-import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { convertToModelMessages, stepCountIs, streamText, type ToolSet, type UIMessage } from "ai";
 import Exa from "exa-js";
 import { createChatTools } from "./tools";
 
@@ -25,13 +24,13 @@ export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
 
   const exa = new Exa(process.env.EXA_API_KEY!);
-  const tools = createChatTools(exa);
+  const tools = createChatTools(exa as unknown as Parameters<typeof createChatTools>[0]);
 
   const result = streamText({
-    model: "google/gemini-3-flash",
+    model: "anthropic/claude-4-6-sonnet",
     system: SYSTEM_PROMPT,
     messages: await convertToModelMessages(messages),
-    tools,
+    tools: tools as ToolSet,
     stopWhen: stepCountIs(5),
   });
 

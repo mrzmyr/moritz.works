@@ -114,7 +114,7 @@ export default async function Page() {
               href="/llm-ops"
               className="flex flex-col rounded-xl border border-border bg-white dark:bg-neutral-900 p-0.5 outline-2 outline outline-neutral-100 dark:outline-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.06)] hover:bg-neutral-100/80 dark:hover:bg-neutral-800/60 hover:border-neutral-200 dark:hover:border-neutral-700 transition-all duration-300 group"
             >
-              <div className="bg-neutral-50 dark:bg-black rounded-xl border border-border/60 overflow-hidden max-h-[280px] pointer-events-none">
+              <div className="rounded-xl border border-border/60 overflow-hidden max-h-[280px] pointer-events-none bg-[#EFEFEF] dark:bg-[#090909]">
                 <div className="translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform">
                   <Suspense fallback={<div className="h-[160px]" />}>
                     <LlmOpsPreview />
@@ -135,7 +135,7 @@ export default async function Page() {
               href="/agent-ops"
               className="flex flex-col rounded-xl border border-border bg-white dark:bg-neutral-900 p-0.5 outline-2 outline outline-neutral-100 dark:outline-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.06)] hover:bg-neutral-100/80 dark:hover:bg-neutral-800/60 hover:border-neutral-200 dark:hover:border-neutral-700 transition-all duration-300 group"
             >
-              <div className="bg-neutral-50 dark:bg-black rounded-xl border border-border/60 overflow-hidden max-h-[280px] pointer-events-none">
+              <div className="rounded-xl border border-border/60 overflow-hidden max-h-[280px] pointer-events-none bg-[#EFEFEF] dark:bg-[#090909]">
                 <div className="translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform">
                   <Suspense fallback={<div className="h-[160px]" />}>
                     <AgentOpsPreview />

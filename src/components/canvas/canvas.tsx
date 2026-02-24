@@ -1527,6 +1527,13 @@ export function Canvas({
 
   const shareUrl = `https://moritz.works/${canvasSlug}`;
 
+  const handleSelectionChangeRf = useCallback(
+    ({ nodes }: { nodes: Node[] }) => {
+      onSelectionChange?.(nodes.map((n) => n.id));
+    },
+    [onSelectionChange],
+  );
+
   const historyContextValue = useMemo(
     () => ({ pushHistory, focusPendingRef, toggleCollapse }),
     [pushHistory, toggleCollapse],
@@ -1569,9 +1576,7 @@ export function Canvas({
                 selectionOnDrag={canEdit}
                 multiSelectionKeyCode={canEdit ? "Shift" : null}
                 onNodeContextMenu={handleNodeContextMenu}
-                onSelectionChange={({ nodes }) =>
-                  onSelectionChange?.(nodes.map((n) => n.id))
-                }
+                onSelectionChange={handleSelectionChangeRf}
                 {...(canEdit && {
                   onConnect,
                   onNodeDragStart: handleNodeDragStart,

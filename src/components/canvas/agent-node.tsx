@@ -1,35 +1,18 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Handle,
-  NodeResizeControl,
-  Position,
-  ResizeControlVariant,
-  useReactFlow,
-  type NodeProps,
-} from "@xyflow/react";
-import {
-  ChevronDown,
-  ChevronRight,
-  ExternalLink,
-  GripVertical,
-  Loader2,
-  Share2,
-} from "lucide-react";
+import { useReactFlow, type NodeProps } from "@xyflow/react";
+import { Loader2 } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { siteConfig } from "@/config/app";
 import { useCanvasActions } from "./canvas-actions-context";
 import { useHistoryContext } from "./history-context";
 import { DynamicLucideIcon, IconPicker } from "./icon-picker";
 import { ImageDropzone } from "./image-dropzone";
 import { MarkdownEditor } from "./markdown-editor";
+import { NodeHandles } from "./node-handles";
+import { NodeResizeControls } from "./node-resize-controls";
+import { NodeToolbar } from "./node-toolbar";
 import { fetchUrlMetadata } from "@/lib/fetch-url-metadata";
 import type { AgentNodeData, AgentNodeType } from "./types";
 
@@ -71,9 +54,9 @@ export const AgentNode = memo(function AgentNode({
   selected,
   draggable,
 }: NodeProps<AgentNodeType>) {
-  const { updateNodeData, setNodes } = useReactFlow();
+  const { updateNodeData } = useReactFlow();
   const { pushHistory, focusPendingRef, toggleCollapse } = useHistoryContext();
-  const { updateNode, updateNodeSize } = useCanvasActions();
+  const { updateNode } = useCanvasActions();
   const titleRef = useRef<HTMLSpanElement>(null);
   const saveDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTitleFocused, setIsTitleFocused] = useState(false);
@@ -81,22 +64,8 @@ export const AgentNode = memo(function AgentNode({
   const [descriptionForceEdit, setDescriptionForceEdit] = useState(false);
   const [isDraggingOverCard, setIsDraggingOverCard] = useState(false);
   const [iconPickerOpen, setIconPickerOpen] = useState(false);
-  const [isShareOpen, setIsShareOpen] = useState(false);
   const [isFetchingLinkMeta, setIsFetchingLinkMeta] = useState(false);
   const dragCounterCard = useRef(0);
-
-  const handleShare = (platform: "x" | "linkedin") => {
-    const title = data.title ?? "";
-    const permalink = `${siteConfig.url}/agent-ops/${id}`;
-
-    const url =
-      platform === "x"
-        ? `https://x.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(permalink)}`
-        : `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(permalink)}`;
-
-    window.open(url, "_blank", "noopener,noreferrer");
-    setIsShareOpen(false);
-  };
 
   // Sync title DOM content only when not focused (prevents overwriting while typing)
   useEffect(() => {
@@ -114,9 +83,7 @@ export const AgentNode = memo(function AgentNode({
     el.contentEditable = "true";
     setIsEditingTitle(true);
     setIsTitleFocused(true);
-    const timer = setTimeout(() => {
-      el.focus();
-    }, 0);
+    const timer = setTimeout(() => el.focus(), 0);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -197,7 +164,6 @@ export const AgentNode = memo(function AgentNode({
     if (!el) return;
     const newTitle = el.textContent ?? "";
 
-    // If the title looks like a URL, fetch its metadata and convert to a link card
     if (isValidHttpUrl(newTitle)) {
       setIsFetchingLinkMeta(true);
       try {
@@ -219,7 +185,6 @@ export const AgentNode = memo(function AgentNode({
         debouncedSave(after);
       } catch {
         toast.error("Failed to fetch link metadata");
-        // Fall back to saving the URL as plain title
         if (newTitle !== (data.title ?? "")) {
           const before = { title: data.title };
           const after = { title: newTitle };
@@ -273,271 +238,15 @@ export const AgentNode = memo(function AgentNode({
 
   return (
     <div className="relative group w-full h-full flex flex-col">
-      {selected && (
-        <>
-          <NodeResizeControl
-            position="right"
-            variant={ResizeControlVariant.Line}
-            minWidth={200}
-            style={{
-              borderColor: "transparent",
-              borderWidth: 6,
-              cursor: "ew-resize",
-            }}
-            onResizeEnd={(_, params) => {
-              setNodes((nds) =>
-                nds.map((n) =>
-                  n.id === id
-                    ? { ...n, style: { ...n.style, width: params.width } }
-                    : n,
-                ),
-              );
-              updateNodeSize({ id, width: params.width }).catch(() =>
-                toast.error("Failed to save size"),
-              );
-            }}
-          />
-          <NodeResizeControl
-            position="bottom"
-            variant={ResizeControlVariant.Line}
-            minHeight={40}
-            style={{
-              borderColor: "transparent",
-              borderWidth: 6,
-              cursor: "ns-resize",
-            }}
-            onResizeEnd={(_, params) => {
-              setNodes((nds) =>
-                nds.map((n) =>
-                  n.id === id
-                    ? { ...n, style: { ...n.style, height: params.height } }
-                    : n,
-                ),
-              );
-              updateNodeSize({ id, height: params.height }).catch(() =>
-                toast.error("Failed to save size"),
-              );
-            }}
-          />
-          <NodeResizeControl
-            position="top"
-            variant={ResizeControlVariant.Line}
-            minHeight={40}
-            style={{
-              borderColor: "transparent",
-              borderWidth: 6,
-              cursor: "ns-resize",
-            }}
-            onResizeEnd={(_, params) => {
-              setNodes((nds) =>
-                nds.map((n) =>
-                  n.id === id
-                    ? { ...n, style: { ...n.style, height: params.height } }
-                    : n,
-                ),
-              );
-              updateNodeSize({ id, height: params.height }).catch(() =>
-                toast.error("Failed to save size"),
-              );
-            }}
-          />
-          {(
-            ["top-left", "top-right", "bottom-left", "bottom-right"] as const
-          ).map((pos) => (
-            <NodeResizeControl
-              key={pos}
-              position={pos}
-              variant={ResizeControlVariant.Handle}
-              minWidth={200}
-              minHeight={40}
-              style={{
-                width: 12,
-                height: 12,
-                background: "transparent",
-                border: "none",
-                cursor:
-                  pos === "top-left" || pos === "bottom-right"
-                    ? "nwse-resize"
-                    : "nesw-resize",
-              }}
-              onResizeEnd={(_, params) => {
-                setNodes((nds) =>
-                  nds.map((n) =>
-                    n.id === id
-                      ? {
-                          ...n,
-                          style: {
-                            ...n.style,
-                            width: params.width,
-                            height: params.height,
-                          },
-                        }
-                      : n,
-                  ),
-                );
-                updateNodeSize({
-                  id,
-                  width: params.width,
-                  height: params.height,
-                }).catch(() => toast.error("Failed to save size"));
-              }}
-            />
-          ))}
-        </>
-      )}
-      {/* Top handle — half circle flush against top edge */}
-      <Handle
-        id="top"
-        type="source"
-        position={Position.Top}
-        isConnectable
-        style={{ transform: "translate(-50%, -100%)" }}
-        className={cn(
-          "!bg-neutral-300 dark:!bg-neutral-600 !border-neutral-300 dark:!border-neutral-500",
-          "!w-5 !h-2 !rounded-t-full !rounded-b-none !border-b-0",
-          draggable
-            ? "opacity-0 group-hover:opacity-100 transition-opacity"
-            : "!opacity-0 !pointer-events-none",
-        )}
+      <NodeResizeControls id={id} selected={selected} />
+      <NodeHandles draggable={draggable} />
+      <NodeToolbar
+        id={id}
+        data={data}
+        draggable={draggable}
+        isLinkCard={isLinkCard}
+        toggleCollapse={toggleCollapse}
       />
-      {/* Left handle — half circle flush against left edge */}
-      <Handle
-        id="left"
-        type="source"
-        position={Position.Left}
-        isConnectable
-        style={{ transform: "translate(-100%, -50%)" }}
-        className={cn(
-          "!bg-neutral-300 dark:!bg-neutral-600 !border-neutral-300 dark:!border-neutral-500",
-          "!w-2 !h-5 !rounded-l-full !rounded-r-none !border-r-0",
-          draggable
-            ? "opacity-0 group-hover:opacity-100 transition-opacity"
-            : "!opacity-0 !pointer-events-none",
-        )}
-      />
-      {/* Right handle — half circle flush against right edge */}
-      <Handle
-        id="right"
-        type="source"
-        position={Position.Right}
-        isConnectable
-        style={{ transform: "translate(100%, -50%)" }}
-        className={cn(
-          "!bg-neutral-300 dark:!bg-neutral-600 !border-neutral-300 dark:!border-neutral-500",
-          "!w-2 !h-5 !rounded-r-full !rounded-l-none !border-l-0",
-          draggable
-            ? "opacity-0 group-hover:opacity-100 transition-opacity"
-            : "!opacity-0 !pointer-events-none",
-        )}
-      />
-      {/* Bottom handle — half circle flush against bottom edge */}
-      <Handle
-        id="bottom"
-        type="source"
-        position={Position.Bottom}
-        isConnectable
-        style={{ transform: "translate(-50%, 100%)" }}
-        className={cn(
-          "!bg-neutral-300 dark:!bg-neutral-600 !border-neutral-300 dark:!border-neutral-500",
-          "!w-5 !h-2 !rounded-b-full !rounded-t-none !border-t-0",
-          draggable
-            ? "opacity-0 group-hover:opacity-100 transition-opacity"
-            : "!opacity-0 !pointer-events-none",
-        )}
-      />
-
-      <div className="absolute top-2 right-2 z-10 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-        {isLinkCard && data.linkUrl && (
-          <a
-            href={data.linkUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={(e) => e.stopPropagation()}
-            className="w-5 h-5 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-400 dark:text-neutral-500"
-            title="Open link"
-          >
-            <ExternalLink size={12} />
-          </a>
-        )}
-        {data.hasChildren && (
-          <button
-            type="button"
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleCollapse(id);
-            }}
-            className="w-5 h-5 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-400 dark:text-neutral-500"
-            title={data.collapsed ? "Expand children" : "Collapse children"}
-          >
-            {data.collapsed ? (
-              <ChevronRight size={12} />
-            ) : (
-              <ChevronDown size={12} />
-            )}
-          </button>
-        )}
-
-        <Popover open={isShareOpen} onOpenChange={setIsShareOpen}>
-          <PopoverTrigger asChild>
-            <button
-              type="button"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => e.stopPropagation()}
-              className="w-5 h-5 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-400 dark:text-neutral-500"
-              title="Share"
-            >
-              <Share2 size={12} />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent
-            className="w-auto p-1.5"
-            side="bottom"
-            align="end"
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex flex-col gap-0.5">
-              <button
-                type="button"
-                onClick={() => handleShare("x")}
-                className="flex items-center gap-2 px-2.5 py-1.5 rounded text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors w-full text-left"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-3.5 h-3.5 fill-current shrink-0"
-                  aria-hidden="true"
-                >
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-                Share on X
-              </button>
-              <button
-                type="button"
-                onClick={() => handleShare("linkedin")}
-                className="flex items-center gap-2 px-2.5 py-1.5 rounded text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors w-full text-left"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-3.5 h-3.5 fill-current shrink-0"
-                  aria-hidden="true"
-                >
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                </svg>
-                Share on LinkedIn
-              </button>
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        {draggable && (
-          <GripVertical
-            size={14}
-            className="text-neutral-400 dark:text-neutral-500 cursor-grab active:cursor-grabbing"
-          />
-        )}
-      </div>
 
       {/* Card visual container — overflow-hidden must be on an inner div so handles aren't clipped */}
       <div
@@ -609,7 +318,6 @@ export const AgentNode = memo(function AgentNode({
           )}
 
           <div className="flex flex-col">
-            {/* Header: icon (only when set) + editable title + drag handle */}
             <div className="flex items-center">
               {data.icon &&
                 (draggable ? (
