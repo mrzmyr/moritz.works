@@ -35,7 +35,7 @@ export default async function Image({
     loadInterFont(600),
   ]);
 
-  const fonts: ConstructorParameters<typeof ImageResponse>[1]["fonts"] = [];
+  const fonts: NonNullable<ConstructorParameters<typeof ImageResponse>[1]>["fonts"] = [];
   if (regular)
     fonts.push({ name: "Inter", data: regular, style: "normal", weight: 400 });
   if (semibold)

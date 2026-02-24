@@ -1295,7 +1295,7 @@ export function Canvas({
           ref={flowWrapper}
           onMouseDown={handleFlowMouseDown}
           className={cn(
-            "w-screen h-screen relative bg-neutral-50 dark:bg-neutral-black transition-opacity duration-200",
+            "w-screen h-screen relative bg-neutral-50 dark:bg-[#090909] transition-opacity duration-200",
             nodesReady ? "opacity-100" : "opacity-0",
             !isDev && !isSelectMode && "[&_*]:!cursor-default",
             isSelectMode && "!cursor-crosshair [&_*]:!cursor-crosshair",
