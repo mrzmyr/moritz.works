@@ -1,0 +1,2 @@
+- use bun for install, deps and testing
+- use server actions over API endpoints

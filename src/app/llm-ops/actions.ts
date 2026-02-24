@@ -4,6 +4,7 @@ import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import type { DbNode } from "@/lib/db/schema";
 import { nodes } from "@/lib/db/schema";
+import { generateId } from "@/lib/generate-id";
 
 const CANVAS = "llm-ops";
 
@@ -24,7 +25,7 @@ export async function createNode(input: {
   const [node] = await db
     .insert(nodes)
     .values({
-      ...(input.id ? { id: input.id } : {}),
+      id: input.id ?? generateId(),
       canvas: CANVAS,
       parentId: input.parentId ?? null,
       positionX: input.positionX,
@@ -43,6 +44,7 @@ export async function updateNode(input: {
   positionY?: number;
   imageUrl?: string | null;
   cardType?: string | null;
+  linkUrl?: string | null;
   parentId?: string | null;
   parentSourceHandle?: string | null;
   parentTargetHandle?: string | null;

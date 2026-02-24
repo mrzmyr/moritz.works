@@ -14,7 +14,14 @@ import {
   useReactFlow,
   type NodeProps,
 } from "@xyflow/react";
-import { ChevronDown, ChevronRight, GripVertical, Share2 } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  ExternalLink,
+  GripVertical,
+  Loader2,
+  Share2,
+} from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { siteConfig } from "@/config/app";
@@ -23,7 +30,17 @@ import { useHistoryContext } from "./history-context";
 import { DynamicLucideIcon, IconPicker } from "./icon-picker";
 import { ImageDropzone } from "./image-dropzone";
 import { MarkdownEditor } from "./markdown-editor";
+import { fetchUrlMetadata } from "@/lib/fetch-url-metadata";
 import type { AgentNodeData, AgentNodeType } from "./types";
+
+function isValidHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
 
 function agentNodePropsAreEqual(
   prev: NodeProps<AgentNodeType>,
@@ -43,7 +60,8 @@ function agentNodePropsAreEqual(
     prev.data.openIconPicker === next.data.openIconPicker &&
     prev.data.autoFocusTitle === next.data.autoFocusTitle &&
     prev.data.autoFocusDescription === next.data.autoFocusDescription &&
-    prev.data.isLinked === next.data.isLinked
+    prev.data.isLinked === next.data.isLinked &&
+    prev.data.linkUrl === next.data.linkUrl
   );
 }
 
@@ -64,6 +82,7 @@ export const AgentNode = memo(function AgentNode({
   const [isDraggingOverCard, setIsDraggingOverCard] = useState(false);
   const [iconPickerOpen, setIconPickerOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isFetchingLinkMeta, setIsFetchingLinkMeta] = useState(false);
   const dragCounterCard = useRef(0);
 
   const handleShare = (platform: "x" | "linkedin") => {
@@ -171,12 +190,49 @@ export const AgentNode = memo(function AgentNode({
     });
   };
 
-  const handleTitleBlur = () => {
+  const handleTitleBlur = async () => {
     setIsTitleFocused(false);
     setIsEditingTitle(false);
     const el = titleRef.current;
     if (!el) return;
     const newTitle = el.textContent ?? "";
+
+    // If the title looks like a URL, fetch its metadata and convert to a link card
+    if (isValidHttpUrl(newTitle)) {
+      setIsFetchingLinkMeta(true);
+      try {
+        const meta = await fetchUrlMetadata(newTitle);
+        const before = {
+          title: data.title,
+          icon: data.icon,
+          linkUrl: data.linkUrl,
+          cardType: data.cardType,
+        };
+        const after: Partial<AgentNodeData> = {
+          title: meta.title,
+          icon: meta.faviconUrl,
+          linkUrl: newTitle,
+          cardType: "link",
+        };
+        updateNodeData(id, after);
+        pushHistory({ type: "update", nodeId: id, before, after });
+        debouncedSave(after);
+      } catch {
+        toast.error("Failed to fetch link metadata");
+        // Fall back to saving the URL as plain title
+        if (newTitle !== (data.title ?? "")) {
+          const before = { title: data.title };
+          const after = { title: newTitle };
+          updateNodeData(id, after);
+          pushHistory({ type: "update", nodeId: id, before, after });
+          debouncedSave(after);
+        }
+      } finally {
+        setIsFetchingLinkMeta(false);
+      }
+      return;
+    }
+
     if (newTitle !== (data.title ?? "")) {
       const before = { title: data.title };
       const after = { title: newTitle };
@@ -213,6 +269,7 @@ export const AgentNode = memo(function AgentNode({
 
   const showDropzone = isDraggingOverCard || !!data.imageUrl;
   const isTitleCard = data.cardType === "title";
+  const isLinkCard = data.cardType === "link" && !!data.linkUrl;
 
   return (
     <div className="relative group w-full h-full flex flex-col">
@@ -390,6 +447,19 @@ export const AgentNode = memo(function AgentNode({
       />
 
       <div className="absolute top-2 right-2 z-10 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        {isLinkCard && data.linkUrl && (
+          <a
+            href={data.linkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
+            className="w-5 h-5 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-400 dark:text-neutral-500"
+            title="Open link"
+          >
+            <ExternalLink size={12} />
+          </a>
+        )}
         {data.hasChildren && (
           <button
             type="button"
@@ -472,12 +542,16 @@ export const AgentNode = memo(function AgentNode({
       {/* Card visual container — overflow-hidden must be on an inner div so handles aren't clipped */}
       <div
         className={cn(
-          "w-full h-full flex flex-col overflow-hidden bg-white dark:bg-neutral-900 rounded-xl transition-all",
-          selected
-            ? "shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
-            : "shadow-[0_1px_2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.06)]",
-          data.isLinked && !selected && "ring-blue-500/40",
-          isTitleCard && "bg-neutral-50 dark:bg-neutral-950",
+          "w-full h-full flex flex-col overflow-hidden rounded-xl",
+          isTitleCard
+            ? selected && "ring-2 ring-blue-500"
+            : [
+                "bg-white dark:bg-neutral-900",
+                selected
+                  ? "ring-2 ring-blue-500"
+                  : "ring-1 ring-neutral-300 dark:ring-neutral-800",
+                data.isLinked && !selected && "ring-blue-500/40",
+              ],
         )}
         onDragEnter={handleCardDragEnter}
         onDragLeave={handleCardDragLeave}
@@ -504,7 +578,8 @@ export const AgentNode = memo(function AgentNode({
 
         <div
           className={cn(
-            "flex flex-col p-2.5 px-3 gap-1 overflow-y-auto min-h-0 shrink [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
+            "flex flex-col overflow-y-auto min-h-0 shrink [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
+            isTitleCard ? "p-5 gap-2" : "p-2.5 px-3 gap-1",
             !showDropzone && "flex-1 justify-center",
           )}
         >
@@ -535,27 +610,40 @@ export const AgentNode = memo(function AgentNode({
 
           <div className="flex flex-col">
             {/* Header: icon (only when set) + editable title + drag handle */}
-            <div className="flex gap-1 items-center">
-              {data.icon && (
-                draggable ? (
+            <div className="flex items-center">
+              {data.icon &&
+                (draggable ? (
                   <IconPicker
                     value={data.icon}
                     onSelect={(icon) => handleFieldChange("icon", icon)}
                   >
                     <button
                       type="button"
-                      className="flex-shrink-0 w-5 h-6 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-500 dark:text-neutral-500"
+                      className={cn(
+                        "flex-shrink-0 flex items-center justify-center rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-500 dark:text-neutral-500",
+                        isTitleCard ? "w-10 h-10 mr-1" : "w-5 h-6",
+                      )}
                       title="Change icon"
                     >
-                      <DynamicLucideIcon name={data.icon} size={14} />
+                      <DynamicLucideIcon
+                        name={data.icon}
+                        size={isTitleCard ? 28 : 14}
+                      />
                     </button>
                   </IconPicker>
                 ) : (
-                  <span className="flex-shrink-0 w-5 h-6 flex items-center justify-center text-neutral-500 dark:text-neutral-500">
-                    <DynamicLucideIcon name={data.icon} size={14} />
+                  <span
+                    className={cn(
+                      "flex-shrink-0 flex items-center justify-center text-neutral-500 dark:text-neutral-500",
+                      isTitleCard ? "w-10 h-10 mr-1" : "w-5 h-6",
+                    )}
+                  >
+                    <DynamicLucideIcon
+                      name={data.icon}
+                      size={isTitleCard ? 28 : 14}
+                    />
                   </span>
-                )
-              )}
+                ))}
 
               <span
                 ref={(el) => {
@@ -571,15 +659,32 @@ export const AgentNode = memo(function AgentNode({
                 onBlur={handleTitleBlur}
                 onKeyDown={handleTitleKeyDown}
                 onMouseDown={(e) => isEditingTitle && e.stopPropagation()}
+                onClick={(e) => {
+                  if (isLinkCard && !draggable && data.linkUrl) {
+                    e.stopPropagation();
+                    window.open(data.linkUrl, "_blank", "noopener,noreferrer");
+                  }
+                }}
                 className={cn(
                   "flex-1 text-sm font-medium text-neutral-900 dark:text-neutral-100 outline-none empty:before:content-['Untitled'] empty:before:text-neutral-400 dark:empty:before:text-neutral-500 min-w-0 break-words",
                   isEditingTitle ? "nodrag cursor-text" : "select-none",
                   isTitleCard &&
-                    "text-base font-semibold tracking-tight text-neutral-700 dark:text-neutral-200",
+                    "text-4xl font-bold tracking-tight leading-tight text-neutral-800 dark:text-neutral-100",
+                  isLinkCard &&
+                    !isEditingTitle &&
+                    "underline underline-offset-2 decoration-neutral-300 dark:decoration-neutral-600",
                 )}
                 data-placeholder="Untitled"
               />
+
+              {isFetchingLinkMeta && (
+                <Loader2
+                  size={12}
+                  className="shrink-0 animate-spin text-neutral-400"
+                />
+              )}
             </div>
+
             <MarkdownEditor
               value={data.description ?? null}
               onChange={(val) => handleFieldChange("description", val || null)}

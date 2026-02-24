@@ -22,6 +22,27 @@
       "when": 1771887600563,
       "tag": "0002_ancient_jubilee",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1771939192093,
+      "tag": "0003_text_ids",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1771940420038,
+      "tag": "0004_even_rattler",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1772000000000,
+      "tag": "0005_link_url",
+      "breakpoints": true
     }
   ]
 }

@@ -20,6 +20,7 @@ export interface CanvasActions {
     positionY?: number;
     imageUrl?: string | null;
     cardType?: string | null;
+    linkUrl?: string | null;
     parentId?: string | null;
     parentSourceHandle?: string | null;
     parentTargetHandle?: string | null;

@@ -1,6 +1,6 @@
 import type { Node } from "@xyflow/react";
 
-export type CardType = "standard" | "title";
+export type CardType = "standard" | "title" | "link";
 
 export type AgentNodeData = {
   title: string;
@@ -8,6 +8,7 @@ export type AgentNodeData = {
   description: string | null;
   imageUrl: string | null;
   cardType?: CardType | null;
+  linkUrl?: string | null;
   /** Transient UI flag — not persisted. When true, the icon picker opens immediately. */
   openIconPicker?: boolean;
   /** Transient UI flag — not persisted. When true, the title enters edit mode and is focused. */

@@ -23,9 +23,11 @@ import {
   ChevronRight,
   Crop,
   Download,
+  EyeOff,
   Link2,
   Loader2,
   MousePointerClick,
+  Pencil,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -33,6 +35,7 @@ import { useSearchParams } from "next/navigation";
 import {
   useCallback,
   useEffect,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -40,13 +43,20 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { SiLinkedin } from "react-icons/si";
+import { addCards as addCardsUtil, type CardSpec } from "./add-cards";
 import { AgentNode } from "./agent-node";
 import {
   CanvasActionsContext,
   type CanvasActions,
 } from "./canvas-actions-context";
 import { CANVAS_COLORS } from "./canvas-config";
+import {
+  getHelperLines,
+  HelperLines,
+  type HelperLinesHandle,
+} from "./helper-lines";
 import { HistoryContext, type HistoryEntry } from "./history-context";
+import { generateId } from "@/lib/generate-id";
 import type { AgentNodeData, AgentNodeType, CardType } from "./types";
 
 const nodeTypes = { agent: AgentNode };
@@ -137,6 +147,7 @@ function dbNodeToRfNode(node: DbNode): AgentNodeType {
       description: node.description,
       imageUrl: node.imageUrl,
       cardType: (node.cardType as CardType | null) ?? null,
+      linkUrl: node.linkUrl ?? null,
     },
   };
 }
@@ -164,11 +175,20 @@ type ContextMenuState = {
   targetEdgeId: string | null;
 };
 
+export interface CanvasHandle {
+  addCards: (
+    cards: CardSpec[],
+    parentId?: string | null,
+  ) => Promise<void>;
+}
+
 interface CanvasProps {
   initialNodes: DbNode[];
   title: string;
   canvasSlug: string;
   actions: CanvasActions;
+  ref?: React.Ref<CanvasHandle>;
+  onSelectionChange?: (ids: string[]) => void;
 }
 
 export function Canvas({
@@ -176,6 +196,8 @@ export function Canvas({
   title,
   canvasSlug,
   actions,
+  ref,
+  onSelectionChange,
 }: CanvasProps) {
   const {
     createNode,
@@ -186,6 +208,8 @@ export function Canvas({
   } = actions;
 
   const isDev = process.env.NODE_ENV === "development";
+  const [isReadOnly, setIsReadOnly] = useState(false);
+  const canEdit = isDev && !isReadOnly;
   const searchParams = useSearchParams();
   const focusNodeId = searchParams.get("node");
   const isDark = useIsDark();
@@ -223,6 +247,9 @@ export function Canvas({
   const [collapsedNodeIds, setCollapsedNodeIds] = useState<Set<string>>(
     new Set(),
   );
+
+  const helperLinesRef = useRef<HelperLinesHandle>(null);
+  const displayedNodesRef = useRef<typeof displayedNodes>([]);
 
   const toggleCollapse = useCallback((nodeId: string) => {
     setCollapsedNodeIds((prev) => {
@@ -275,6 +302,8 @@ export function Canvas({
       })),
     [rfNodes, hiddenNodeIds, childrenMap, collapsedNodeIds, focusNodeId],
   );
+
+  displayedNodesRef.current = displayedNodes;
 
   const displayedEdges = useMemo(
     () =>
@@ -496,6 +525,44 @@ export function Canvas({
     [setNodes, setEdges],
   );
 
+  useImperativeHandle(
+    ref,
+    () => ({
+      async addCards(cards, parentId = null) {
+        const parentNode = parentId
+          ? rfNodes.find((n) => n.id === parentId)
+          : null;
+
+        const basePosition: XYPosition = parentNode
+          ? {
+              x: parentNode.position.x,
+              y:
+                parentNode.position.y +
+                ((parentNode.style?.height as number | undefined) ?? 160) +
+                60,
+            }
+          : screenToFlowRef.current
+            ? screenToFlowRef.current({
+                x: window.innerWidth / 2 - (cards.length * 308) / 2,
+                y: window.innerHeight / 2,
+              })
+            : { x: 0, y: 0 };
+
+        const dbNodes = await addCardsUtil(
+          cards,
+          parentId,
+          { createNode, updateNode },
+          basePosition,
+        );
+
+        for (const dbNode of dbNodes) {
+          addNodeToState(dbNode);
+        }
+      },
+    }),
+    [rfNodes, screenToFlowRef, createNode, updateNode, addNodeToState],
+  );
+
   const handleCreateNode = useCallback(
     async (
       pos: XYPosition,
@@ -541,6 +608,133 @@ export function Canvas({
     );
   }, [rfNodes, handleCreateNode, setNodes]);
 
+  const handlePaste = useCallback(async () => {
+    const clipboard = clipboardRef.current;
+    if (!clipboard || clipboard.nodes.length === 0) return;
+
+    const PASTE_OFFSET = 40;
+    const idMap = new Map<string, string>();
+    for (const node of clipboard.nodes) {
+      idMap.set(node.id, generateId());
+    }
+
+    const newNodes: AgentNodeType[] = clipboard.nodes.map((node) => ({
+      ...node,
+      id: idMap.get(node.id)!,
+      position: {
+        x: node.position.x + PASTE_OFFSET,
+        y: node.position.y + PASTE_OFFSET,
+      },
+      selected: true,
+      data: { ...node.data },
+    }));
+
+    const newEdges: Edge[] = clipboard.edges
+      .filter((e) => idMap.has(e.source) && idMap.has(e.target))
+      .map((edge) => {
+        const newSource = idMap.get(edge.source)!;
+        const newTarget = idMap.get(edge.target)!;
+        return {
+          ...edge,
+          id: `e-${newSource}-${newTarget}`,
+          source: newSource,
+          target: newTarget,
+          style: getEdgeStyle(isDark),
+        };
+      });
+
+    setNodes((prev) => [
+      ...prev.map((n) => ({ ...n, selected: false })),
+      ...newNodes,
+    ]);
+    if (newEdges.length > 0) {
+      setEdges((prev) => [...prev, ...newEdges]);
+    }
+
+    setSyncCount((c) => c + 1);
+    try {
+      await Promise.all(
+        newNodes.map(async (node) => {
+          const incomingEdge = newEdges.find((e) => e.target === node.id);
+          const parentId = incomingEdge?.source ?? null;
+
+          const dbNode = await createNode({
+            id: node.id,
+            parentId,
+            positionX: node.position.x,
+            positionY: node.position.y,
+          });
+
+          const sourceWidth =
+            (node.style?.width as number | undefined) ?? null;
+          const sourceHeight =
+            (node.style?.height as number | undefined) ?? null;
+
+          const updates: Promise<unknown>[] = [
+            updateNode({
+              id: dbNode.id,
+              title: node.data.title,
+              icon: node.data.icon,
+              description: node.data.description,
+              imageUrl: node.data.imageUrl,
+              cardType: node.data.cardType,
+              linkUrl: node.data.linkUrl,
+              ...(incomingEdge && {
+                parentSourceHandle:
+                  incomingEdge.sourceHandle ?? "right",
+                parentTargetHandle:
+                  incomingEdge.targetHandle ?? "left",
+              }),
+            }),
+          ];
+
+          if (sourceWidth != null || sourceHeight != null) {
+            updates.push(
+              updateNodeSize({
+                id: dbNode.id,
+                ...(sourceWidth != null && { width: sourceWidth }),
+                ...(sourceHeight != null && { height: sourceHeight }),
+              }),
+            );
+          }
+
+          await Promise.all(updates);
+          pushHistory({
+            type: "create",
+            nodeId: node.id,
+            nodeData: {
+              ...dbNode,
+              title: node.data.title,
+              icon: node.data.icon,
+              description: node.data.description,
+              imageUrl: node.data.imageUrl,
+              cardType: node.data.cardType ?? null,
+              linkUrl: node.data.linkUrl ?? null,
+              width: sourceWidth,
+              height: sourceHeight,
+            },
+          });
+        }),
+      );
+    } catch {
+      toast.error("Failed to paste");
+      const newIds = new Set(newNodes.map((n) => n.id));
+      const newEdgeIds = new Set(newEdges.map((e) => e.id));
+      setNodes((prev) => prev.filter((n) => !newIds.has(n.id)));
+      setEdges((prev) => prev.filter((e) => !newEdgeIds.has(e.id)));
+    } finally {
+      setSyncCount((c) => c - 1);
+    }
+  }, [
+    isDark,
+    createNode,
+    updateNode,
+    updateNodeSize,
+    pushHistory,
+    setNodes,
+    setEdges,
+  ]);
+
   const handleDeleteNode = useCallback(
     async (nodeId: string) => {
       const nodeToDelete = rfNodes.find((n) => n.id === nodeId);
@@ -561,6 +755,7 @@ export function Canvas({
         width: (nodeToDelete.style?.width as number | undefined) ?? null,
         height: (nodeToDelete.style?.height as number | undefined) ?? null,
         cardType: nodeToDelete.data.cardType ?? null,
+        linkUrl: nodeToDelete.data.linkUrl ?? null,
         parentSourceHandle: incomingEdge?.sourceHandle ?? null,
         parentTargetHandle: incomingEdge?.targetHandle ?? null,
         canvas: canvasSlug,
@@ -622,6 +817,8 @@ export function Canvas({
           icon: entry.snapshot.icon,
           description: entry.snapshot.description,
           imageUrl: entry.snapshot.imageUrl,
+          cardType: entry.snapshot.cardType,
+          linkUrl: entry.snapshot.linkUrl,
           parentSourceHandle: entry.snapshot.parentSourceHandle,
           parentTargetHandle: entry.snapshot.parentTargetHandle,
         });
@@ -844,7 +1041,7 @@ export function Canvas({
   ]);
 
   useEffect(() => {
-    if (!isDev) return;
+    if (!canEdit) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       const active = document.activeElement;
       const isEditing =
@@ -862,6 +1059,24 @@ export function Canvas({
       } else if (modifier && ((e.key === "z" && e.shiftKey) || e.key === "y")) {
         e.preventDefault();
         performRedo();
+      } else if (modifier && e.key === "c" && !isEditing) {
+        const selectedNodes = rfNodes.filter((n) => n.selected);
+        if (selectedNodes.length > 0) {
+          e.preventDefault();
+          const selectedIds = new Set(selectedNodes.map((n) => n.id));
+          const internalEdges = rfEdges.filter(
+            (ed) => selectedIds.has(ed.source) && selectedIds.has(ed.target),
+          );
+          clipboardRef.current = { nodes: selectedNodes, edges: internalEdges };
+          toast.success(
+            selectedNodes.length === 1
+              ? "Node copied"
+              : `${selectedNodes.length} nodes copied`,
+          );
+        }
+      } else if (modifier && e.key === "v" && !isEditing) {
+        e.preventDefault();
+        handlePaste();
       } else if (e.key === "Tab" && !isEditing) {
         e.preventDefault();
         handleTabCreate();
@@ -889,10 +1104,13 @@ export function Canvas({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [
+    canEdit,
     performUndo,
     performRedo,
     handleTabCreate,
+    handlePaste,
     rfNodes,
+    rfEdges,
     setNodes,
     handleDeleteNode,
   ]);
@@ -913,6 +1131,11 @@ export function Canvas({
       window.removeEventListener("mouseup", onUp);
     };
   }, []);
+
+  const clipboardRef = useRef<{
+    nodes: AgentNodeType[];
+    edges: Edge[];
+  } | null>(null);
 
   const dragStartPositions = useRef<Map<string, XYPosition>>(new Map());
 
@@ -935,7 +1158,7 @@ export function Canvas({
       const outgoingEdges = rfEdges.filter((edge) => edge.source === source.id);
       const parentId = incomingEdges[0]?.source ?? null;
 
-      const newId = crypto.randomUUID();
+      const newId = generateId();
       const optimisticNode: AgentNodeType = {
         id: newId,
         type: "agent",
@@ -1037,8 +1260,18 @@ export function Canvas({
     ],
   );
 
+  const handleNodeDrag = useCallback(
+    (_: React.MouseEvent, node: Node) => {
+      helperLinesRef.current?.update(
+        getHelperLines(node, displayedNodesRef.current),
+      );
+    },
+    [],
+  );
+
   const handleNodeDragStop = useCallback(
     (_: React.MouseEvent, node: Node, nodes: Node[]) => {
+      helperLinesRef.current?.update({});
       const movedNodes = nodes.length > 1 ? nodes : [node];
       const moves = movedNodes.map((n) => ({
         id: n.id,
@@ -1070,10 +1303,13 @@ export function Canvas({
       e.preventDefault();
       const rect = flowWrapper.current?.getBoundingClientRect();
       if (!rect) return;
+      const flowPos = screenToFlowRef.current
+        ? screenToFlowRef.current({ x: e.clientX, y: e.clientY })
+        : { x: e.clientX - rect.left, y: e.clientY - rect.top };
       setContextMenu({
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
-        flowPos: { x: e.clientX - rect.left - 144, y: e.clientY - rect.top },
+        flowPos,
         targetNodeId: null,
         targetEdgeId: null,
       });
@@ -1270,7 +1506,15 @@ export function Canvas({
   const handleMenuSetCardType = (cardType: CardType) => {
     if (!contextMenu?.targetNodeId) return;
     const id = contextMenu.targetNodeId;
+    const prevCardType =
+      rfNodes.find((n) => n.id === id)?.data.cardType ?? null;
     closeMenu();
+    pushHistory({
+      type: "update",
+      nodeId: id,
+      before: { cardType: prevCardType },
+      after: { cardType },
+    });
     setNodes((nodes) =>
       nodes.map((n) =>
         n.id === id ? { ...n, data: { ...n.data, cardType } } : n,
@@ -1297,7 +1541,7 @@ export function Canvas({
           className={cn(
             "w-screen h-screen relative bg-neutral-50 dark:bg-[#090909] transition-opacity duration-200",
             nodesReady ? "opacity-100" : "opacity-0",
-            !isDev && !isSelectMode && "[&_*]:!cursor-default",
+            !canEdit && !isSelectMode && "[&_*]:!cursor-default",
             isSelectMode && "!cursor-crosshair [&_*]:!cursor-crosshair",
           )}
         >
@@ -1317,17 +1561,21 @@ export function Canvas({
                 maxZoom={2}
                 deleteKeyCode={null}
                 proOptions={{ hideAttribution: false }}
-                snapToGrid={isDev}
+                snapToGrid={canEdit}
                 snapGrid={[20, 20]}
-                nodesDraggable={isDev}
-                nodesConnectable={isDev}
+                nodesDraggable={canEdit}
+                nodesConnectable={canEdit}
                 panOnDrag={[1]}
-                selectionOnDrag={isDev}
-                multiSelectionKeyCode={isDev ? "Shift" : null}
+                selectionOnDrag={canEdit}
+                multiSelectionKeyCode={canEdit ? "Shift" : null}
                 onNodeContextMenu={handleNodeContextMenu}
-                {...(isDev && {
+                onSelectionChange={({ nodes }) =>
+                  onSelectionChange?.(nodes.map((n) => n.id))
+                }
+                {...(canEdit && {
                   onConnect,
                   onNodeDragStart: handleNodeDragStart,
+                  onNodeDrag: handleNodeDrag,
                   onNodeDragStop: handleNodeDragStop,
                   onPaneContextMenu: handlePaneContextMenu,
                   onEdgeContextMenu: handleEdgeContextMenu,
@@ -1337,6 +1585,9 @@ export function Canvas({
                 <ZoomResetHandler />
                 <FlowUtils screenToFlowRef={screenToFlowRef} />
                 <FocusNodeOnMount nodeId={focusNodeId} />
+                {canEdit && (
+                  <HelperLines ref={helperLinesRef} isDark={isDark} />
+                )}
                 <Background
                   variant={BackgroundVariant.Dots}
                   gap={20}
@@ -1351,7 +1602,7 @@ export function Canvas({
               </ReactFlow>
 
               {/* Title */}
-              <div className="absolute top-0 left-0 right-0 z-50 select-none flex justify-center">
+              <div className="absolute top-0 left-0 right-0 z-50 select-none flex justify-center pointer-events-none">
                 <div
                   className="w-full flex flex-col items-center relative"
                   style={{
@@ -1404,7 +1655,7 @@ export function Canvas({
               )}
 
               {/* Empty state */}
-              {isDev && rfNodes.length === 0 && (
+              {canEdit && rfNodes.length === 0 && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="flex flex-col items-center gap-2 text-neutral-400">
                     <MousePointerClick size={24} strokeWidth={1.5} />
@@ -1416,7 +1667,7 @@ export function Canvas({
               )}
 
               {/* Share / capture button (read-only mode) */}
-              {!isDev && (
+              {!canEdit && (
                 <div
                   data-skip-capture="true"
                   className="absolute top-4 right-4 z-50"
@@ -1463,8 +1714,8 @@ export function Canvas({
                       top: normalizedSelection.y,
                       width: normalizedSelection.width,
                       height: normalizedSelection.height,
-                      outline: "2px solid rgba(255,255,255,0.9)",
-                      boxShadow: "0 0 0 9999px rgba(0,0,0,0.35)",
+                      boxShadow:
+                        "inset 0 0 0 2px rgba(255,255,255,0.9), 0 0 0 9999px rgba(0,0,0,0.35)",
                     }}
                   />
                 )}
@@ -1553,6 +1804,41 @@ export function Canvas({
                 </div>
               )}
 
+              {/* Read-only toggle (writer access only) */}
+              {isDev && (
+                <div
+                  data-skip-capture="true"
+                  className="absolute bottom-4 right-4 z-50"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setIsReadOnly((v) => !v)}
+                    className={cn(
+                      "flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full transition-all duration-150 select-none",
+                      isReadOnly
+                        ? isDark
+                          ? "bg-neutral-800 text-neutral-300 border border-neutral-700"
+                          : "bg-neutral-200 text-neutral-600 border border-neutral-300"
+                        : isDark
+                          ? "text-white/40 hover:text-white/60 bg-black/20 hover:bg-black/30 backdrop-blur-sm border border-white/10"
+                          : "text-neutral-400 hover:text-neutral-600 bg-white/70 hover:bg-white/90 backdrop-blur-sm border border-neutral-200/60 shadow-sm",
+                    )}
+                  >
+                    {isReadOnly ? (
+                      <>
+                        <EyeOff size={11} />
+                        Read only
+                      </>
+                    ) : (
+                      <>
+                        <Pencil size={11} />
+                        Editing
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+
               {/* Context menu */}
               {contextMenu && (
                 <div
@@ -1571,7 +1857,7 @@ export function Canvas({
                     </button>
                   ) : contextMenu.targetNodeId ? (
                     <>
-                      {isDev && (
+                      {canEdit && (
                         <>
                           {!rfNodes.find(
                             (n) => n.id === contextMenu.targetNodeId,
@@ -1618,15 +1904,12 @@ export function Canvas({
                             </button>
                             {cardTypeSubmenuOpen && (
                               <div className="absolute left-full top-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg py-1 min-w-40 ml-1 z-50">
-                                {(["standard", "title"] as const).map(
+                                {(["standard", "title", "link"] as const).map(
                                   (type) => {
                                     const current = rfNodes.find(
                                       (n) => n.id === contextMenu?.targetNodeId,
                                     )?.data.cardType;
-                                    const isActive =
-                                      type === "title"
-                                        ? current === "title"
-                                        : current !== "title";
+                                    const isActive = current === type || (type === "standard" && current !== "title" && current !== "link");
                                     return (
                                       <button
                                         key={type}
@@ -1646,7 +1929,9 @@ export function Canvas({
                                         />
                                         {type === "standard"
                                           ? "Standard Card"
-                                          : "Title Card"}
+                                          : type === "title"
+                                          ? "Title Card"
+                                          : "Link Card"}
                                       </button>
                                     );
                                   },
@@ -1664,7 +1949,7 @@ export function Canvas({
                       >
                         Copy link to node
                       </button>
-                      {isDev && (
+                      {canEdit && (
                         <>
                           <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
                           <button

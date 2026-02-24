@@ -9,6 +9,7 @@ import { Books, BooksSkeleton } from "../components/books";
 import WorkList from "../components/work-list";
 import { LlmOpsPreview } from "../llm-ops/preview";
 import { AgentOpsPreview } from "../agent-ops/preview";
+import { AuthButton } from "./auth-button";
 
 const Headline = ({ children }: { children: React.ReactNode }) => {
   return <div className="font-medium dark:text-white">{children}</div>;
@@ -49,7 +50,7 @@ export default async function Page() {
               <span className="font-semibold tracking-tight">Moritz Meyer</span>
               <span className="opacity-50 rounded text-sm">he/him</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <a
                 href="https://github.com/mrzmyr"
                 target="_blank"
@@ -58,6 +59,7 @@ export default async function Page() {
               >
                 <SiGithub className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300" />
               </a>
+              <AuthButton />
             </div>
           </div>
           <div className="leading-7 lg:mt-36">
@@ -110,7 +112,7 @@ export default async function Page() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
             <Link
               href="/llm-ops"
-              className="flex flex-col rounded-xl border border-border bg-white dark:bg-neutral-900 p-0.5 outline-2 outline outline-neutral-100 dark:outline-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:bg-neutral-100/80 dark:hover:bg-neutral-800/60 hover:border-neutral-200 dark:hover:border-neutral-700 transition-all duration-300 group"
+              className="flex flex-col rounded-xl border border-border bg-white dark:bg-neutral-900 p-0.5 outline-2 outline outline-neutral-100 dark:outline-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.06)] hover:bg-neutral-100/80 dark:hover:bg-neutral-800/60 hover:border-neutral-200 dark:hover:border-neutral-700 transition-all duration-300 group"
             >
               <div className="bg-neutral-50 dark:bg-black rounded-xl border border-border/60 overflow-hidden max-h-[280px] pointer-events-none">
                 <div className="translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform">
@@ -131,7 +133,7 @@ export default async function Page() {
 
             <Link
               href="/agent-ops"
-              className="flex flex-col rounded-xl border border-border bg-white dark:bg-neutral-900 p-0.5 outline-2 outline outline-neutral-100 dark:outline-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:bg-neutral-100/80 dark:hover:bg-neutral-800/60 hover:border-neutral-200 dark:hover:border-neutral-700 transition-all duration-300 group"
+              className="flex flex-col rounded-xl border border-border bg-white dark:bg-neutral-900 p-0.5 outline-2 outline outline-neutral-100 dark:outline-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.06)] hover:bg-neutral-100/80 dark:hover:bg-neutral-800/60 hover:border-neutral-200 dark:hover:border-neutral-700 transition-all duration-300 group"
             >
               <div className="bg-neutral-50 dark:bg-black rounded-xl border border-border/60 overflow-hidden max-h-[280px] pointer-events-none">
                 <div className="translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform">
