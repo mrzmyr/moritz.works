@@ -472,10 +472,10 @@ export const AgentNode = memo(function AgentNode({
       {/* Card visual container — overflow-hidden must be on an inner div so handles aren't clipped */}
       <div
         className={cn(
-          "w-full h-full flex flex-col overflow-hidden bg-white dark:bg-neutral-900 rounded-xl transition-all border border-border",
+          "w-full h-full flex flex-col overflow-hidden bg-white dark:bg-neutral-900 rounded-xl transition-all",
           selected
-            ? "ring-neutral-900/25 dark:ring-white/25 outline-2 outline outline-neutral-100 dark:outline-neutral-900 shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
-            : "outline-2 outline outline-neutral-100 dark:outline-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.06)]",
+            ? "shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
+            : "shadow-[0_1px_2px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.06)]",
           data.isLinked && !selected && "ring-blue-500/40",
           isTitleCard && "bg-neutral-50 dark:bg-neutral-950",
         )}
@@ -503,7 +503,7 @@ export const AgentNode = memo(function AgentNode({
 
         <div
           className={cn(
-            "flex flex-col p-2 gap-1 overflow-y-auto min-h-0 shrink [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
+            "flex flex-col p-2.5 px-3 gap-1 overflow-y-auto min-h-0 shrink [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
             !showDropzone && "flex-1 justify-center",
           )}
         >
