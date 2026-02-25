@@ -125,6 +125,24 @@ function useIsDark() {
   );
 }
 
+function ShareLinkButton({ url }: { url: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+    >
+      {copied ? <Check size={13} /> : <Link2 size={13} />}
+      {copied ? "Copied!" : "Copy link"}
+    </button>
+  );
+}
+
 const DEFAULT_NODE_WIDTH = 288;
 
 const getEdgeStyle = (isDark: boolean) => ({
@@ -1525,7 +1543,9 @@ export function Canvas({
     );
   };
 
-  const shareUrl = `https://moritz.works/${canvasSlug}`;
+  const shareUrl = focusNodeId
+    ? `https://moritz.works/${canvasSlug}?node=${focusNodeId}`
+    : `https://moritz.works/${canvasSlug}`;
 
   const handleSelectionChangeRf = useCallback(
     ({ nodes }: { nodes: Node[] }) => {
@@ -1548,7 +1568,6 @@ export function Canvas({
           className={cn(
             "w-screen h-screen relative bg-neutral-50 dark:bg-[#090909] transition-opacity duration-200",
             nodesReady ? "opacity-100" : "opacity-0",
-            !canEdit && !isSelectMode && "[&_*]:!cursor-default",
             isSelectMode && "!cursor-crosshair [&_*]:!cursor-crosshair",
           )}
         >
@@ -1572,7 +1591,7 @@ export function Canvas({
                 snapGrid={[20, 20]}
                 nodesDraggable={canEdit}
                 nodesConnectable={canEdit}
-                panOnDrag={[1]}
+                panOnDrag={canEdit ? [1] : [0, 1]}
                 selectionOnDrag={canEdit}
                 multiSelectionKeyCode={canEdit ? "Shift" : null}
                 onNodeContextMenu={handleNodeContextMenu}
@@ -1781,6 +1800,7 @@ export function Canvas({
                         <Download size={13} />
                         Download
                       </a>
+                      <ShareLinkButton url={shareUrl} />
                       <a
                         href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${title} by @mrzmyr\n\n${shareUrl}`)}`}
                         target="_blank"
