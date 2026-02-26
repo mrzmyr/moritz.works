@@ -144,6 +144,7 @@ function ShareLinkButton({ url }: { url: string }) {
 }
 
 const DEFAULT_NODE_WIDTH = 288;
+const CANVAS_CLIPBOARD_KEY = "canvas_clipboard";
 
 const getEdgeStyle = (isDark: boolean) => ({
   stroke: isDark ? CANVAS_COLORS.EDGE_DARK : CANVAS_COLORS.EDGE_LIGHT,
@@ -627,7 +628,16 @@ export function Canvas({
   }, [rfNodes, handleCreateNode, setNodes]);
 
   const handlePaste = useCallback(async () => {
-    const clipboard = clipboardRef.current;
+    const clipboard = (() => {
+      if (clipboardRef.current) return clipboardRef.current;
+      try {
+        const stored = localStorage.getItem(CANVAS_CLIPBOARD_KEY);
+        if (!stored) return null;
+        return JSON.parse(stored) as { nodes: AgentNodeType[]; edges: Edge[] };
+      } catch {
+        return null;
+      }
+    })();
     if (!clipboard || clipboard.nodes.length === 0) return;
 
     const PASTE_OFFSET = 40;
@@ -1086,6 +1096,36 @@ export function Canvas({
             (ed) => selectedIds.has(ed.source) && selectedIds.has(ed.target),
           );
           clipboardRef.current = { nodes: selectedNodes, edges: internalEdges };
+          try {
+            localStorage.setItem(
+              CANVAS_CLIPBOARD_KEY,
+              JSON.stringify({
+                nodes: selectedNodes.map(({ id, type, position, style, data }) => ({
+                  id,
+                  type,
+                  position,
+                  style,
+                  data: {
+                    title: data.title,
+                    icon: data.icon,
+                    description: data.description,
+                    imageUrl: data.imageUrl,
+                    cardType: data.cardType ?? null,
+                    linkUrl: data.linkUrl ?? null,
+                  },
+                })),
+                edges: internalEdges.map(({ id, source, target, sourceHandle, targetHandle }) => ({
+                  id,
+                  source,
+                  target,
+                  sourceHandle,
+                  targetHandle,
+                })),
+              }),
+            );
+          } catch {
+            // localStorage unavailable or quota exceeded — cross-tab paste won't work
+          }
           toast.success(
             selectedNodes.length === 1
               ? "Node copied"
