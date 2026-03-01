@@ -24,8 +24,9 @@ import {
   Loader2,
   MousePointerClick,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   useCallback,
   useEffect,
@@ -36,6 +37,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { toast } from "sonner";
+import { useSession, signIn, signOut } from "@/lib/auth-client";
 import { addCards as addCardsUtil, type CardSpec } from "./add-cards";
 import { AgentNode } from "./agent-node";
 import {
@@ -205,6 +207,8 @@ export function Canvas({
   } = actions;
 
   const canEdit = canEditProp;
+  const { data: session } = useSession();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const nodeParam = searchParams.get("node");
   const focusNodeId = useMemo(() => {
@@ -1549,6 +1553,51 @@ export function Canvas({
                       Back
                     </Link>
                   </div>
+                  <div className="absolute top-4 right-4 pointer-events-auto">
+                    {session ? (
+                      <div className="flex items-center gap-2">
+                        {session.user.image && (
+                          <Image
+                            src={session.user.image}
+                            alt={session.user.name ?? ""}
+                            width={22}
+                            height={22}
+                            className="rounded-full"
+                          />
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => signOut()}
+                          className={cn(
+                            "text-xs transition-colors",
+                            isDark
+                              ? "text-white/50 hover:text-white"
+                              : "text-neutral-500 hover:text-neutral-700",
+                          )}
+                        >
+                          Sign out
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          signIn.social({
+                            provider: "github",
+                            callbackURL: pathname,
+                          })
+                        }
+                        className={cn(
+                          "text-xs transition-colors",
+                          isDark
+                            ? "text-white/50 hover:text-white"
+                            : "text-neutral-500 hover:text-neutral-700",
+                        )}
+                      >
+                        Sign in
+                      </button>
+                    )}
+                  </div>
                   <span
                     className={cn(
                       "text-lg font-medium",
@@ -1570,7 +1619,7 @@ export function Canvas({
 
               {/* Sync indicator */}
               {isSyncing && (
-                <div className="absolute top-4 right-4 z-50 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm px-2.5 py-1.5 rounded-full shadow-sm border border-neutral-200/60 dark:border-neutral-700/60 pointer-events-none select-none">
+                <div className="absolute top-14 right-4 z-50 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm px-2.5 py-1.5 rounded-full shadow-sm border border-neutral-200/60 dark:border-neutral-700/60 pointer-events-none select-none">
                   <Loader2 size={12} className="animate-spin" />
                   <span>Syncing</span>
                 </div>
