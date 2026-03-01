@@ -4,6 +4,7 @@ import type { DbNode } from "@/lib/db/schema";
 
 const makeDbNode = (id: string, overrides: Partial<DbNode> = {}): DbNode => ({
   id,
+  shortId: null,
   title: "",
   icon: null,
   description: null,

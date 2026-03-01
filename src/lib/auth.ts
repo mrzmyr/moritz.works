@@ -3,8 +3,9 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";
 import * as schema from "./db/schema";
 
-const localhostOrigins = [
+const trustedOrigins = [
   "https://localhost:3000",
+  "https://moritz.works",
 ];
 
 export const auth = betterAuth({
@@ -17,7 +18,12 @@ export const auth = betterAuth({
       verification: schema.verification,
     },
   }),
-  trustedOrigins: localhostOrigins,
+  trustedOrigins,
+  user: {
+    additionalFields: {
+      username: { type: "string", required: false },
+    },
+  },
   session: {
     cookieCache: {
       enabled: true,
@@ -28,6 +34,7 @@ export const auth = betterAuth({
     github: {
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      mapProfileToUser: (profile) => ({ username: profile.login }),
     },
   },
 });

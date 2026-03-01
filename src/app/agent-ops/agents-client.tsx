@@ -15,9 +15,10 @@ import {
 
 interface AgentsClientProps {
   initialNodes: DbNode[];
+  canEdit: boolean;
 }
 
-export function AgentsClient({ initialNodes }: AgentsClientProps) {
+export function AgentsClient({ initialNodes, canEdit }: AgentsClientProps) {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
   const canvasRef = useRef<CanvasHandle>(null);
@@ -49,6 +50,7 @@ export function AgentsClient({ initialNodes }: AgentsClientProps) {
           initialNodes={initialNodes}
           title="Agent Operations"
           canvasSlug="agent-ops"
+          canEdit={canEdit}
           actions={{
             createNode,
             deleteNode,

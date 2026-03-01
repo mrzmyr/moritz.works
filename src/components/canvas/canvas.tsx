@@ -3,11 +3,11 @@
 import type { DbNode } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
 import {
-  addEdge,
   Background,
   BackgroundVariant,
   ConnectionMode,
   type Edge,
+  type EdgeChange,
   type Node,
   type OnConnect,
   ReactFlow,
@@ -21,14 +21,8 @@ import {
   ArrowLeft,
   Check,
   ChevronRight,
-  Crop,
-  Download,
-  EyeOff,
-  Link2,
   Loader2,
   MousePointerClick,
-  Pencil,
-  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -42,7 +36,6 @@ import {
   useSyncExternalStore,
 } from "react";
 import { toast } from "sonner";
-import { SiLinkedin } from "react-icons/si";
 import { addCards as addCardsUtil, type CardSpec } from "./add-cards";
 import { AgentNode } from "./agent-node";
 import {
@@ -125,24 +118,6 @@ function useIsDark() {
   );
 }
 
-function ShareLinkButton({ url }: { url: string }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        navigator.clipboard.writeText(url);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      }}
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-    >
-      {copied ? <Check size={13} /> : <Link2 size={13} />}
-      {copied ? "Copied!" : "Copy link"}
-    </button>
-  );
-}
-
 const DEFAULT_NODE_WIDTH = 288;
 const CANVAS_CLIPBOARD_KEY = "canvas_clipboard";
 
@@ -165,6 +140,7 @@ function dbNodeToRfNode(node: DbNode): AgentNodeType {
       icon: node.icon,
       description: node.description,
       imageUrl: node.imageUrl,
+      shortId: node.shortId ?? null,
       cardType: (node.cardType as CardType | null) ?? null,
       linkUrl: node.linkUrl ?? null,
     },
@@ -205,6 +181,7 @@ interface CanvasProps {
   initialNodes: DbNode[];
   title: string;
   canvasSlug: string;
+  canEdit?: boolean;
   actions: CanvasActions;
   ref?: React.Ref<CanvasHandle>;
   onSelectionChange?: (ids: string[]) => void;
@@ -214,6 +191,7 @@ export function Canvas({
   initialNodes,
   title,
   canvasSlug,
+  canEdit: canEditProp = false,
   actions,
   ref,
   onSelectionChange,
@@ -226,18 +204,30 @@ export function Canvas({
     updateNodeSize,
   } = actions;
 
-  const isDev = process.env.NODE_ENV === "development";
-  const [isReadOnly, setIsReadOnly] = useState(false);
-  const canEdit = isDev && !isReadOnly;
+  const canEdit = canEditProp;
   const searchParams = useSearchParams();
-  const focusNodeId = searchParams.get("node");
+  const nodeParam = searchParams.get("node");
+  const focusNodeId = useMemo(() => {
+    if (!nodeParam) return null;
+    const byId = initialNodes.find((n) => n.id === nodeParam);
+    if (byId) return byId.id;
+    const byShortId = initialNodes.find((n) => n.shortId === nodeParam);
+    return byShortId?.id ?? null;
+  }, [nodeParam, initialNodes]);
   const isDark = useIsDark();
 
   const [rfNodes, setNodes, onNodesChange] = useNodesState<AgentNodeType>(
     (initialNodes ?? []).map(dbNodeToRfNode),
   );
-  const [rfEdges, setEdges, onEdgesChange] = useEdgesState(
+  const [rfEdges, setEdges, onEdgesChangeRaw] = useEdgesState(
     deriveEdges(initialNodes ?? [], isDark),
+  );
+
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) => {
+      onEdgesChangeRaw(changes.filter((c) => c.type !== "remove"));
+    },
+    [onEdgesChangeRaw],
   );
 
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
@@ -353,159 +343,6 @@ export function Canvas({
     const t = requestAnimationFrame(() => setNodesReady(true));
     return () => cancelAnimationFrame(t);
   }, []);
-
-  type SelectionRect = {
-    startX: number;
-    startY: number;
-    endX: number;
-    endY: number;
-  };
-
-  const [isSelectMode, setIsSelectMode] = useState(false);
-  const [selectionRect, setSelectionRect] = useState<SelectionRect | null>(
-    null,
-  );
-  const [isCapturing, setIsCapturing] = useState(false);
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [showShareModal, setShowShareModal] = useState(false);
-
-  const selectionRectRef = useRef<SelectionRect | null>(null);
-  const selectStartRef = useRef<{ x: number; y: number } | null>(null);
-
-  const normalizedSelection = useMemo(() => {
-    if (!selectionRect) return null;
-    return {
-      x: Math.min(selectionRect.startX, selectionRect.endX),
-      y: Math.min(selectionRect.startY, selectionRect.endY),
-      width: Math.abs(selectionRect.endX - selectionRect.startX),
-      height: Math.abs(selectionRect.endY - selectionRect.startY),
-    };
-  }, [selectionRect]);
-
-  const captureArea = useCallback(
-    async (x: number, y: number, width: number, height: number) => {
-      if (!flowWrapper.current || width < 10 || height < 10) return;
-      setIsCapturing(true);
-      try {
-        const { toPng } = await import("html-to-image");
-        const pixelRatio = 2;
-        const fullDataUrl = await toPng(flowWrapper.current, {
-          pixelRatio,
-          filter: (node) => {
-            if (!(node instanceof HTMLElement)) return true;
-            return node.dataset.skipCapture !== "true";
-          },
-        });
-
-        const img = new Image();
-        img.src = fullDataUrl;
-        await new Promise<void>((resolve) => {
-          img.onload = () => resolve();
-        });
-
-        const offscreen = document.createElement("canvas");
-        offscreen.width = width * pixelRatio;
-        offscreen.height = height * pixelRatio;
-        const ctx = offscreen.getContext("2d")!;
-        ctx.drawImage(
-          img,
-          x * pixelRatio,
-          y * pixelRatio,
-          width * pixelRatio,
-          height * pixelRatio,
-          0,
-          0,
-          width * pixelRatio,
-          height * pixelRatio,
-        );
-
-        setCapturedImage(offscreen.toDataURL("image/png"));
-        setShowShareModal(true);
-      } catch {
-        toast.error("Failed to capture area");
-      } finally {
-        setIsCapturing(false);
-      }
-    },
-    [],
-  );
-
-  const handleFlowMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      if (!isSelectMode || e.button !== 0) return;
-      const target = e.target as HTMLElement;
-      if (target.closest("a, button")) return;
-      e.preventDefault();
-      const rect = flowWrapper.current!.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      selectStartRef.current = { x, y };
-      const sr: SelectionRect = { startX: x, startY: y, endX: x, endY: y };
-      selectionRectRef.current = sr;
-      setSelectionRect(sr);
-    },
-    [isSelectMode],
-  );
-
-  useEffect(() => {
-    if (!isSelectMode) return;
-
-    let rafId: number | null = null;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!selectStartRef.current || !flowWrapper.current) return;
-      const clientX = e.clientX;
-      const clientY = e.clientY;
-      if (rafId !== null) return;
-      rafId = requestAnimationFrame(() => {
-        rafId = null;
-        if (!selectStartRef.current || !flowWrapper.current) return;
-        const rect = flowWrapper.current.getBoundingClientRect();
-        const sr: SelectionRect = {
-          startX: selectStartRef.current.x,
-          startY: selectStartRef.current.y,
-          endX: clientX - rect.left,
-          endY: clientY - rect.top,
-        };
-        selectionRectRef.current = sr;
-        setSelectionRect(sr);
-      });
-    };
-
-    const handleMouseUp = async () => {
-      if (!selectStartRef.current) return;
-      const finalRect = selectionRectRef.current;
-      selectStartRef.current = null;
-      selectionRectRef.current = null;
-      setSelectionRect(null);
-      if (finalRect) {
-        const x = Math.min(finalRect.startX, finalRect.endX);
-        const y = Math.min(finalRect.startY, finalRect.endY);
-        const w = Math.abs(finalRect.endX - finalRect.startX);
-        const h = Math.abs(finalRect.endY - finalRect.startY);
-        await captureArea(x, y, w, h);
-      }
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        selectStartRef.current = null;
-        selectionRectRef.current = null;
-        setSelectionRect(null);
-        setIsSelectMode(false);
-      }
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      if (rafId !== null) cancelAnimationFrame(rafId);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isSelectMode, captureArea]);
 
   const pushHistory = useCallback((entry: HistoryEntry) => {
     undoStack.current = [...undoStack.current.slice(-49), entry];
@@ -679,71 +516,89 @@ export function Canvas({
       setEdges((prev) => [...prev, ...newEdges]);
     }
 
+    // Sort nodes topologically so parents are created before children (avoids FK violations)
+    const pastedIds = new Set(newNodes.map((n) => n.id));
+    const parentOf = new Map<string, string>();
+    for (const edge of newEdges) {
+      parentOf.set(edge.target, edge.source);
+    }
+    const sorted: AgentNodeType[] = [];
+    const visited = new Set<string>();
+    function visit(node: AgentNodeType) {
+      if (visited.has(node.id)) return;
+      visited.add(node.id);
+      const pid = parentOf.get(node.id);
+      if (pid && pastedIds.has(pid)) {
+        const parentNode = newNodes.find((n) => n.id === pid);
+        if (parentNode) visit(parentNode);
+      }
+      sorted.push(node);
+    }
+    for (const node of newNodes) visit(node);
+
     setSyncCount((c) => c + 1);
     try {
-      await Promise.all(
-        newNodes.map(async (node) => {
-          const incomingEdge = newEdges.find((e) => e.target === node.id);
-          const parentId = incomingEdge?.source ?? null;
+      for (const node of sorted) {
+        const incomingEdge = newEdges.find((e) => e.target === node.id);
+        const parentId = incomingEdge?.source ?? null;
 
-          const dbNode = await createNode({
-            id: node.id,
-            parentId,
-            positionX: node.position.x,
-            positionY: node.position.y,
-          });
+        const dbNode = await createNode({
+          id: node.id,
+          parentId,
+          positionX: node.position.x,
+          positionY: node.position.y,
+        });
 
-          const sourceWidth =
-            (node.style?.width as number | undefined) ?? null;
-          const sourceHeight =
-            (node.style?.height as number | undefined) ?? null;
+        const sourceWidth =
+          (node.style?.width as number | undefined) ?? null;
+        const sourceHeight =
+          (node.style?.height as number | undefined) ?? null;
 
-          const updates: Promise<unknown>[] = [
-            updateNode({
-              id: dbNode.id,
-              title: node.data.title,
-              icon: node.data.icon,
-              description: node.data.description,
-              imageUrl: node.data.imageUrl,
-              cardType: node.data.cardType,
-              linkUrl: node.data.linkUrl,
-              ...(incomingEdge && {
-                parentSourceHandle:
-                  incomingEdge.sourceHandle ?? "right",
-                parentTargetHandle:
-                  incomingEdge.targetHandle ?? "left",
-              }),
+        const updates: Promise<unknown>[] = [
+          updateNode({
+            id: dbNode.id,
+            title: node.data.title,
+            icon: node.data.icon,
+            description: node.data.description,
+            imageUrl: node.data.imageUrl,
+            cardType: node.data.cardType,
+            linkUrl: node.data.linkUrl,
+            ...(incomingEdge && {
+              parentSourceHandle:
+                incomingEdge.sourceHandle ?? "right",
+              parentTargetHandle:
+                incomingEdge.targetHandle ?? "left",
             }),
-          ];
+          }),
+        ];
 
-          if (sourceWidth != null || sourceHeight != null) {
-            updates.push(
-              updateNodeSize({
-                id: dbNode.id,
-                ...(sourceWidth != null && { width: sourceWidth }),
-                ...(sourceHeight != null && { height: sourceHeight }),
-              }),
-            );
-          }
+        if (sourceWidth != null || sourceHeight != null) {
+          updates.push(
+            updateNodeSize({
+              id: dbNode.id,
+              ...(sourceWidth != null && { width: sourceWidth }),
+              ...(sourceHeight != null && { height: sourceHeight }),
+            }),
+          );
+        }
 
-          await Promise.all(updates);
-          pushHistory({
-            type: "create",
-            nodeId: node.id,
-            nodeData: {
-              ...dbNode,
-              title: node.data.title,
-              icon: node.data.icon,
-              description: node.data.description,
-              imageUrl: node.data.imageUrl,
-              cardType: node.data.cardType ?? null,
-              linkUrl: node.data.linkUrl ?? null,
-              width: sourceWidth,
-              height: sourceHeight,
-            },
-          });
-        }),
-      );
+        await Promise.all(updates);
+        pushHistory({
+          type: "create",
+          nodeId: node.id,
+          nodeData: {
+            ...dbNode,
+            title: node.data.title,
+            icon: node.data.icon,
+            description: node.data.description,
+            imageUrl: node.data.imageUrl,
+            cardType: node.data.cardType ?? null,
+            linkUrl: node.data.linkUrl ?? null,
+            width: sourceWidth,
+            height: sourceHeight,
+          },
+        });
+      }
     } catch {
       toast.error("Failed to paste");
       const newIds = new Set(newNodes.map((n) => n.id));
@@ -773,6 +628,7 @@ export function Canvas({
 
       const snapshot: DbNode = {
         id: nodeToDelete.id,
+        shortId: nodeToDelete.data.shortId ?? null,
         title: nodeToDelete.data.title,
         icon: nodeToDelete.data.icon,
         description: nodeToDelete.data.description,
@@ -1212,9 +1068,10 @@ export function Canvas({
       const sourceHeight = (source.style?.height as number | undefined) ?? null;
       const data = source.data;
 
-      const incomingEdges = rfEdges.filter((edge) => edge.target === source.id);
-      const outgoingEdges = rfEdges.filter((edge) => edge.source === source.id);
-      const parentId = incomingEdges[0]?.source ?? null;
+      const incomingEdge = rfEdges.find((edge) => edge.target === source.id);
+      const parentId = incomingEdge?.source ?? null;
+      const parentSourceHandle = incomingEdge?.sourceHandle ?? "right";
+      const parentTargetHandle = incomingEdge?.targetHandle ?? "left";
 
       const newId = generateId();
       const optimisticNode: AgentNodeType = {
@@ -1234,24 +1091,21 @@ export function Canvas({
         selected: false,
       };
 
-      const copiedEdges: Edge[] = [
-        ...incomingEdges.map((edge) => ({
-          ...edge,
-          id: `e-${edge.source}-${newId}`,
-          target: newId,
-          style: getEdgeStyle(isDark),
-        })),
-        ...outgoingEdges.map((edge) => ({
-          ...edge,
-          id: `e-${newId}-${edge.target}`,
-          source: newId,
-          style: getEdgeStyle(isDark),
-        })),
-      ];
+      const cloneEdge: Edge | null = parentId
+        ? {
+            id: `e-${parentId}-${newId}`,
+            source: parentId,
+            sourceHandle: parentSourceHandle,
+            target: newId,
+            targetHandle: parentTargetHandle,
+            type: "default",
+            style: getEdgeStyle(isDark),
+          }
+        : null;
 
       setNodes((prev) => [...prev, optimisticNode]);
-      if (copiedEdges.length > 0) {
-        setEdges((prev) => [...prev, ...copiedEdges]);
+      if (cloneEdge) {
+        setEdges((prev) => [...prev, cloneEdge]);
       }
 
       setSyncCount((c) => c + 1);
@@ -1259,17 +1113,18 @@ export function Canvas({
         .then(async (dbNode) => {
           const updates: Promise<unknown>[] = [];
 
-          if (data.title || data.icon || data.description || data.imageUrl) {
-            updates.push(
-              updateNode({
-                id: dbNode.id,
-                title: data.title,
-                icon: data.icon,
-                description: data.description,
-                imageUrl: data.imageUrl,
-              }),
-            );
+          const nodeUpdates: Parameters<typeof updateNode>[0] = {
+            id: dbNode.id,
+            title: data.title,
+            icon: data.icon,
+            description: data.description,
+            imageUrl: data.imageUrl,
+          };
+          if (parentId) {
+            nodeUpdates.parentSourceHandle = parentSourceHandle;
+            nodeUpdates.parentTargetHandle = parentTargetHandle;
           }
+          updates.push(updateNode(nodeUpdates));
 
           if (sourceWidth || sourceHeight) {
             updates.push(
@@ -1293,15 +1148,18 @@ export function Canvas({
             positionY: pos.y,
             width: sourceWidth,
             height: sourceHeight,
+            parentSourceHandle,
+            parentTargetHandle,
           };
           pushHistory({ type: "create", nodeId: newId, nodeData: fullNode });
         })
         .catch(() => {
-          const copiedEdgeIds = new Set(copiedEdges.map((ce) => ce.id));
           setNodes((prev) => prev.filter((n) => n.id !== newId));
-          setEdges((prev) =>
-            prev.filter((edge) => !copiedEdgeIds.has(edge.id)),
-          );
+          if (cloneEdge) {
+            setEdges((prev) =>
+              prev.filter((edge) => edge.id !== cloneEdge.id),
+            );
+          }
           toast.error("Failed to copy node");
         })
         .finally(() => setSyncCount((c) => c - 1));
@@ -1420,15 +1278,18 @@ export function Canvas({
         const withoutOld = prevEdge
           ? eds.filter((e) => e.id !== prevEdge.id)
           : eds;
-        return addEdge(
+        return [
+          ...withoutOld,
           {
-            ...connection,
+            id: `e-${connection.source}-${connection.target}`,
+            source: connection.source,
+            target: connection.target,
             sourceHandle: newSourceHandle,
             targetHandle: newTargetHandle,
+            type: "default",
             style: getEdgeStyle(isDark),
           },
-          withoutOld,
-        );
+        ];
       });
 
       pushHistory({
@@ -1500,13 +1361,15 @@ export function Canvas({
 
   const handleMenuCopyLink = () => {
     if (!contextMenu?.targetNodeId) return;
-    const id = contextMenu.targetNodeId;
+    const node = rfNodes.find((n) => n.id === contextMenu.targetNodeId);
+    if (!node) return;
     closeMenu();
+    const linkId = node.data.shortId ?? node.id;
     const base =
       typeof window !== "undefined"
         ? window.location.origin
         : "https://moritz.works";
-    const url = `${base}/${canvasSlug}?node=${id}`;
+    const url = `${base}/${canvasSlug}?node=${linkId}`;
     navigator.clipboard.writeText(url);
     toast.success("Link copied");
   };
@@ -1583,10 +1446,6 @@ export function Canvas({
     );
   };
 
-  const shareUrl = focusNodeId
-    ? `https://moritz.works/${canvasSlug}?node=${focusNodeId}`
-    : `https://moritz.works/${canvasSlug}`;
-
   const handleSelectionChangeRf = useCallback(
     ({ nodes }: { nodes: Node[] }) => {
       onSelectionChange?.(nodes.map((n) => n.id));
@@ -1604,11 +1463,9 @@ export function Canvas({
       <HistoryContext.Provider value={historyContextValue}>
         <div
           ref={flowWrapper}
-          onMouseDown={handleFlowMouseDown}
           className={cn(
             "w-screen h-screen relative bg-neutral-50 dark:bg-[#090909] transition-opacity duration-200",
             nodesReady ? "opacity-100" : "opacity-0",
-            isSelectMode && "!cursor-crosshair [&_*]:!cursor-crosshair",
           )}
         >
           {mounted && (
@@ -1626,6 +1483,7 @@ export function Canvas({
                 minZoom={0.2}
                 maxZoom={2}
                 deleteKeyCode={null}
+                edgesReconnectable={false}
                 proOptions={{ hideAttribution: false }}
                 snapToGrid={canEdit}
                 snapGrid={[20, 20]}
@@ -1727,180 +1585,6 @@ export function Canvas({
                       Right-click to add your first node
                     </p>
                   </div>
-                </div>
-              )}
-
-              {/* Share / capture button (read-only mode) */}
-              {!canEdit && (
-                <div
-                  data-skip-capture="true"
-                  className="absolute top-4 right-4 z-50"
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsSelectMode((v) => !v);
-                      setSelectionRect(null);
-                      selectStartRef.current = null;
-                      selectionRectRef.current = null;
-                    }}
-                    className={cn(
-                      "flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full transition-all duration-150 select-none",
-                      isSelectMode
-                        ? "bg-white text-neutral-900 shadow-md"
-                        : isDark
-                          ? "text-white/70 hover:text-white bg-black/25 hover:bg-black/40 backdrop-blur-sm"
-                          : "text-neutral-600 hover:text-neutral-900 bg-white/70 hover:bg-white/90 backdrop-blur-sm shadow-sm border border-neutral-200/60",
-                    )}
-                  >
-                    <Crop size={13} />
-                    <span>
-                      {isSelectMode ? "Drag to select area" : "Share"}
-                    </span>
-                    {isSelectMode && (
-                      <span className="text-neutral-400 text-xs ml-0.5">
-                        · Esc to cancel
-                      </span>
-                    )}
-                  </button>
-                </div>
-              )}
-
-              {/* Selection rectangle overlay */}
-              {isSelectMode &&
-                normalizedSelection &&
-                normalizedSelection.width > 4 && (
-                  <div
-                    data-skip-capture="true"
-                    className="absolute pointer-events-none z-[60]"
-                    style={{
-                      left: normalizedSelection.x,
-                      top: normalizedSelection.y,
-                      width: normalizedSelection.width,
-                      height: normalizedSelection.height,
-                      boxShadow:
-                        "inset 0 0 0 2px rgba(255,255,255,0.9), 0 0 0 9999px rgba(0,0,0,0.35)",
-                    }}
-                  />
-                )}
-
-              {/* Capturing overlay */}
-              {isCapturing && (
-                <div
-                  data-skip-capture="true"
-                  className="absolute inset-0 z-[70] flex items-center justify-center bg-black/30 backdrop-blur-sm"
-                >
-                  <Loader2 size={28} className="animate-spin text-white" />
-                </div>
-              )}
-
-              {/* Share modal */}
-              {showShareModal && capturedImage && (
-                <div
-                  data-skip-capture="true"
-                  className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-                  onClick={(e) => {
-                    if (e.target === e.currentTarget) {
-                      setShowShareModal(false);
-                      setCapturedImage(null);
-                    }
-                  }}
-                >
-                  <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-neutral-800">
-                      <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                        Share snapshot
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowShareModal(false);
-                          setCapturedImage(null);
-                        }}
-                        className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-
-                    <div className="p-4">
-                      <img
-                        src={capturedImage}
-                        alt="Selected area snapshot"
-                        className="w-full rounded-lg border border-neutral-200 dark:border-neutral-800"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2 px-4 pb-4 flex-wrap">
-                      <a
-                        href={capturedImage}
-                        download={`${canvasSlug}-snapshot.png`}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-                      >
-                        <Download size={13} />
-                        Download
-                      </a>
-                      <ShareLinkButton url={shareUrl} />
-                      <a
-                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${title} by @mrzmyr\n\n${shareUrl}`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black text-white text-sm hover:bg-neutral-800 transition-colors"
-                      >
-                        <span
-                          className="font-bold leading-none"
-                          style={{ fontFamily: "serif" }}
-                        >
-                          𝕏
-                        </span>
-                        Share on X
-                      </a>
-                      <a
-                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0A66C2] text-white text-sm hover:bg-[#0958a8] transition-colors"
-                      >
-                        <SiLinkedin className="w-3.5 h-3.5" />
-                        Share on LinkedIn
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Read-only toggle (writer access only) */}
-              {isDev && (
-                <div
-                  data-skip-capture="true"
-                  className="absolute bottom-4 right-4 z-50"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setIsReadOnly((v) => !v)}
-                    className={cn(
-                      "flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full transition-all duration-150 select-none",
-                      isReadOnly
-                        ? isDark
-                          ? "bg-neutral-800 text-neutral-300 border border-neutral-700"
-                          : "bg-neutral-200 text-neutral-600 border border-neutral-300"
-                        : isDark
-                          ? "text-white/40 hover:text-white/60 bg-black/20 hover:bg-black/30 backdrop-blur-sm border border-white/10"
-                          : "text-neutral-400 hover:text-neutral-600 bg-white/70 hover:bg-white/90 backdrop-blur-sm border border-neutral-200/60 shadow-sm",
-                    )}
-                  >
-                    {isReadOnly ? (
-                      <>
-                        <EyeOff size={11} />
-                        Read only
-                      </>
-                    ) : (
-                      <>
-                        <Pencil size={11} />
-                        Editing
-                      </>
-                    )}
-                  </button>
                 </div>
               )}
 

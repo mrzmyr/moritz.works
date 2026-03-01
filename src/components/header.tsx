@@ -1,10 +1,15 @@
 "use client";
 
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useSession, signIn, signOut } from "@/lib/auth-client";
+
+const CANVAS_PATHS = ["/agent-ops", "/llm-ops"];
 
 export const Header = () => {
   const { data: session, isPending } = useSession();
+  const pathname = usePathname();
+  const isCanvasPage = CANVAS_PATHS.includes(pathname);
 
   if (isPending) return null;
 
@@ -30,15 +35,22 @@ export const Header = () => {
           </button>
         </div>
       ) : (
-        <button
-          type="button"
-          onClick={() =>
-            signIn.social({ provider: "github", callbackURL: "/" })
-          }
-          className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
-        >
-          Sign in
-        </button>
+        <div className="flex items-center gap-2">
+          {isCanvasPage && (
+            <span className="text-xs text-neutral-400 dark:text-neutral-500">
+              Sign in to edit
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() =>
+              signIn.social({ provider: "github", callbackURL: pathname })
+            }
+            className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+          >
+            Sign in
+          </button>
+        </div>
       )}
     </header>
   );

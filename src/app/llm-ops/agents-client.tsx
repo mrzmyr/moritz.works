@@ -13,15 +13,17 @@ import {
 
 interface AgentsClientProps {
   initialNodes: DbNode[];
+  canEdit: boolean;
 }
 
-export function AgentsClient({ initialNodes }: AgentsClientProps) {
+export function AgentsClient({ initialNodes, canEdit }: AgentsClientProps) {
   return (
     <Suspense>
       <Canvas
         initialNodes={initialNodes}
         title="LLM Operations"
         canvasSlug="llm-ops"
+        canEdit={canEdit}
         actions={{
           createNode,
           deleteNode,

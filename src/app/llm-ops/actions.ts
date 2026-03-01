@@ -1,12 +1,22 @@
 "use server";
 
 import { eq, and } from "drizzle-orm";
+import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import type { DbNode } from "@/lib/db/schema";
 import { nodes } from "@/lib/db/schema";
 import { generateId } from "@/lib/generate-id";
+import { auth } from "@/lib/auth";
+import { CANVAS_OWNER_USERNAME } from "@/lib/canvas-owner";
 
 const CANVAS = "llm-ops";
+
+async function requireOwner() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (session?.user.username !== CANVAS_OWNER_USERNAME) {
+    throw new Error("Unauthorized");
+  }
+}
 
 export async function getNodes(): Promise<DbNode[]> {
   return await db
@@ -22,10 +32,12 @@ export async function createNode(input: {
   positionX: number;
   positionY: number;
 }): Promise<DbNode> {
+  await requireOwner();
   const [node] = await db
     .insert(nodes)
     .values({
       id: input.id ?? generateId(),
+      shortId: generateId(),
       canvas: CANVAS,
       parentId: input.parentId ?? null,
       positionX: input.positionX,
@@ -49,6 +61,7 @@ export async function updateNode(input: {
   parentSourceHandle?: string | null;
   parentTargetHandle?: string | null;
 }): Promise<DbNode> {
+  await requireOwner();
   const { id, ...rest } = input;
   const [node] = await db
     .update(nodes)
@@ -59,6 +72,7 @@ export async function updateNode(input: {
 }
 
 export async function deleteNode(id: string): Promise<void> {
+  await requireOwner();
   await db
     .delete(nodes)
     .where(and(eq(nodes.id, id), eq(nodes.canvas, CANVAS)));
@@ -69,6 +83,7 @@ export async function updateNodeSize(input: {
   width?: number;
   height?: number;
 }): Promise<void> {
+  await requireOwner();
   await db
     .update(nodes)
     .set({
@@ -82,6 +97,7 @@ export async function updateNodeSize(input: {
 export async function updateNodePositions(
   positions: { id: string; x: number; y: number }[],
 ): Promise<void> {
+  await requireOwner();
   await Promise.all(
     positions.map(({ id, x, y }) =>
       db

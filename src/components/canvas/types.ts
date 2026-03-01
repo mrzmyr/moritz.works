@@ -7,6 +7,7 @@ export type AgentNodeData = {
   icon: string | null;
   description: string | null;
   imageUrl: string | null;
+  shortId?: string | null;
   cardType?: CardType | null;
   linkUrl?: string | null;
   /** Transient UI flag — not persisted. When true, the icon picker opens immediately. */

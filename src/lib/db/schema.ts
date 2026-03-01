@@ -3,6 +3,7 @@ import { boolean, pgTable, real, text, timestamp } from "drizzle-orm/pg-core";
 
 export const nodes = pgTable("agent_nodes", {
   id: text("id").primaryKey(),
+  shortId: text("short_id").unique(),
   title: text("title").notNull().default(""),
   icon: text("icon"),
   description: text("description"),
@@ -32,6 +33,7 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull(),
   image: text("image"),
+  username: text("username"),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 });
