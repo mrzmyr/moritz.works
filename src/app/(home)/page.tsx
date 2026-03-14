@@ -86,7 +86,7 @@ export default async function Page() {
             >
               published a study
             </a>{" "}
-            if your emojis predict your character, and built{" "}
+            if your emojis predict your character. I built{" "}
             <Link
               href="https://pixy.day"
               target="_blank"
@@ -94,7 +94,16 @@ export default async function Page() {
               className="underline"
             >
               Pixy
-            </Link>
+            </Link>{" "}
+            and{" "}
+            <a
+              href="https://www.gigaohm.de"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              Gigaohm
+            </a>
             .
           </div>
           <div className="leading-7">
