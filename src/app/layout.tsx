@@ -64,11 +64,6 @@ export const metadata: Metadata = {
     },
   },
   manifest: "/manifest.json",
-  icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.ico",
-    apple: "/favicon.svg",
-  },
   metadataBase: new URL(siteConfig.url),
   alternates: {
     canonical: "/",
