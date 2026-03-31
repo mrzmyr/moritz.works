@@ -1,0 +1,374 @@
+---
+title: Software Engineer Career Framework
+excerpt: A career framework for software engineers from Junior to Principal.
+createdAt: 2026-03-31
+updatedAt: 2026-03-31
+---
+
+This framework defines expectations for software engineers across five levels: Junior, Mid, Senior, Lead, and Principal. It covers three disciplines: Direction, Engineering, and Approach.
+
+I used it in my role at 1KOMMA5° to evaluate my own performance as a software engineer and to give feedback to my reports.
+
+## Levels
+
+<Table className="my-2!">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-24">Level</TableHead>
+      <TableHead>Tagline</TableHead>
+      <TableHead>Work Unit Scope</TableHead>
+      <TableHead>Team Scope</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell className="align-top">Junior</TableCell>
+      <TableCell>Contributing with guidance</TableCell>
+      <TableCell><Term definition={`**Feature**\nA scoped unit of user-facing functionality that delivers measurable value.\n\n**Scope:** Single team, short-term (weeks)\n**Focus:** User value, correctness, usability`}>Feature</Term> / <Term definition={`**Project**\nA coordinated set of features or system changes delivering a business outcome.\n\n**Scope:** Multi-feature, possibly multi-squad, medium-term (1-3 months)\n**Focus:** Cross-functional alignment, measurable success metrics`}>Project</Term></TableCell>
+      <TableCell>Self / Tasks</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Mid</TableCell>
+      <TableCell>Independent Contributor</TableCell>
+      <TableCell><Term definition={`**Project**\nA coordinated set of features or system changes delivering a business outcome.\n\n**Scope:** Multi-feature, possibly multi-squad, medium-term (1-3 months)\n**Focus:** Cross-functional alignment, measurable success metrics`}>Project</Term> / <Term definition={`**Architecture**\nThe structural design of systems and services, how components interact, scale, and evolve.\n\n**Scope:** Cross-team, long-term (quarters-years)\n**Focus:** Scalability, maintainability, reliability, cost efficiency`}>Architecture</Term></TableCell>
+      <TableCell>Team</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Senior</TableCell>
+      <TableCell>Technical Team Lead</TableCell>
+      <TableCell><Term definition={`**Architecture**\nThe structural design of systems and services, how components interact, scale, and evolve.\n\n**Scope:** Cross-team, long-term (quarters-years)\n**Focus:** Scalability, maintainability, reliability, cost efficiency`}>Architecture</Term> / <Term definition={`**System**\nA cohesive set of components and services providing a core capability.\n\n**Scope:** Cross-team, long-term (quarters-years)\n**Focus:** Scalability, reliability, performance, cost`}>Systems</Term></TableCell>
+      <TableCell>Multi-Project / Multi-Team</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Lead</TableCell>
+      <TableCell>Technical Domain Lead</TableCell>
+      <TableCell><Term definition={`**System**\nA cohesive set of components and services providing a core capability.\n\n**Scope:** Cross-team, long-term (quarters-years)\n**Focus:** Scalability, reliability, performance, cost`}>Systems</Term> / <Term definition={`**Technical Vision**\nThe long-term, high-leverage direction for technology that enables future business strategy.\n\n**Scope:** Org or company-wide, multi-year horizon\n**Focus:** Strategic leverage, innovation, risk management`}>Technical Vision</Term></TableCell>
+      <TableCell>Multi-Domain</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Principal</TableCell>
+      <TableCell>Technical Org Lead</TableCell>
+      <TableCell>_Same as Lead_</TableCell>
+      <TableCell>Org</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+---
+
+## <Blink color="#3b82f6">▌</Blink> AI
+
+AI is a force multiplier. Run on top of it, wisely.
+
+<Table className="my-2!">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-24">Level</TableHead>
+      <TableHead>Expectation</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell className="align-top">Junior</TableCell>
+      <TableCell><ul className="my-0!"><li>Uses AI tools (copilot, chat) daily for code generation, debugging, learning</li><li>Knows when AI output needs review</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Mid</TableCell>
+      <TableCell><ul className="my-0!"><li>Integrates AI into personal workflow systematically</li><li>Writes effective prompts, builds small automations</li><li>Evaluates AI output critically</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Senior</TableCell>
+      <TableCell><ul className="my-0!"><li>Drives AI adoption within team</li><li>Identifies high-leverage use cases (code review, testing, docs, incident triage)</li><li>Sets quality bar for AI-assisted output</li><li>Builds reusable prompts or workflows for the team</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Lead</TableCell>
+      <TableCell><ul className="my-0!"><li>Defines AI strategy for the domain</li><li>Evaluates build-vs-buy for AI tooling</li><li>Ensures AI usage aligns with data privacy, cost, and reliability constraints</li><li>Scales what works across teams</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Principal</TableCell>
+      <TableCell><ul className="my-0!"><li>Shapes org-wide AI strategy</li><li>Defines where human-in-the-loop is non-negotiable</li><li>Drives competitive advantage through AI-native workflows</li><li>Owns cost/value framework for AI investments</li></ul></TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+---
+
+## <Blink color="#f43f5e">▌</Blink> Direction
+
+Engineers must own a part or the whole product. Lead firm, but kind.
+
+### Product
+
+<Table className="my-2!">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-24">Level</TableHead>
+      <TableHead>Expectation</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell className="align-top">Junior</TableCell>
+      <TableCell><ul className="my-0!"><li>Knows why features matter to business or users</li><li>Contributes to team architecture discussions</li><li>Thinks about user impact before coding</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Mid</TableCell>
+      <TableCell><ul className="my-0!"><li>Builds projects for user and business impact</li><li>Owns architecture decisions</li><li>Creates decision documents (RFC, ADRs)</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Senior</TableCell>
+      <TableCell><ul className="my-0!"><li>Links work to company goals</li><li>Leads architecture within team/domain</li><li>Creates clarity for long-term direction</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Lead</TableCell>
+      <TableCell><ul className="my-0!"><li>Aligns systems to company goals</li><li>Drives long-term architecture direction</li><li>Owns technical debt strategy</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Principal</TableCell>
+      <TableCell><ul className="my-0!"><li>Defines technical vision for business impact</li><li>Sets architectural north star for the org</li><li>Influences company strategy</li></ul></TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+### Leadership
+
+<Table className="my-2!">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-24">Level</TableHead>
+      <TableHead>Expectation</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell className="align-top">Junior</TableCell>
+      <TableCell className="text-muted-foreground">_No requirement_</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Mid</TableCell>
+      <TableCell><ul className="my-0!"><li>Mentors peers</li><li>Unblocks others</li><li>Drives clarity and healthy team habits</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Senior</TableCell>
+      <TableCell><ul className="my-0!"><li>Creates clarity fast</li><li>Makes hard calls</li><li>Aligns decisions with business</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Lead</TableCell>
+      <TableCell><ul className="my-0!"><li>Multiplies seniors</li><li>Scales clarity and accountability across teams</li><li>Raises performance</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Principal</TableCell>
+      <TableCell><ul className="my-0!"><li>Shapes org culture</li><li>Grows senior leaders</li><li>Delivers through people not hierarchy</li></ul></TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+---
+
+## <Blink color="#10b981">▌</Blink> Engineering
+
+Technical excellence is archived by understanding the trade-offs and the impact of your decisions.
+
+### Software Design
+
+<Table className="my-2!">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-24">Level</TableHead>
+      <TableHead>Expectation</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell className="align-top">Junior</TableCell>
+      <TableCell><ul className="my-0!"><li>Ships production code with guidance</li><li>Clean code, meaningful unit tests</li><li>Follows team conventions</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Mid</TableCell>
+      <TableCell><ul className="my-0!"><li>Refactors confidently</li><li>Adds test layers</li><li>Simplifies implementation</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Senior</TableCell>
+      <TableCell><ul className="my-0!"><li>Owns team code quality, velocity, and reliability</li><li>Sets standards within team</li><li>Optimizes entire codebase</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Lead</TableCell>
+      <TableCell><ul className="my-0!"><li>Defines quality, velocity, and reliability standards</li><li>Leads frameworks</li><li>Drives cross-team code standards</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Principal</TableCell>
+      <TableCell><ul className="my-0!"><li>Defines quality, velocity, and reliability standards org-wide</li><li>Leads large-scale investments</li><li>Sets technology direction for the org</li></ul></TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+### Operations
+
+<Table className="my-2!">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-24">Level</TableHead>
+      <TableHead>Expectation</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell className="align-top">Junior</TableCell>
+      <TableCell><ul className="my-0!"><li>Contributes to incidents</li><li>Monitors metrics and dashboards on-call with guidance</li><li>Learns alerting and monitoring basics</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Mid</TableCell>
+      <TableCell><ul className="my-0!"><li>Participates in small responder</li><li>Active in incidents</li><li>Improves runbooks</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Senior</TableCell>
+      <TableCell><ul className="my-0!"><li>Leads incident prevention</li><li>Owns team metrics</li><li>Drives zero-downtime</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Lead</TableCell>
+      <TableCell><ul className="my-0!"><li>Leads reliability</li><li>Reliability strategy at org level</li><li>Org templates for reliability</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Principal</TableCell>
+      <TableCell><ul className="my-0!"><li>Defines company-wide reliability</li><li>Multi-region strategy</li><li>Reliability culture by design</li></ul></TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+### Data
+
+<Table className="my-2!">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-24">Level</TableHead>
+      <TableHead>Expectation</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell className="align-top">Junior</TableCell>
+      <TableCell><ul className="my-0!"><li>Implements data flows with guidance</li><li>Designs data models and pipelines</li><li>Safe migrations</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Mid</TableCell>
+      <TableCell><ul className="my-0!"><li>Defines metrics</li><li>Query optimizations</li><li>Data tests</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Senior</TableCell>
+      <TableCell><ul className="my-0!"><li>Drives data-informed decisions</li><li>Ensures scale</li><li>Owns data lineage</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Lead</TableCell>
+      <TableCell><ul className="my-0!"><li>Defines data platform, governance, and quality standards</li><li>Owns data architecture across domains</li><li>Leads data platform roadmap</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Principal</TableCell>
+      <TableCell><ul className="my-0!"><li>Owns long-term data and analytics strategy</li><li>Enterprise data strategy</li><li>Privacy-by-design</li></ul></TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+---
+
+## <Blink color="#8b5cf6">▌</Blink> Approach
+
+Communication is the foundation of everything.
+
+### Communication
+
+<Table className="my-2!">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-24">Level</TableHead>
+      <TableHead>Expectation</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell className="align-top">Junior</TableCell>
+      <TableCell><ul className="my-0!"><li>Communicates clearly</li><li>Posts async updates as comments/tickets</li><li>Uses sync discussions when needed</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Mid</TableCell>
+      <TableCell><ul className="my-0!"><li>Top-tier <a href="/blog/async">async communicator</a></li><li>Presents ideas centered around code or prototypes</li><li>Explains concepts to teammates using docs or demos</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Senior</TableCell>
+      <TableCell><ul className="my-0!"><li>Improves communication efficiency</li><li>Facilitates fast decision-making in groups</li><li>Elevates clarity across the team</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Lead</TableCell>
+      <TableCell><ul className="my-0!"><li>Improves team and org communication structures</li><li>Communicates complex topics to executives and partners</li><li>Mentors others on effective communication</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Principal</TableCell>
+      <TableCell><ul className="my-0!"><li>Defines technical communication culture for the org</li><li>Crafts narratives that drive company strategy</li><li>Models communication that aligns teams and leadership</li></ul></TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+### Delivery
+
+<Table className="my-2!">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-24">Level</TableHead>
+      <TableHead>Expectation</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell className="align-top">Junior</TableCell>
+      <TableCell><ul className="my-0!"><li>Ships projects fast with guidance</li><li>Unblocks themselves by reaching out asap</li><li>Breaks work into small deliverables</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Mid</TableCell>
+      <TableCell><ul className="my-0!"><li>Independently delivers features</li><li>Solves problems without waiting for permission</li><li>Ships services end-to-end</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Senior</TableCell>
+      <TableCell><ul className="my-0!"><li>Leads multi-team projects to prod</li><li>Drives multi-domain high-risk projects</li><li>Owns delivery timelines for complex work</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Lead</TableCell>
+      <TableCell><ul className="my-0!"><li>Independently drives high-complexity projects</li><li>Metrics first, code second</li><li>Drastically improves iteration speed</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Principal</TableCell>
+      <TableCell><ul className="my-0!"><li>Drives technical transformations</li><li>Creates high-leverage frameworks</li><li>Drastically simplifies architecture and significantly reduces cost</li></ul></TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+### Mindset
+
+<Table className="my-2!">
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-24">Level</TableHead>
+      <TableHead>Expectation</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell className="align-top">Junior</TableCell>
+      <TableCell><ul className="my-0!"><li>Asks why, not just how</li><li>Sees user and business pain</li><li>Asks rigorously for feedback</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Mid</TableCell>
+      <TableCell><ul className="my-0!"><li>Full ownership on ambiguous problems</li><li>Builds prototypes</li><li>Automates toil</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Senior</TableCell>
+      <TableCell><ul className="my-0!"><li>Prioritizes ruthlessly</li><li>Enforces write-first</li><li>Turns ambiguity into plan + execution</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Lead</TableCell>
+      <TableCell><ul className="my-0!"><li>Scales speed via systems</li><li>Cadences, DRIs, documentation, feedback loops</li><li>Multiplies ownership mindset across teams</li></ul></TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell className="align-top">Principal</TableCell>
+      <TableCell><ul className="my-0!"><li>Shapes how strategy, priorities, and ownership flow top-to-bottom</li><li>Defines principles, not just processes</li><li>Defines how information scales globally</li></ul></TableCell>
+    </TableRow>
+  </TableBody>
+</Table>

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import type { MDXComponents } from "mdx/types";
 import { AiButton } from "@/components/ai-button";
+import { Blink } from "@/components/blink";
 import { Card, CardContent, CardTitle } from "@/components/card";
 import { Figure, FigureCaption, FigureContent } from "@/components/figure";
 import {
@@ -26,6 +27,15 @@ import { SimpleCodeBlock } from "@/components/simple-code-block";
 import { SlackMessage } from "@/components/slack-message/slack-message";
 import { SlackMessageReply } from "@/components/slack-message/slack-message-reply";
 import { StackItem } from "@/components/stack-item";
+import { Term } from "@/components/term";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ZoomImage } from "@/components/zoom-image";
 
 const components: MDXComponents = {
@@ -43,6 +53,7 @@ const components: MDXComponents = {
   Card,
   CardContent,
   CardTitle,
+  Blink,
   h1: H1,
   h2: H2,
   h3: H3,
@@ -64,6 +75,7 @@ const components: MDXComponents = {
   },
   code: SimpleCodeBlock,
   InfoTooltip,
+  Term,
   StackItem,
   Grid,
   GridItem,
@@ -75,6 +87,12 @@ const components: MDXComponents = {
   HandshakeIcon,
   ArrowRightIcon,
   BlendIcon,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 };
 
 export function useMDXComponents(): MDXComponents {

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { PageBack } from "@/components/page-back";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { PostContentConatiner } from "@/components/post-content-container";
 import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";
@@ -23,7 +23,12 @@ export default async function Layout({
 
   return (
     <>
-      <PageBack href="/blog" />
+      <Breadcrumb
+        items={[
+          { label: "Blog", href: "/blog" },
+          { label: post.title },
+        ]}
+      />
       <PostStructuredData
         type="article"
         title={post.title}

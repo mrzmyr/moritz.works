@@ -3,7 +3,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { PageBack } from "@/components/page-back";
+import { Breadcrumb } from "@/components/breadcrumb";
 import {
   PostListItem,
   PostListItemSkeleton,
@@ -67,7 +67,7 @@ const PostsSkeleton = () => {
 export default function Page() {
   return (
     <>
-      <PageBack href="/" />
+      <Breadcrumb items={[{ label: "Blog" }]} />
 
       <h1 className="text-2xl font-medium mb-4 dark:text-white">Blog</h1>
 
