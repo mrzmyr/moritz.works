@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Heart } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 let heartId = 0;
 
@@ -69,26 +69,23 @@ function spawnHearts(
   });
 }
 
-export function ClapButton({ slug }: { slug: string }) {
-  const [claps, setClaps] = useState(0);
-  const [userClaps, setUserClaps] = useState(0);
-  const [disabled, setDisabled] = useState(false);
+export function ClapButton({
+  slug,
+  initialClaps = 0,
+  initialUserClaps = 0,
+}: {
+  slug: string;
+  initialClaps?: number;
+  initialUserClaps?: number;
+}) {
+  const [claps, setClaps] = useState(initialClaps);
+  const [userClaps, setUserClaps] = useState(initialUserClaps);
+  const [disabled, setDisabled] = useState(initialUserClaps >= 50);
   const [hearts, setHearts] = useState<FloatingHeart[]>([]);
   const [pageHearts, setPageHearts] = useState<FloatingHeart[]>([]);
   const [glowing, setGlowing] = useState(false);
   const [glowIntensity, setGlowIntensity] = useState(0);
   const [shaking, setShaking] = useState(false);
-
-  useEffect(() => {
-    fetch(`/api/claps?slug=${encodeURIComponent(slug)}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setClaps(data.claps ?? 0);
-        setUserClaps(data.userClaps ?? 0);
-        if ((data.userClaps ?? 0) >= 50) setDisabled(true);
-      })
-      .catch(() => {});
-  }, [slug]);
 
   const handleClap = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -142,13 +139,21 @@ export function ClapButton({ slug }: { slug: string }) {
       })
         .then((r) => {
           if (r.status === 429) setDisabled(true);
+          if (!r.ok) throw new Error("Failed");
           return r.json();
         })
         .then((data) => {
           if (data.claps) setClaps(data.claps);
           if (data.userClaps) setUserClaps(data.userClaps);
         })
-        .catch(() => {});
+        .catch(() => {
+          setClaps((c) => Math.max(0, c - 1));
+          setUserClaps((c) => {
+            const reverted = Math.max(0, c - 1);
+            if (reverted < 50) setDisabled(false);
+            return reverted;
+          });
+        });
     },
     [disabled, userClaps, slug],
   );
