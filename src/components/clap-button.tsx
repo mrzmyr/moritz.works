@@ -177,7 +177,6 @@ export function ClapButton({ slug }: { slug: string }) {
             transition={{
               duration: 0.6,
               ease: [0.22, 1, 0.36, 1],
-              exit: { duration: 2, ease: [0.22, 1, 0.36, 1] },
             }}
             className="pointer-events-none fixed inset-0 z-40"
           />
