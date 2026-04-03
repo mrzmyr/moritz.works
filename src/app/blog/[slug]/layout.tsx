@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { ClapButton } from "@/components/clap-button";
 import { PostContentConatiner } from "@/components/post-content-container";
 import { PostHeadline } from "@/components/post-headline";
 import { PostMetadata } from "@/components/post-metadata";
@@ -24,10 +25,7 @@ export default async function Layout({
   return (
     <>
       <Breadcrumb
-        items={[
-          { label: "Blog", href: "/blog" },
-          { label: post.title },
-        ]}
+        items={[{ label: "Blog", href: "/blog" }, { label: post.title }]}
       />
       <PostStructuredData
         type="article"
@@ -38,14 +36,17 @@ export default async function Layout({
         dateModified={post.updatedAt}
         image={`${siteConfig.url}/static/og/default.png`}
       />
-      <div className="my-12">
-        <PostHeadline>{post.title}</PostHeadline>
-        <PostMetadata
-          createdAt={new Date(post.createdAt)}
-          updatedAt={new Date(post.updatedAt)}
-        />
+      <div className="relative">
+        <div className="my-12">
+          <PostHeadline>{post.title}</PostHeadline>
+          <PostMetadata
+            createdAt={new Date(post.createdAt)}
+            updatedAt={new Date(post.updatedAt)}
+          />
+        </div>
+        <ClapButton slug={slug} />
+        <PostContentConatiner>{children}</PostContentConatiner>
       </div>
-      <PostContentConatiner>{children}</PostContentConatiner>
     </>
   );
 }
