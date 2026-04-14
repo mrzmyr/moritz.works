@@ -1,6 +1,6 @@
 const IMAGE_MAP = {
-  Alice: "https://avatar.iran.liara.run/public/20",
-  Bob: "https://avatar.iran.liara.run/public/30",
+  Alice: "/static/images/avatars/alice.svg",
+  Bob: "/static/images/avatars/bob.svg",
 };
 
 export { IMAGE_MAP };

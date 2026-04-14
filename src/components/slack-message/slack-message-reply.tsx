@@ -30,7 +30,7 @@ export const SlackMessageReply = ({
             className="inline-block h-7 w-7 rounded-md border-2 border-white bg-neutral-300"
           >
             <Image
-              className="grayscale"
+              className="grayscale rounded-md"
               src={IMAGE_MAP[reply.name as keyof typeof IMAGE_MAP]}
               alt={reply.name}
               width={32}

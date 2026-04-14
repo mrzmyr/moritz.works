@@ -23,7 +23,7 @@ export const SlackMessage = ({
         >
           {image && (
             <Image
-              className="grayscale"
+              className="grayscale rounded-md"
               src={image}
               alt={name}
               width={32}
