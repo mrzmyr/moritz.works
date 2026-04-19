@@ -9,7 +9,7 @@ import ProjectList from "../components/project-list";
 import WorkList from "../components/work-list";
 
 const Headline = ({ children }: { children: React.ReactNode }) => {
-  return <div className="font-medium dark:text-white">{children}</div>;
+  return <div className="font-medium dark:text-white mb-6">{children}</div>;
 };
 
 const Section = ({ children }: { children: React.ReactNode }) => {
