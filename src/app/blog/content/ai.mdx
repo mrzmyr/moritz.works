@@ -1,62 +1,93 @@
 ---
 title: My AI Setup
-excerpt: How I keep coding agents useful without letting their context drift.
+excerpt: A small file-based setup for keeping coding agents useful.
 slug: ai
 createdAt: 2026-06-03
 updatedAt: 2026-06-03
 ---
 
-My AI setup is mostly boring files.
+Here’s how I keep coding agents useful:
 
-I don't want every agent to become its own isolated context island. Codex has `AGENTS.md`, Claude has `CLAUDE.md`, Cursor has rules, and every tool invents a slightly different place for instructions.
+- [1. One source of truth](#1-one-source-of-truth)
+- [2. Writing style](#2-writing-style)
+- [3. Skills](#3-skills)
+- [4. File structure](#4-file-structure)
+- [5. Review](#5-review)
 
-If I copy/paste instructions between them, they drift. So I keep one source of truth and symlink it into each agent.
+## 1. One source of truth
+
+Every agent has its own config file:
+
+- Codex reads `AGENTS.md`
+- Claude reads `CLAUDE.md`
+- Cursor has rules
+
+Copy/paste them and they drift.
+
+Keep one source file instead. Symlink it into each agent.
 
 ```bash
 ln -s ~/.agents/system_prompt.md ~/.codex/AGENTS.md
 ln -s ~/.agents/system_prompt.md ~/.claude/CLAUDE.md
 ```
 
-Now updates happen once. Every agent gets the same baseline context.
+Now updates happen once.
 
-## Writing style
+## 2. Writing style
 
-The highest ROI file in my setup is `writing_style.md`.
+Add a `writing_style.md`.
 
-Agents are decent at writing, but often drift into generic AI voice. Too polished, too long, not how I would actually write.
+Agents can write, but they drift into generic AI voice.
 
-So I keep a small file with concrete examples from my own messages, comments, docs, and replies. Before an agent drafts anything in my name, it has to read that file.
+Too polished. Too long. Not how I would write.
 
-It includes patterns like:
+The file should include concrete examples from your own:
+
+- messages
+- comments
+- docs
+- replies
+
+My version includes rules like:
 
 - English in team channels, German in German 1:1s
-- short paragraphs
-- direct asks
-- use `Context:` and `Impact:` when useful
-- avoid "I hope this helps"
+- Use short paragraphs
+- Make direct asks
+- Use `Context:` and `Impact:` when useful
+- Avoid "I hope this helps"
 
-It still needs review. But it reduces rewrite time a lot.
+Tell agents to read this file before drafting anything in your name.
 
-## Skills
+Still review the output. The goal is less rewriting, not zero review.
 
-The second layer is skills.
+## 3. Skills
 
-My baseline instructions should define how the agent behaves. Skills define sharper opinions for specific work.
+Baseline instructions define agent behavior.
 
-Two examples:
+Skills define sharper opinions for specific work.
 
-- [typescript-principles](https://github.com/mrzmyr/agent-plugin/blob/main/skills/typescript-principles/SKILL.md)
-- [deslop](https://github.com/mrzmyr/agent-plugin/blob/main/skills/deslop/SKILL.md)
+Examples:
 
-`typescript-principles` encodes small code-style rules that I want repeated everywhere: named parameters over positional parameters, boolean functions prefixed with `is`, `has`, or `can`, short action-based function names, and structured errors that explain `what`, `why`, and `fix`.
+- [`typescript-principles`](https://github.com/mrzmyr/agent-plugin/blob/main/skills/typescript-principles/SKILL.md)
+- [`deslop`](https://github.com/mrzmyr/agent-plugin/blob/main/skills/deslop/SKILL.md)
 
-`deslop` is a reaction against lazy agent code. Question fallbacks. Question regex parsing when a real parser or platform API exists. Use popular libraries for solved problems. Avoid type assertions when inference should be enough.
+`typescript-principles` covers TypeScript defaults:
 
-The point is not to make the agent memorize my taste. The point is to make taste executable.
+- Prefer named parameters over positional parameters
+- Prefix boolean functions with `is`, `has`, `can`, `should`, etc.
+- Use short action-based function names
+- Write structured errors with `status`, `message`, `why`, and `fix`
 
-## Shape
+`deslop` pushes against lazy agent code:
 
-My setup roughly looks like this:
+- Question fallbacks
+- Question regex parsing when a real parser exists
+- Use popular libraries for solved problems
+- Avoid type assertions when inference should work
+
+The goal: make taste executable.
+
+## 4. File structure
 
 ```txt
 ~/.agents/
@@ -72,8 +103,16 @@ My setup roughly looks like this:
 ~/.claude/CLAUDE.md -> ~/.agents/system_prompt.md
 ```
 
-The system prompt sets defaults. `writing_style.md` keeps communication close to my actual voice. Skills add local pressure for the work at hand.
+The system prompt sets defaults.
 
-Nothing here is fancy. That is the point.
+`writing_style.md` keeps communication close to my voice.
 
-Good agent setup is less about one perfect prompt and more about removing drift.
+Skills add pressure for the work at hand.
+
+## 5. Review
+
+This setup does not make agents perfect.
+
+It removes drift.
+
+That is usually enough.

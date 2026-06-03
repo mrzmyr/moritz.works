@@ -58,6 +58,10 @@ const Code = ({ children, className, ...props }: ComponentProps<"code">) => {
   return <SimpleCodeBlock lang={lang}>{children}</SimpleCodeBlock>;
 };
 
+const Pre = ({ children }: ComponentProps<"pre">) => {
+  return <>{children}</>;
+};
+
 const components: MDXComponents = {
   PostMetadata,
   PostHeadline,
@@ -93,6 +97,7 @@ const components: MDXComponents = {
   Image: ({ ...props }) => {
     return <ZoomImage className="w-full" {...props} />;
   },
+  pre: Pre,
   code: Code,
   InfoTooltip,
   Term,
