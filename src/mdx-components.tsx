@@ -8,6 +8,8 @@ import {
   UserIcon,
 } from "lucide-react";
 import type { MDXComponents } from "mdx/types";
+import type { ComponentProps } from "react";
+import type { BundledLanguage } from "shiki";
 import { AiButton } from "@/components/ai-button";
 import { Blink } from "@/components/blink";
 import { Card, CardContent, CardTitle } from "@/components/card";
@@ -37,6 +39,24 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ZoomImage } from "@/components/zoom-image";
+
+const Code = ({ children, className, ...props }: ComponentProps<"code">) => {
+  const languageClass = className
+    ?.split(" ")
+    .find((name) => name.startsWith("language-"));
+
+  if (!languageClass) {
+    return (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    );
+  }
+
+  const lang = languageClass.replace("language-", "") as BundledLanguage;
+
+  return <SimpleCodeBlock lang={lang}>{children}</SimpleCodeBlock>;
+};
 
 const components: MDXComponents = {
   PostMetadata,
@@ -73,7 +93,7 @@ const components: MDXComponents = {
   Image: ({ ...props }) => {
     return <ZoomImage className="w-full" {...props} />;
   },
-  code: SimpleCodeBlock,
+  code: Code,
   InfoTooltip,
   Term,
   StackItem,
