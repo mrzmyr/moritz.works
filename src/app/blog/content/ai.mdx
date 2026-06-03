@@ -6,29 +6,21 @@ createdAt: 2026-06-03
 updatedAt: 2026-06-03
 ---
 
-Create this setup:
+My setup has three parts:
 
-- [1. Create files](#1-create-files)
-- [2. Symlink agent instructions](#2-symlink-agent-instructions)
-- [3. Add writing style](#3-add-writing-style)
-- [4. Add skills](#4-add-skills)
-- [5. Final structure](#5-final-structure)
+- [Shared agent instructions](#shared-agent-instructions)
+- [Writing style](#writing-style)
+- [Skills](#skills)
 
-## 1. Create files
+## Shared agent instructions
 
-Put shared agent context in `~/.agents`.
+Put shared agent context in `~/.agents`. `system_prompt.md` is the source of truth.
 
 ```bash
 mkdir -p ~/.agents/skills
 touch ~/.agents/system_prompt.md
 touch ~/.agents/writing_style.md
 ```
-
-`system_prompt.md` is the source of truth.
-
-`writing_style.md` is used whenever agents write in your name.
-
-## 2. Symlink agent instructions
 
 Different agents read different files:
 
@@ -45,11 +37,11 @@ ln -s ~/.agents/system_prompt.md ~/.claude/CLAUDE.md
 
 Now edits to `~/.agents/system_prompt.md` apply everywhere.
 
-## 3. Add writing style
+## Writing style
 
-Create `~/.agents/writing_style.md` from existing messages.
+`writing_style.md` is used whenever agents write in your name.
 
-Use:
+Create `~/.agents/writing_style.md` from existing messages:
 
 - Slack messages
 - emails
@@ -82,7 +74,7 @@ Then reference it from `~/.agents/system_prompt.md`:
 When writing anything in my name, read ~/.agents/writing_style.md first and match the voice, language, and patterns there.
 ```
 
-## 4. Add skills
+## Skills
 
 Skills are small instruction files for specific work.
 
@@ -104,25 +96,3 @@ Skills are small instruction files for specific work.
 - Avoid type assertions when inference should work
 
 The goal: make taste executable.
-
-## 5. Final structure
-
-```txt
-~/.agents/
-  system_prompt.md
-  writing_style.md
-  skills/
-    typescript-principles/
-      SKILL.md
-    deslop/
-      SKILL.md
-
-~/.codex/AGENTS.md -> ~/.agents/system_prompt.md
-~/.claude/CLAUDE.md -> ~/.agents/system_prompt.md
-```
-
-The system prompt sets defaults.
-
-`writing_style.md` keeps communication close to my voice.
-
-Skills add pressure for the work at hand.
