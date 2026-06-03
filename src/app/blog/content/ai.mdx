@@ -1,60 +1,38 @@
 ---
-title: My AI Setup
-excerpt: Files and symlinks for a reproducible coding agent setup.
+title: AI Setup
+excerpt: Things to consider when setting up an AI agent.
 slug: ai
 createdAt: 2026-06-03
 updatedAt: 2026-06-03
 ---
 
-My setup has three parts:
+## Skills
 
-- [Shared agent instructions](#shared-agent-instructions)
-- [Writing style](#writing-style)
-- [Skills](#skills)
+- See [skills repository](https://github.com/mrzmyr/agent-plugin/blob/main/skills).
 
-## Shared agent instructions
+## Symlink Context
 
-Put shared agent context in `~/.agents`. `system_prompt.md` is the source of truth.
+- Add `~/.agents/system_prompt.md`.
+- Add symlinks to `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, etc.
 
-```bash
-mkdir -p ~/.agents/skills
-touch ~/.agents/system_prompt.md
-touch ~/.agents/writing_style.md
-```
+## `.agents/`
 
-Different agents read different files:
-
-- Codex reads `AGENTS.md`
-- Claude reads `CLAUDE.md`
-- Cursor has rules
-
-Symlink them to one shared file.
-
-```bash
-ln -s ~/.agents/system_prompt.md ~/.codex/AGENTS.md
-ln -s ~/.agents/system_prompt.md ~/.claude/CLAUDE.md
-```
-
-Now edits to `~/.agents/system_prompt.md` apply everywhere.
+- `.agents/` is a remote git repository
+- Updated by hooks when you commit to `~/.agents/`
 
 ## Writing style
 
 `writing_style.md` is used whenever agents write in your name.
 
-Create `~/.agents/writing_style.md` from existing messages:
-
-- Slack messages
-- emails
-- PR comments
-- docs
-- replies
-
-Structure it like this:
+- Create `~/.agents/writing_style.md` from existing messages
+- Use slack, emails, PR comments, docs, replies.
+- Reference in `~/.agents/system_prompt.md`:
 
 ```md
 # Writing style
 
 ## Rules
+
 - English in team channels, German in German 1:1s
 - short paragraphs
 - direct asks
@@ -63,36 +41,6 @@ Structure it like this:
 
 ## Examples
 
-> can you add @Name to the cursor team?
->
-> Impact: Setup security automations for Customer Journey Portal.
+- can you add @Name to the cursor team?
+- used whenever agents write in your name
 ```
-
-Then reference it from `~/.agents/system_prompt.md`:
-
-```md
-When writing anything in my name, read ~/.agents/writing_style.md first and match the voice, language, and patterns there.
-```
-
-## Skills
-
-Skills are small instruction files for specific work.
-
-- [`typescript-principles`](https://github.com/mrzmyr/agent-plugin/blob/main/skills/typescript-principles/SKILL.md): TypeScript defaults for naming, params, and errors.
-- [`deslop`](https://github.com/mrzmyr/agent-plugin/blob/main/skills/deslop/SKILL.md): Pushback against fallback-heavy, regex-heavy, custom agent code.
-
-`typescript-principles` covers TypeScript defaults:
-
-- Prefer named parameters over positional parameters
-- Prefix boolean functions with `is`, `has`, `can`, `should`, etc.
-- Use short action-based function names
-- Write structured errors with `status`, `message`, `why`, and `fix`
-
-`deslop` pushes against lazy agent code:
-
-- Question fallbacks
-- Question regex parsing when a real parser exists
-- Use popular libraries for solved problems
-- Avoid type assertions when inference should work
-
-The goal: make taste executable.
