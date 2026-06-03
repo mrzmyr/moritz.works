@@ -1,71 +1,90 @@
 ---
 title: My AI Setup
-excerpt: A small file-based setup for keeping coding agents useful.
+excerpt: Files and symlinks for a reproducible coding agent setup.
 slug: ai
 createdAt: 2026-06-03
 updatedAt: 2026-06-03
 ---
 
-Here’s how I keep coding agents useful:
+Create this setup:
 
-- [1. One source of truth](#1-one-source-of-truth)
-- [2. Writing style](#2-writing-style)
-- [3. Skills](#3-skills)
-- [4. File structure](#4-file-structure)
+- [1. Create files](#1-create-files)
+- [2. Symlink agent instructions](#2-symlink-agent-instructions)
+- [3. Add writing style](#3-add-writing-style)
+- [4. Add skills](#4-add-skills)
+- [5. Final structure](#5-final-structure)
 
-## 1. One source of truth
+## 1. Create files
 
-Every agent has its own config file:
+Put shared agent context in `~/.agents`.
+
+```bash
+mkdir -p ~/.agents/skills
+touch ~/.agents/system_prompt.md
+touch ~/.agents/writing_style.md
+```
+
+`system_prompt.md` is the source of truth.
+
+`writing_style.md` is used whenever agents write in your name.
+
+## 2. Symlink agent instructions
+
+Different agents read different files:
 
 - Codex reads `AGENTS.md`
 - Claude reads `CLAUDE.md`
 - Cursor has rules
 
-Copy/paste them and they drift.
-
-Keep one source file instead. Symlink it into each agent.
+Symlink them to one shared file.
 
 ```bash
 ln -s ~/.agents/system_prompt.md ~/.codex/AGENTS.md
 ln -s ~/.agents/system_prompt.md ~/.claude/CLAUDE.md
 ```
 
-Now updates happen once.
+Now edits to `~/.agents/system_prompt.md` apply everywhere.
 
-## 2. Writing style
+## 3. Add writing style
 
-Add a `writing_style.md`.
+Create `~/.agents/writing_style.md` from existing messages.
 
-Agents can write, but they drift into generic AI voice.
+Use:
 
-Too polished. Too long. Not how I would write.
-
-The file should include concrete examples from your own:
-
-- messages
-- comments
+- Slack messages
+- emails
+- PR comments
 - docs
 - replies
 
-My version includes rules like:
+Structure it like this:
 
+```md
+# Writing style
+
+## Rules
 - English in team channels, German in German 1:1s
-- Use short paragraphs
-- Make direct asks
-- Use `Context:` and `Impact:` when useful
-- Avoid "I hope this helps"
+- short paragraphs
+- direct asks
+- use `Context:` and `Impact:` when useful
+- avoid "I hope this helps"
 
-Tell agents to read this file before drafting anything in your name.
+## Examples
 
-Still review the output. The goal is less rewriting, not zero review.
+> can you add @Name to the cursor team?
+>
+> Impact: Setup security automations for Customer Journey Portal.
+```
 
-## 3. Skills
+Then reference it from `~/.agents/system_prompt.md`:
 
-Baseline instructions define agent behavior.
+```md
+When writing anything in my name, read ~/.agents/writing_style.md first and match the voice, language, and patterns there.
+```
 
-Skills define sharper opinions for specific work.
+## 4. Add skills
 
-Examples:
+Skills are small instruction files for specific work.
 
 - [`typescript-principles`](https://github.com/mrzmyr/agent-plugin/blob/main/skills/typescript-principles/SKILL.md): TypeScript defaults for naming, params, and errors.
 - [`deslop`](https://github.com/mrzmyr/agent-plugin/blob/main/skills/deslop/SKILL.md): Pushback against fallback-heavy, regex-heavy, custom agent code.
@@ -86,7 +105,7 @@ Examples:
 
 The goal: make taste executable.
 
-## 4. File structure
+## 5. Final structure
 
 ```txt
 ~/.agents/
