@@ -27,16 +27,25 @@ export default async function Layout({
     notFound();
   }
 
-  const ip = headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const [claps, userClaps] = await Promise.all([
-    kv.get<number>(`claps:${slug}`).then((v) => v ?? 0),
-    kv.get<number>(`claps:${slug}:ip:${ip}`).then((v) => v ?? 0),
-  ]);
+  const ip =
+    headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const hasKvEnv = Boolean(
+    process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN,
+  );
+  const [claps, userClaps] = hasKvEnv
+    ? await Promise.all([
+        kv.get<number>(`claps:${slug}`).then((v) => v ?? 0),
+        kv.get<number>(`claps:${slug}:ip:${ip}`).then((v) => v ?? 0),
+      ])
+    : [0, 0];
 
   return (
     <>
       <Breadcrumb
-        items={[{ label: "Blog", href: "/blog" }, { label: post.title }]}
+        items={[
+          { label: "Blog", href: "/blog", shortcut: "b" },
+          { label: post.title },
+        ]}
       />
       <PostStructuredData
         type="article"
@@ -55,7 +64,11 @@ export default async function Layout({
             updatedAt={new Date(post.updatedAt)}
           />
         </div>
-        <ClapButton slug={slug} initialClaps={claps} initialUserClaps={userClaps} />
+        <ClapButton
+          slug={slug}
+          initialClaps={claps}
+          initialUserClaps={userClaps}
+        />
         <PostContentConatiner>{children}</PostContentConatiner>
       </div>
     </>

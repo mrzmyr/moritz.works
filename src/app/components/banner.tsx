@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ShortcutHint } from "@/components/shortcut-hint";
 import {
   HoverCard,
   HoverCardContent,
@@ -12,7 +13,7 @@ import type { Book } from "@/lib/get-books";
 
 export const Banner = ({ currentBook }: { currentBook?: Book }) => {
   const [time, setTime] = useState<{ hours: string; minutes: string } | null>(
-    null
+    null,
   );
   const [colonVisible, setColonVisible] = useState(true);
 
@@ -69,9 +70,11 @@ export const Banner = ({ currentBook }: { currentBook?: Book }) => {
                 href={bookUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="italic underline underline-offset-2 hover:text-neutral-600 dark:hover:text-neutral-300"
+                className="inline-flex items-center gap-1 italic underline underline-offset-2 hover:text-neutral-600 dark:hover:text-neutral-300"
+                data-hotkey="r"
               >
                 {currentBook.title}
+                <ShortcutHint keys="r" />
               </Link>
             </HoverCardTrigger>
             <HoverCardContent align="end" className="w-auto p-3">

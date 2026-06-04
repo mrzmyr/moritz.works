@@ -10,19 +10,25 @@ import {
 
 dayjs.extend(relativeTime);
 
-export const PostListItem = async ({ post }: { post: PostData }) => {
-  const { data: Preview, error } = await getPostPreviewFromTsx(post.slug);
+export const PostListItem = async ({
+  post,
+  shortcut,
+}: {
+  post: PostData;
+  shortcut?: string[];
+}) => {
+  const { data: Preview } = await getPostPreviewFromTsx(post.slug);
 
   if (Preview) {
     return (
-      <PostListItemPreviewContaienr post={post}>
+      <PostListItemPreviewContaienr post={post} shortcut={shortcut}>
         {/* @ts-expect-error used as dynamic import */}
         <Preview post={post} />
       </PostListItemPreviewContaienr>
     );
   }
 
-  return <PostListItemSimple post={post} />;
+  return <PostListItemSimple post={post} shortcut={shortcut} />;
 };
 
 export const PostListItemSkeleton = () => {

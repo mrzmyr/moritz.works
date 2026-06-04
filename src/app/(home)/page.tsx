@@ -1,37 +1,37 @@
 import { TreeDeciduous } from "lucide-react";
 import Link from "next/link";
+import type { ComponentProps, ReactNode } from "react";
 import { Footer } from "@/components/footer";
+import { KeyboardShortcuts } from "@/components/keyboard-shortcuts";
 import { LastPosts } from "@/components/last-posts";
 import { PostStructuredData } from "@/components/post-structured-data";
+import { ShortcutHint } from "@/components/shortcut-hint";
 import { getBooks } from "@/lib/get-books";
 import { Banner } from "../components/banner";
 import ProjectList from "../components/project-list";
 import WorkList from "../components/work-list";
 
-const Headline = ({ children }: { children: React.ReactNode }) => {
+const Headline = ({ children }: { children: ReactNode }) => {
   return <div className="font-medium dark:text-white mb-6">{children}</div>;
 };
 
-const Section = ({ children }: { children: React.ReactNode }) => {
+const Section = ({ children }: { children: ReactNode }) => {
   return <div className="flex flex-col mt-16">{children}</div>;
 };
 
-const QuickLink = ({
-  children,
-  href,
-  ...props
-}: {
-  children: React.ReactNode;
-  href: string;
-  [key: string]: any;
-}) => {
+type QuickLinkProps = ComponentProps<typeof Link> & {
+  shortcut?: string | string[];
+};
+
+const QuickLink = ({ children, href, shortcut, ...props }: QuickLinkProps) => {
   return (
     <Link
       href={href}
-      className="text-neutral-600 dark:text-neutral-400 text-sm hover:text-neutral-800 dark:hover:text-neutral-200"
+      className="inline-flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400 text-sm hover:text-neutral-800 dark:hover:text-neutral-200"
       {...props}
     >
       {children}
+      {shortcut && <ShortcutHint keys={shortcut} />}
     </Link>
   );
 };
@@ -43,6 +43,7 @@ export default async function Page() {
   return (
     <>
       <PostStructuredData type="person" />
+      <KeyboardShortcuts />
       <div className="max-w-3xl mx-auto pt-8 pb-12 px-4 h-full">
         <Banner currentBook={currentBook} />
         <div className="text-neutral-800 leading-7 space-y-6 dark:text-neutral-200">
@@ -70,9 +71,11 @@ export default async function Page() {
               href="https://www.researchgate.net/publication/335566326_Emoji_Emoji_on_the_Wall_Show_Me_One_I_Show_You_All_-_An_Exploratory_Study_on_the_Connection_Between_Traits_and_Emoji_Usage"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline"
+              className="inline-flex items-center gap-1 underline"
+              data-hotkey="e"
             >
               published a study
+              <ShortcutHint keys="e" />
             </a>{" "}
             if your emojis predict your character.
           </div>
@@ -81,7 +84,9 @@ export default async function Page() {
         <Section>
           <div className="flex items-center justify-between">
             <Headline>Recent Posts</Headline>
-            <QuickLink href="/blog">View All</QuickLink>
+            <QuickLink href="/blog" shortcut="b" data-hotkey="b">
+              View All
+            </QuickLink>
           </div>
 
           <div className="flex flex-col gap-2 -ml-4 mt-4 -mr-4">
@@ -103,6 +108,8 @@ export default async function Page() {
               target="_blank"
               rel="noopener noreferrer"
               href="https://www.linkedin.com/in/bd40da1b5cafa74efb3c0d32ae3989b0/"
+              shortcut="l"
+              data-hotkey="l"
             >
               View All
             </QuickLink>

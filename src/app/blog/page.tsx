@@ -49,7 +49,9 @@ const Posts = async () => {
     notFound();
   }
 
-  return posts.map((post) => <PostListItem key={post.id} post={post} />);
+  return posts.map((post, index) => (
+    <PostListItem key={post.id} post={post} shortcut={["g", `${index + 1}`]} />
+  ));
 };
 
 const PostsSkeleton = () => {

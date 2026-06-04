@@ -3,10 +3,22 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { useCallback, useState } from "react";
+import { ShortcutHint } from "@/components/shortcut-hint";
 
 let heartId = 0;
 
-const LAUGH_EMOJIS = ["😂", "🤣", "💀", "😭", "🫠", "😩", "🤪", "😜", "🥴", "😆"];
+const LAUGH_EMOJIS = [
+  "😂",
+  "🤣",
+  "💀",
+  "😭",
+  "🫠",
+  "😩",
+  "🤪",
+  "😜",
+  "🥴",
+  "😆",
+];
 
 type FloatingHeart = {
   id: number;
@@ -21,13 +33,10 @@ type FloatingHeart = {
 };
 
 function getIntensity(userClaps: number): number {
-  return Math.pow(userClaps / 50, 2.5);
+  return (userClaps / 50) ** 2.5;
 }
 
-function spawnHearts(
-  userClaps: number,
-  buttonRect: DOMRect,
-): FloatingHeart[] {
+function spawnHearts(userClaps: number, buttonRect: DOMRect): FloatingHeart[] {
   const intensity = getIntensity(userClaps);
   const count = Math.floor(1 + intensity * 40);
   const cx = buttonRect.left + buttonRect.width / 2;
@@ -119,17 +128,23 @@ export function ClapButton({
       if (local.length > 0) {
         setHearts((h) => [...h, ...local]);
         const ids = local.map((h) => h.id);
-        setTimeout(() => {
-          setHearts((h) => h.filter((heart) => !ids.includes(heart.id)));
-        }, 1000 + intensity * 500);
+        setTimeout(
+          () => {
+            setHearts((h) => h.filter((heart) => !ids.includes(heart.id)));
+          },
+          1000 + intensity * 500,
+        );
       }
 
       if (page.length > 0) {
         setPageHearts((h) => [...h, ...page]);
         const ids = page.map((h) => h.id);
-        setTimeout(() => {
-          setPageHearts((h) => h.filter((heart) => !ids.includes(heart.id)));
-        }, 1800 + intensity * 600);
+        setTimeout(
+          () => {
+            setPageHearts((h) => h.filter((heart) => !ids.includes(heart.id)));
+          },
+          1800 + intensity * 600,
+        );
       }
 
       fetch("/api/claps", {
@@ -252,8 +267,20 @@ export function ClapButton({
             {hearts.map((h) => (
               <motion.div
                 key={h.id}
-                initial={{ opacity: 1, y: 0, x: h.x * 0.3, scale: 0.9, rotate: 0 }}
-                animate={{ opacity: 0, y: h.y, x: h.x, scale: 0.5, rotate: h.rotation }}
+                initial={{
+                  opacity: 1,
+                  y: 0,
+                  x: h.x * 0.3,
+                  scale: 0.9,
+                  rotate: 0,
+                }}
+                animate={{
+                  opacity: 0,
+                  y: h.y,
+                  x: h.x,
+                  scale: 0.5,
+                  rotate: h.rotation,
+                }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: h.duration, ease: [0.22, 1, 0.36, 1] }}
                 className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 text-red-500"
@@ -265,6 +292,8 @@ export function ClapButton({
 
           <motion.button
             type="button"
+            aria-label="Clap"
+            data-hotkey="c"
             onClick={handleClap}
             disabled={disabled}
             className="flex size-12 items-center justify-center rounded-full bg-background transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50 active:scale-95 duration-200 cursor-pointer"
@@ -282,12 +311,17 @@ export function ClapButton({
         <span className="text-xs font-medium tabular-nums text-muted-foreground">
           {claps}
         </span>
+        <ShortcutHint keys="c" />
         <AnimatePresence>
           {userClaps >= 50 && (
             <motion.div
               initial={{ opacity: 0, y: -6, scale: 0.9, filter: "blur(4px)" }}
               animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+              transition={{
+                duration: 1.2,
+                ease: [0.22, 1, 0.36, 1],
+                delay: 0.3,
+              }}
               className="flex flex-col items-center gap-0.5 whitespace-nowrap"
             >
               <span className="text-[10px] tracking-wide text-muted-foreground/70">
@@ -296,7 +330,11 @@ export function ClapButton({
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.8 }}
+                transition={{
+                  duration: 0.6,
+                  ease: [0.22, 1, 0.36, 1],
+                  delay: 0.8,
+                }}
                 className="text-sm"
               >
                 🫶

@@ -1,4 +1,5 @@
 import { Footer } from "@/components/footer";
+import { KeyboardShortcuts } from "@/components/keyboard-shortcuts";
 
 export default async function Layout({
   children,
@@ -7,6 +8,7 @@ export default async function Layout({
 }) {
   return (
     <div className="max-w-3xl mx-auto pt-8 pb-12 px-4 h-full">
+      <KeyboardShortcuts />
       {children}
 
       <Footer />
