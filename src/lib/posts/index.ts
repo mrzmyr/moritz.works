@@ -7,6 +7,14 @@ import { tryCatch } from "../utils";
 import { POSTS_DIRECTORY } from "./config";
 import type { PostContent, PostData, PostModule } from "./types";
 
+export const isDraftVisible = () => process.env.NODE_ENV !== "production";
+
+export const isPostDraft = (post: Pick<PostData, "draft">) =>
+  post.draft === true;
+
+export const canShowPost = (post: Pick<PostData, "draft">) =>
+  isDraftVisible() || !isPostDraft(post);
+
 export const getPostMetadata = async (
   slug: string,
 ): Promise<Response<PostData>> => {
@@ -18,9 +26,14 @@ export const getPostMetadata = async (
 
   const fileContents = await fs.promises.readFile(fullPath, "utf8");
   const { data: metadata, content } = matter(fileContents);
-  const url = getPostUrl({ slug: metadata.slug });
+  const url = getPostUrl({ slug });
+  const post = { id: slug, slug, ...metadata, url, content } as PostData;
 
-  return { success: true, data: { ...metadata, url, content } as PostData };
+  if (!canShowPost(post)) {
+    return { success: false, error: `Post not found: ${slug}` };
+  }
+
+  return { success: true, data: post };
 };
 
 export async function getPosts(): Promise<Response<PostData[]>> {
@@ -36,12 +49,18 @@ export async function getPosts(): Promise<Response<PostData[]>> {
 
     const { data: metadata } = matter(fileContents);
 
-    posts.push({
+    const post = {
       id: slug,
       slug,
       url: getPostUrl({ slug }),
       ...metadata,
-    } as PostData);
+    } as PostData;
+
+    if (!canShowPost(post)) {
+      continue;
+    }
+
+    posts.push(post);
   }
 
   return {

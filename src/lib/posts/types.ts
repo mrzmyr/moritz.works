@@ -6,6 +6,7 @@ export type PostData = {
   url: string;
   createdAt: string;
   updatedAt: string;
+  draft?: boolean;
   content: string;
 };
 

@@ -1,0 +1,1162 @@
+---
+title: AI-first SDLC
+excerpt: How software teams can make agents useful without losing engineering fundamentals.
+createdAt: 2026-06-07
+updatedAt: 2026-06-07
+draft: true
+---
+
+import {
+  siAirbyte,
+  siApacheavro,
+  siAppstore,
+  siAuth0,
+  siBackstage,
+  siDatadog,
+  siDocker,
+  siGithubactions,
+  siGithub,
+  siGooglebigquery,
+  siGooglecloud,
+  siGooglepubsub,
+  siGrafana,
+  siLooker,
+  siNotion,
+  siRetool,
+  siStoryblok,
+  siLinear,
+  siTerraform,
+  siTrivy,
+  siVercel,
+  siZendesk,
+} from "simple-icons";
+import {
+  KumoFlow,
+  KumoFlowNode,
+  KumoFlowParallel,
+} from "./kumo-flow";
+
+export const flows = {
+  spec: {
+    needs: [
+      ["Product requirement", "how to make money"],
+      ["Data model"],
+      ["API contract"],
+      ["Acceptance tests"],
+    ],
+    target: ["Spec"],
+  },
+  scaffolding: {
+    needs: [["Service templates"], ["Codegen"], ["Boilerplate"]],
+    target: ["Scaffolding"],
+  },
+  platform: {
+    needs: [["Service catalog"], ["Ownership"], ["Dependencies"]],
+    target: [
+      "Backstage",
+      "Internal Developer Platform",
+      "https://backstage.io/",
+    ],
+  },
+  guardrails: {
+    needs: [["Hooks"], ["Security gates"], ["Compliance gates"]],
+    target: ["Guardrails"],
+  },
+  verify: {
+    needs: [
+      ["Unit tests"],
+      ["Integration tests"],
+      ["E2E tests"],
+      ["Preview deployments"],
+    ],
+    target: ["Verify"],
+  },
+  ship: {
+    needs: [["CI/CD"], ["IaC"], ["Flags"], ["Canary / rollback"]],
+    target: ["Ship"],
+  },
+  operate: {
+    needs: [["Logs"], ["Metrics"], ["Traces"], ["On-call"]],
+    target: ["Operate"],
+  },
+  reproduce: {
+    needs: [["Production version"], ["Fixtures"], ["Trace replay"]],
+    target: ["Reproduce"],
+  },
+  measure: {
+    needs: [["DORA"], ["SPACE"], ["Agent intervention rate"]],
+    target: ["Measure"],
+  },
+};
+
+export const BackstageIcon = () => {
+  return (
+    <svg
+      aria-label={siBackstage.title}
+      className="size-5"
+      role="img"
+      viewBox="0 0 24 24"
+    >
+      <path d={siBackstage.path} fill={`#${siBackstage.hex}`} />
+    </svg>
+  );
+};
+
+export const SdlcNeed = ({ label, detail }) => {
+  return (
+    <li
+      data-sdlc-need="true"
+      className="w-40 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm shadow-sm dark:border-neutral-800 dark:bg-neutral-950"
+    >
+      <div className="font-medium text-neutral-950 dark:text-neutral-50">
+        {label}
+      </div>
+      {detail && (
+        <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+          {detail}
+        </div>
+      )}
+    </li>
+  );
+};
+
+export const SdlcTarget = ({ label, detail, href }) => {
+  const targetClassName =
+    "rounded-lg border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-950 shadow-sm dark:border-neutral-700 dark:bg-neutral-100 dark:text-neutral-950";
+
+  const content = (
+    <>
+      {label === "Backstage" && <BackstageIcon />}
+      <span>
+        <span className="font-semibold">{label}</span>
+        {detail && (
+          <span className="mt-0.5 block text-xs font-normal text-neutral-500 dark:text-neutral-400">
+            {detail}
+          </span>
+        )}
+      </span>
+    </>
+  );
+
+  if (href) {
+    return (
+      <li className={targetClassName} data-sdlc-target="true">
+        <a
+          className="flex items-center gap-2 text-inherit no-underline"
+          href={href}
+        >
+          {content}
+        </a>
+      </li>
+    );
+  }
+
+  return (
+    <li className={targetClassName} data-sdlc-target="true">
+      <div className="flex items-center gap-2">{content}</div>
+    </li>
+  );
+};
+
+export const SdlcFlow = ({ variant = "spec" }) => {
+  const { needs, target } = flows[variant] ?? flows.spec;
+  const [targetLabel, targetDetail, targetHref] = target;
+
+  return (
+    <div data-sdlc-flow={variant}>
+      <KumoFlow
+        align="center"
+        className="not-prose my-8 rounded-lg border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950/50"
+        padding={{ x: 16, y: 24 }}
+      >
+        <KumoFlowParallel>
+          {needs.map(([label, detail], index) => (
+            <KumoFlowNode
+              id={`${variant}-need-${index}`}
+              key={label}
+              render={<SdlcNeed detail={detail} label={label} />}
+            />
+          ))}
+        </KumoFlowParallel>
+        <KumoFlowNode
+          id={`${variant}-target`}
+          render={
+            <SdlcTarget
+              detail={targetDetail}
+              href={targetHref}
+              label={targetLabel}
+            />
+          }
+        />
+      </KumoFlow>
+    </div>
+  );
+};
+
+export const fallbackProviderIcons = {
+  browserstack: { letters: "BS", color: "#ff6a00" },
+  dataform: { letters: "DF", color: "#4285f4" },
+  datastream: { letters: "DS", color: "#4285f4" },
+  heyapi: { letters: "HA", color: "#111827" },
+  incidentio: { letters: "io", color: "#ff4f64" },
+  launchdarkly: { letters: "LD", color: "#405bff" },
+  releaseplease: { letters: "RP", color: "#24292f" },
+  sqlmesh: { letters: "SM", color: "#0f766e" },
+  terramate: { letters: "TM", color: "#5b21b6" },
+  testcontainers: { letters: "TC", color: "#16385c" },
+  testflight: { letters: "TF", color: "#0a84ff" },
+  windmill: { letters: "WM", color: "#0ea5e9" },
+  wiz: { letters: "W", color: "#5b5ce2" },
+};
+
+export const evidenceSourceFlows = [
+  {
+    id: "observability",
+    needs: ["Logs", "Metrics", "Traces", "Monitors", "Alerts"],
+    sources: [
+      {
+        name: "Datadog",
+        provider: "Datadog",
+        icon: siDatadog,
+      },
+    ],
+  },
+  {
+    id: "observability-dashboards",
+    needs: ["Dashboards", "SLO views"],
+    sources: [
+      {
+        name: "Grafana",
+        provider: "Grafana",
+        icon: siGrafana,
+      },
+    ],
+  },
+  {
+    id: "deployments",
+    needs: ["Deployments"],
+    sources: [
+      {
+        name: "Cloud Run",
+        provider: "Google Cloud",
+        icon: siGooglecloud,
+      },
+      {
+        name: "Vercel",
+        provider: "Vercel",
+        icon: siVercel,
+      },
+    ],
+  },
+  {
+    id: "mobile-releases",
+    needs: ["Mobile builds", "Beta releases", "App review"],
+    sources: [
+      {
+        name: "App Store Connect",
+        provider: "App Store Connect",
+        icon: siAppstore,
+      },
+      {
+        name: "TestFlight",
+        provider: "TestFlight",
+        fallbackIcon: fallbackProviderIcons.testflight,
+      },
+    ],
+  },
+  {
+    id: "ci-checks",
+    needs: ["CI runs", "Checks", "Build artifacts", "Test results"],
+    sources: [
+      {
+        name: "GitHub Actions",
+        provider: "GitHub Actions",
+        icon: siGithubactions,
+      },
+    ],
+  },
+  {
+    id: "test-infra",
+    needs: ["Integration test env", "Device test runs"],
+    sources: [
+      {
+        name: "Testcontainers",
+        provider: "Testcontainers",
+        fallbackIcon: fallbackProviderIcons.testcontainers,
+      },
+      {
+        name: "BrowserStack",
+        provider: "BrowserStack",
+        fallbackIcon: fallbackProviderIcons.browserstack,
+      },
+    ],
+  },
+  {
+    id: "release-state",
+    needs: ["Changelog", "Release PRs", "Version tags"],
+    sources: [
+      {
+        name: "Release Please",
+        provider: "Release Please",
+        fallbackIcon: fallbackProviderIcons.releaseplease,
+      },
+    ],
+  },
+  {
+    id: "code-context",
+    needs: ["Source code", "Pull requests", "CODEOWNERS"],
+    sources: [
+      {
+        name: "GitHub",
+        provider: "GitHub",
+        icon: siGithub,
+      },
+    ],
+  },
+  {
+    id: "code-security",
+    needs: ["Code security", "Dependency risk", "Secret scanning"],
+    sources: [
+      {
+        name: "Wiz",
+        provider: "Wiz",
+        fallbackIcon: fallbackProviderIcons.wiz,
+      },
+      {
+        name: "GitHub",
+        provider: "GitHub",
+        icon: siGithub,
+      },
+    ],
+  },
+  {
+    id: "image-security",
+    needs: ["Image vulnerabilities"],
+    sources: [
+      {
+        name: "Trivy",
+        provider: "Trivy",
+        icon: siTrivy,
+      },
+    ],
+  },
+  {
+    id: "cloud-security",
+    needs: ["Cloud posture", "Workload findings"],
+    sources: [
+      {
+        name: "Wiz",
+        provider: "Wiz",
+        fallbackIcon: fallbackProviderIcons.wiz,
+      },
+    ],
+  },
+  {
+    id: "identity",
+    needs: ["Auth config", "Roles", "Permissions", "Auth logs"],
+    sources: [
+      {
+        name: "Auth0",
+        provider: "Auth0",
+        icon: siAuth0,
+      },
+    ],
+  },
+  {
+    id: "incidents",
+    needs: ["Incidents", "Incident timeline", "Responders"],
+    sources: [
+      {
+        name: "incident.io",
+        provider: "incident.io",
+        fallbackIcon: fallbackProviderIcons.incidentio,
+      },
+    ],
+  },
+  {
+    id: "knowledge-docs",
+    needs: ["Runbooks", "Decision documents", "Postmortems", "Incident debriefs"],
+    sources: [
+      {
+        name: "Notion",
+        provider: "Notion",
+        icon: siNotion,
+      },
+    ],
+  },
+  {
+    id: "domain-data",
+    needs: ["Domain data", "Schemas"],
+    sources: [
+      {
+        name: "BigQuery",
+        provider: "BigQuery",
+        icon: siGooglebigquery,
+      },
+    ],
+  },
+  {
+    id: "business-metrics",
+    needs: ["Semantic metrics", "BI dashboards"],
+    sources: [
+      {
+        name: "Looker",
+        provider: "Looker",
+        icon: siLooker,
+      },
+    ],
+  },
+  {
+    id: "data-pipelines",
+    needs: ["Data pipelines", "Warehouse transforms", "CDC", "Data lineage"],
+    sources: [
+      {
+        name: "Dataform",
+        provider: "Dataform",
+        fallbackIcon: fallbackProviderIcons.dataform,
+      },
+      {
+        name: "SQLMesh",
+        provider: "SQLMesh",
+        fallbackIcon: fallbackProviderIcons.sqlmesh,
+      },
+      {
+        name: "Datastream",
+        provider: "Datastream",
+        fallbackIcon: fallbackProviderIcons.datastream,
+      },
+      {
+        name: "Airbyte",
+        provider: "Airbyte",
+        icon: siAirbyte,
+      },
+    ],
+  },
+  {
+    id: "platform-context",
+    needs: ["API spec", "Service catalog", "Service dependencies", "Ownership"],
+    sources: [
+      {
+        name: "Backstage",
+        provider: "Backstage",
+        icon: siBackstage,
+      },
+    ],
+  },
+  {
+    id: "event-contracts",
+    needs: ["Async contracts", "Event schemas", "Domain events"],
+    sources: [
+      {
+        name: "Pub/Sub",
+        provider: "Google Cloud",
+        icon: siGooglepubsub,
+      },
+      {
+        name: "Avro",
+        provider: "Avro",
+        icon: siApacheavro,
+      },
+    ],
+  },
+  {
+    id: "approved-technologies",
+    needs: ["Approved technologies"],
+    sources: [
+      {
+        name: "Tech Radar",
+        provider: "Tech Radar",
+        icon: siGithub,
+      },
+    ],
+  },
+  {
+    id: "feature-flags",
+    needs: ["Feature flags", "Rollout rules"],
+    sources: [
+      {
+        name: "Launch Darkly",
+        provider: "Launch Darkly",
+        fallbackIcon: fallbackProviderIcons.launchdarkly,
+      },
+    ],
+  },
+  {
+    id: "roadmap",
+    needs: ["Roadmap", "Issues", "Projects", "Cycles"],
+    sources: [
+      {
+        name: "Linear",
+        provider: "Linear",
+        icon: siLinear,
+      },
+    ],
+  },
+  {
+    id: "internal-ops",
+    needs: ["Internal tools", "Ops workflows", "Manual remediation"],
+    sources: [
+      {
+        name: "Retool",
+        provider: "Retool",
+        icon: siRetool,
+      },
+      {
+        name: "Windmill",
+        provider: "Windmill",
+        fallbackIcon: fallbackProviderIcons.windmill,
+      },
+    ],
+  },
+  {
+    id: "customer-impact",
+    needs: ["Customer tickets", "Support impact"],
+    sources: [
+      {
+        name: "Zendesk",
+        provider: "Zendesk",
+        icon: siZendesk,
+      },
+    ],
+  },
+  {
+    id: "content-state",
+    needs: ["CMS content", "Content releases"],
+    sources: [
+      {
+        name: "Storyblok",
+        provider: "Storyblok",
+        icon: siStoryblok,
+      },
+    ],
+  },
+  {
+    id: "infra-state",
+    needs: ["Cloud resources", "Runtime config", "IaC plans"],
+    sources: [
+      {
+        name: "Google Cloud",
+        provider: "Google Cloud",
+        icon: siGooglecloud,
+      },
+      {
+        name: "Terraform",
+        provider: "Terraform",
+        icon: siTerraform,
+      },
+      {
+        name: "Terramate",
+        provider: "Terramate",
+        fallbackIcon: fallbackProviderIcons.terramate,
+      },
+    ],
+  },
+  {
+    id: "containers",
+    needs: ["Container images", "Dockerfiles"],
+    sources: [
+      {
+        name: "Docker",
+        provider: "Docker",
+        icon: siDocker,
+      },
+    ],
+  },
+];
+
+export const ProviderIcon = ({ icon, fallbackIcon, label }) => {
+  if (icon) {
+    return (
+      <svg
+        aria-label={icon.title}
+        className="size-5 shrink-0"
+        role="img"
+        viewBox="0 0 24 24"
+      >
+        <path d={icon.path} fill={`#${icon.hex}`} />
+      </svg>
+    );
+  }
+
+  const fallback = fallbackIcon ?? {
+    color: "#737373",
+    letters: label.slice(0, 2),
+  };
+
+  return (
+    <span
+      aria-label={label}
+      className="flex size-5 shrink-0 items-center justify-center rounded-sm text-[9px] font-semibold leading-none text-white"
+      role="img"
+      style={{ backgroundColor: fallback.color }}
+    >
+      {fallback.letters}
+    </span>
+  );
+};
+
+export const EvidenceNeedNode = ({ id, label }) => {
+  return (
+    <li
+      className="w-44 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-950 shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
+      data-evidence-need={id}
+      data-testid={`need-${id}`}
+    >
+      {label}
+    </li>
+  );
+};
+
+export const EvidenceSourceNode = ({ id, source }) => {
+  return (
+    <li
+      className="w-44 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-950 shadow-sm dark:border-neutral-700 dark:bg-neutral-100 dark:text-neutral-950"
+      data-evidence-source={id}
+      data-testid={`source-${id}`}
+    >
+      <div className="flex items-center gap-2">
+        <ProviderIcon
+          fallbackIcon={source.fallbackIcon}
+          icon={source.icon}
+          label={source.provider}
+        />
+        <span className="min-w-0">
+          <span className="block truncate font-medium text-neutral-950">
+            {source.name}
+          </span>
+        </span>
+      </div>
+    </li>
+  );
+};
+
+export const EvidenceSourceFlow = ({ flow }) => {
+  const needs =
+    flow.needs.length === 1 ? (
+      <KumoFlowNode
+        id={`${flow.id}-need-0`}
+        render={<EvidenceNeedNode id={`${flow.id}-need-0`} label={flow.needs[0]} />}
+      />
+    ) : (
+      <KumoFlowParallel>
+        {flow.needs.map((need, index) => (
+          <KumoFlowNode
+            id={`${flow.id}-need-${index}`}
+            key={need}
+            render={<EvidenceNeedNode id={`${flow.id}-need-${index}`} label={need} />}
+          />
+        ))}
+      </KumoFlowParallel>
+    );
+
+  const sources =
+    flow.sources.length === 1 ? (
+      <KumoFlowNode
+        id={`${flow.id}-source-0`}
+        render={
+          <EvidenceSourceNode
+            id={`${flow.id}-source-0`}
+            source={flow.sources[0]}
+          />
+        }
+      />
+    ) : (
+      <KumoFlowParallel>
+        {flow.sources.map((source, index) => (
+          <KumoFlowNode
+            id={`${flow.id}-source-${index}`}
+            key={source.name}
+            render={
+              <EvidenceSourceNode
+                id={`${flow.id}-source-${index}`}
+                source={source}
+              />
+            }
+          />
+        ))}
+      </KumoFlowParallel>
+    );
+
+  return (
+    <div data-evidence-flow={flow.id}>
+      <KumoFlow
+        align="center"
+        className="rounded-lg border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950/50"
+        padding={{ x: 10, y: 18 }}
+      >
+        {needs}
+        {sources}
+      </KumoFlow>
+    </div>
+  );
+};
+
+export const EvidenceSourceFlows = () => {
+  return (
+    <div className="not-prose my-8 grid gap-4">
+      {evidenceSourceFlows.map((flow) => (
+        <EvidenceSourceFlow flow={flow} key={flow.id} />
+      ))}
+    </div>
+  );
+};
+
+## Software Development Lifecycle
+
+
+
+## Spec
+
+A spec is compressed intent.
+
+It tells people and agents what should be true when the work is done.
+
+For humans, a loose spec can be enough because humans carry context. They remember meetings, politics, edge cases and why a previous approach failed.
+
+Agents do not have that context unless you give it to them.
+
+An agent-ready spec needs:
+
+- product requirement
+- non-goals
+- API contract
+- schema
+- examples
+- edge cases
+- acceptance criteria
+- tests that prove the outcome
+
+<SdlcFlow variant="spec" />
+
+The most important part is the last one.
+
+> Which tests verify that you trust the outcome without looking at the code?
+
+That question should be answered before the agent starts.
+
+If the answer is unclear, the agent can still help, but the loop is not mature yet.
+
+## Scaffolding
+
+Boilerplate is wasted attention.
+
+Every team has code that should not be invented again:
+
+- service setup
+- routes
+- database migrations
+- observability
+- auth
+- permissions
+- config
+- deployment wiring
+
+<SdlcFlow variant="scaffolding" />
+
+This should be generated deterministically.
+
+The agent should not invent the shape of a service every time. It should select a known template, fill in the details and explain the diff.
+
+This is why tools like software templates, service catalogs and component generators matter. The exact product can change. The primitive stays the same.
+
+Use deterministic generation for deterministic work.
+
+Keep the agent for ambiguity.
+
+## Internal Developer Platform
+
+Agents need a map.
+
+For a human engineer, the map often lives in their head. They know who owns a service, which deployment is risky, which API is deprecated and which team to ask.
+
+For agents, this has to be queryable.
+
+An internal developer platform should expose:
+
+- service catalog
+- ownership
+- dependencies
+- runtime config
+- deployment targets
+- runbooks
+- software templates
+- approved technologies
+- known incidents
+
+<SdlcFlow variant="platform" />
+
+Backstage is one implementation. The stable idea is not Backstage.
+
+The stable idea is a machine-readable map of the engineering system.
+
+## Data sources
+
+Every step in the lifecycle needs data.
+
+Without data, the agent is guessing.
+
+With data, the agent can prepare a decision.
+
+The common pattern should be a small set of read-only providers that expose evidence in the same shape:
+
+```ts
+type Evidence = {
+  kind: string;
+  provider: string;
+  id: string;
+  title: string;
+  url?: string;
+  service?: string;
+  owner?: string;
+  environment?: string;
+  observedAt?: string;
+  summary: string;
+  data: unknown;
+};
+```
+
+The provider can be anything.
+
+The agent should not care whether an incident came from PagerDuty, incident.io or FireHydrant.
+
+It should care that it can ask:
+
+- what service is affected?
+- who owns it?
+- what changed recently?
+- what proof do we have?
+- where can a human inspect the source?
+
+Common sources look like this:
+
+| Data needed | Common API shape | Providers teams use |
+| --- | --- | --- |
+| Engineering map | service catalog, ownership, lifecycle, dependencies, docs | Backstage, Cortex, Port, OpsLevel |
+| API contracts | OpenAPI, AsyncAPI, GraphQL schema, owners, changelog | Backstage API catalog, SwaggerHub, Stoplight, Postman, Apollo GraphOS |
+| Domain data | governed SQL, semantic metrics, table schemas, lineage | BigQuery, Snowflake, Databricks, dbt Semantic Layer, Looker, DataHub, Atlan |
+| Incidents | incident state, timeline, responders, linked alerts, postmortem | PagerDuty, incident.io, FireHydrant, Rootly, Opsgenie, Jira Service Management |
+| Security issues | vulnerabilities, code findings, dependency risk, cloud posture | Snyk, GitHub Advanced Security, Semgrep, Wiz, Prisma Cloud, AWS Security Hub |
+| Deployments | commit SHA, environment, rollout status, deployment logs | GitHub Deployments, GitHub Actions, GitLab CI/CD, Argo CD, Flux, Kubernetes, Vercel |
+| Logs, metrics, traces | OpenTelemetry signals, query APIs, trace IDs, log search | OpenTelemetry Collector, Datadog, Grafana, New Relic, Splunk, Elastic, Honeycomb, Sentry |
+| Test results | check runs, artifacts, JUnit XML, coverage, flaky tests | GitHub Checks, GitHub Actions, GitLab CI, Buildkite, CircleCI, Jenkins, Testmo, Allure |
+| Runbooks | docs pages keyed by service, alert, error or operation | Backstage TechDocs, Confluence, Notion, Google Docs, GitHub Markdown |
+
+This is where MCP fits well.
+
+Not because MCP is magic.
+
+Because every source can become a small tool with the same boring contract:
+
+- `search(query, filters)`
+- `get(id)`
+- `listRecent(service, timeRange)`
+- `link(entity)`
+
+The first version should be read-only.
+
+Writes are different.
+
+Creating incidents, changing rollout state, muting alerts or opening customer data should require stronger policy.
+
+The goal is not to give the agent every permission.
+
+The goal is to make the evidence easy to fetch, compare and cite.
+
+## Company state
+
+The model becomes useful when it sits next to current company state.
+
+For every artifact, document the provider:
+
+- evidence need
+- source system
+- provider API
+- sync shape
+- freshness
+- owner
+- gaps
+
+That turns the provider list into boring flows:
+
+```ts
+type EvidenceSourceFlow = {
+  needs: string[];
+  sources: Array<{
+    name: string;
+    provider: string;
+  }>;
+  readApi: string;
+  sync: "live-read" | "scheduled-ingest" | "catalog-file" | "manual";
+  freshness: string;
+  gaps: string[];
+};
+```
+
+For my current company context, first useful flows are:
+
+<EvidenceSourceFlows />
+
+These flows should not be static documentation.
+
+They should be generated from the same sources the agent can query.
+
+The important gap is usually not provider choice.
+
+The gap is whether every provider can answer the same boring questions:
+
+- what entity is this about?
+- who owns it?
+- what changed?
+- what evidence supports the decision?
+- where is the human-readable source?
+
+## Guardrails
+
+Guardrails are executable constraints.
+
+They should not live in Slack messages or tribal knowledge.
+
+They should live in hooks, CI and policy.
+
+Examples:
+
+- formatting
+- type checks
+- secret scanning
+- dependency rules
+- security checks
+- compliance gates
+- CODEOWNERS
+- required reviews
+- policy as code
+
+<SdlcFlow variant="guardrails" />
+
+Good guardrails make agent work safer because they reduce the decision space.
+
+They also make review less subjective.
+
+The question changes from "do I like this?" to "does this pass the constraints we agreed on?"
+
+## Verify
+
+Verification is the loss function of software engineering.
+
+For a model, the loss function says how wrong the prediction was.
+
+For a software team, tests and runtime checks say how wrong the change was.
+
+This is where most AI-first workflows should invest first.
+
+Useful verification includes:
+
+- unit tests
+- integration tests
+- end-to-end tests
+- contract tests
+- evals
+- staging data
+- explicit mocks
+- preview deployments
+- browser checks
+- screenshots
+- trace links
+
+<SdlcFlow variant="verify" />
+
+The agent should not only say what it changed.
+
+It should prove what it changed.
+
+A good first pass includes the diff, the commands it ran, the output, the preview URL and remaining risk.
+
+## Ship
+
+Shipping is a state transition.
+
+The more reversible the transition is, the more autonomy you can give the agent.
+
+This is why deployment fundamentals matter:
+
+- CI/CD
+- infrastructure as code
+- containers
+- orchestration
+- feature flags
+- canary releases
+- blue-green deployments
+- rollback plans
+
+<SdlcFlow variant="ship" />
+
+An agent can prepare the change.
+
+The human decides risk.
+
+For low-risk changes, the decision can become policy. For example: if the diff only touches generated code, tests pass and the rollout is behind a flag, merge automatically.
+
+For high-risk changes, the agent should prepare the decision, not make it.
+
+## Operate
+
+Production is the real environment.
+
+An agent that cannot see production signals is guessing.
+
+The basics matter:
+
+- logs
+- metrics
+- traces
+- alerts
+- SLOs
+- runbooks
+- on-call tooling
+- incident timelines
+
+<SdlcFlow variant="operate" />
+
+OpenTelemetry is important because it gives the system a shared language.
+
+Logs explain what happened.
+
+Metrics explain how often it happened.
+
+Traces explain where it happened.
+
+Together they give agents enough context to prepare useful work.
+
+For an incident, the agent should gather recent deploys, affected services, customer impact, correlated traces and rollback options before the human joins.
+
+The human should enter the loop with context, not start from zero.
+
+## Reproduce
+
+Agents can only fix what they can reproduce.
+
+This is easy to underestimate.
+
+If a bug only exists as a vague Slack message, the loop is weak. If it exists as a trace ID, request payload, deployed version, fixture and failing test, the loop is strong.
+
+Reproduction needs:
+
+- preview deployments
+- production version metadata
+- release manifests
+- request fixtures
+- test data
+- seed scripts
+- replayable traces
+
+<SdlcFlow variant="reproduce" />
+
+The goal is not only to fix the issue.
+
+The goal is to turn production reality into a reusable test.
+
+## Measure
+
+Metrics are the outer loop.
+
+DORA metrics still matter:
+
+- deployment frequency
+- lead time
+- change failure rate
+- mean time to recovery
+
+DevEx and SPACE metrics also matter because speed without developer experience becomes debt.
+
+For agents, I would add a few more:
+
+- time to first useful proof
+- human intervention rate
+- false positive rate
+- rollback rate
+- cost per loop
+- percentage of agent work merged without rework
+- percentage of incidents with useful agent prep
+
+<SdlcFlow variant="measure" />
+
+Do not only measure tokens saved.
+
+Measure whether the system ships faster, fails less and learns more.
+
+## Examples
+
+Here are loops that already make sense:
+
+- Test failure -> agent reproduces failure -> proposes fix -> runs tests -> opens PR
+- Failed deployment -> agent reads logs -> identifies failing step -> proposes rollback or fix
+- Out of memory alert -> agent checks memory trend -> links recent deploys -> suggests limit or code change
+- Incident alert -> agent builds timeline -> links traces -> lists suspect deploys -> prepares comms
+- Cost spike -> agent finds resource delta -> estimates impact -> proposes mitigation
+- Code review -> agent checks diff against conventions -> finds risk -> suggests patch
+- Slack feedback -> agent collects context -> creates ticket -> links original thread
+- Design request -> agent builds prototype -> captures screenshots -> human picks direction
+- Data quality issue -> agent finds failing pipeline -> checks freshness -> proposes backfill
+- Customer feedback -> agent clusters messages -> links churn risk -> suggests product follow-up
+- Job application -> agent checks rubric -> summarizes evidence -> human decides
+- Churn signal -> agent gathers account history -> drafts action plan -> customer owner decides
+
+The pattern is always the same.
+
+The agent does the first pass.
+
+The system provides proof.
+
+The human decides.
+
+## What stays stable
+
+The tools will change.
+
+The model names will change.
+
+The interfaces will change.
+
+But the fundamentals probably will not:
+
+- contracts
+- schemas
+- tests
+- policies
+- deployment safety
+- observability
+- reproduction
+- measurement
+- human judgment
+
+That is why understanding things low-level still matters.
+
+If you understand the primitives, you can swap the tools.
+
+If you only understand the tools, every model release can make you feel behind.
+
+## The shift
+
+AI-first SDLC is not asking an agent to write more code.
+
+It is designing the lifecycle so an agent can safely do useful work before a human looks at it.
+
+The engineer's job moves up one level.
+
+Less manual first pass.
+
+More loop design.
+
+More proof design.
+
+More deciding what should be automated, what should be reviewed and what should never happen without a human.
+
+Loops are where this goes.
+
+Not because loops are new.
+
+Because loops are how engineering work becomes reliable.
+
+**Further reading**
+
+- [Understanding AI](https://leerob.com/ai) by Lee Robinson
+- [How does image compression work?](https://leerob.com/compression) by Lee Robinson
