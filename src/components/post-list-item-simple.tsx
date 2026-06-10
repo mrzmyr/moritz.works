@@ -17,19 +17,19 @@ export const PostListItemSimple = async ({
     <Link
       href={post.url}
       key={post.id}
-      className="flex flex-col sm:flex-row justify-between group items-start gap-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 px-4 py-2.5 rounded-md"
+      className="flex flex-col sm:flex-row justify-between group items-start gap-2 hover:bg-neutral-200/70 dark:hover:bg-neutral-700/70 px-4 py-2.5 rounded-md"
       data-hotkey={shortcut?.join(" ")}
     >
       <div className="flex flex-col gap-1 min-w-0">
         <div className="dark:text-white">{post.title}</div>
 
         {post.excerpt && (
-          <div className="text-neutral-400 dark:text-neutral-400 text-sm">
+          <div className="text-neutral-500 dark:text-neutral-300">
             {post.excerpt}
           </div>
         )}
       </div>
-      <div className="flex shrink-0 items-center gap-2 text-sm text-neutral-400 dark:text-neutral-400 mt-2 sm:mt-0">
+      <div className="flex shrink-0 items-center gap-2 text-sm text-neutral-500 dark:text-neutral-300 mt-2 sm:mt-0">
         <span>{dayjs(post.createdAt).fromNow()}</span>
         {shortcut && <ShortcutHint keys={shortcut} />}
       </div>

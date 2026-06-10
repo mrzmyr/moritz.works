@@ -11,7 +11,7 @@ export const ShortcutHint = ({
   const keyList = Array.isArray(keys) ? keys : [keys];
 
   return (
-    <KbdGroup className={cn("align-middle", className)}>
+    <KbdGroup className={cn("hidden align-middle sm:inline-flex", className)}>
       {keyList.map((key) => (
         <Kbd key={key} className="h-4 min-w-4 px-1 text-[10px]">
           {key.toUpperCase()}

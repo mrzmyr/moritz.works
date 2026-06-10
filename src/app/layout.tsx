@@ -4,7 +4,6 @@ import { Source_Serif_4 } from "next/font/google";
 import type React from "react";
 import { Toaster } from "sonner";
 import { PostHogProvider } from "@/app/providers";
-import { Footer } from "@/components/footer";
 import { PostStructuredData } from "@/components/post-structured-data";
 import { siteConfig } from "@/config/app";
 import "./globals.css";
@@ -67,6 +66,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   alternates: {
     canonical: "/",
+    types: {
+      "application/rss+xml": "/rss.xml",
+    },
   },
 };
 

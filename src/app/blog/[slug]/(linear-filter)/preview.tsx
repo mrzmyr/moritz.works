@@ -4,18 +4,18 @@ import { FilterDemo } from "./components/filter-demo";
 
 export default function Preview({ post }: { post: PostData }) {
   return (
-    <div className="flex flex-col gap-2 hover:bg-border/50 border border-border rounded-lg mx-4 max-h-[300px] overflow-hidden group transition-all duration-300 ease-out">
+    <div className="flex flex-col gap-2 hover:bg-neutral-200/70 dark:hover:bg-neutral-700/70 border border-border rounded-lg mx-4 max-h-[300px] overflow-hidden group transition-all duration-300 ease-out">
       <div className="flex flex-row justify-between gap-2 pt-4 px-4">
         <div className="flex flex-col gap-1">
           <div className="dark:text-white">{post.title}</div>
 
           {post.excerpt && (
-            <div className="text-neutral-400 dark:text-neutral-400 text-sm">
+            <div className="text-neutral-500 dark:text-neutral-300">
               {post.excerpt}
             </div>
           )}
         </div>
-        <div className="text-sm text-neutral-400 dark:text-neutral-400 mt-2 sm:mt-0">
+        <div className="text-sm text-neutral-500 dark:text-neutral-300 mt-2 sm:mt-0">
           {dayjs(post.createdAt).fromNow()}
         </div>
       </div>

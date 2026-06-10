@@ -259,7 +259,7 @@ export function ClapButton({
       </AnimatePresence>
 
       <div
-        className="fixed top-28 z-50 flex flex-col items-center gap-1"
+        className="blog-clap-control fixed top-28 z-50 flex flex-col items-center gap-1 rounded-full bg-neutral-50 px-2 py-1 dark:bg-[#090909]"
         style={{ right: "max(1rem, calc(50% - 384px - 5rem))" }}
       >
         <div className="relative">

@@ -1,8 +1,6 @@
 "use client";
 
-import { ArrowDown, ArrowUp } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { ShortcutHint } from "@/components/shortcut-hint";
 
 const DIGIT_KEYS = new Set(["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
 const SEQUENCE_TIMEOUT_MS = 650;
@@ -164,7 +162,7 @@ export const KeyboardShortcuts = () => {
         return;
       }
 
-      if (["b", "c", "e", "h", "i", "l", "r", "x"].includes(key)) {
+      if (["b", "c", "e", "f", "h", "i", "l", "r", "x"].includes(key)) {
         event.preventDefault();
         triggerHotkey(key);
       }
@@ -178,16 +176,5 @@ export const KeyboardShortcuts = () => {
     };
   }, []);
 
-  return (
-    <div className="fixed right-4 bottom-4 z-50 flex gap-1.5 rounded-md border border-neutral-200 bg-white/85 p-1.5 shadow-sm backdrop-blur dark:border-neutral-800 dark:bg-neutral-950/85">
-      <div className="flex items-center gap-1">
-        <ShortcutHint keys="j" />
-        <ArrowDown className="size-3 text-neutral-500 dark:text-neutral-400" />
-      </div>
-      <div className="flex items-center gap-1">
-        <ShortcutHint keys="k" />
-        <ArrowUp className="size-3 text-neutral-500 dark:text-neutral-400" />
-      </div>
-    </div>
-  );
+  return null;
 };

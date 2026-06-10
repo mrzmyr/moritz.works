@@ -13,6 +13,10 @@ import type { BundledLanguage } from "shiki";
 import { AiButton } from "@/components/ai-button";
 import { Blink } from "@/components/blink";
 import { Card, CardContent, CardTitle } from "@/components/card";
+import {
+  CareerFrameworkSwiper,
+  CareerFrameworkSwiperSlide,
+} from "@/components/career-framework-swiper";
 import { Figure, FigureCaption, FigureContent } from "@/components/figure";
 import {
   BadExample,
@@ -77,6 +81,8 @@ const components: MDXComponents = {
   Card,
   CardContent,
   CardTitle,
+  CareerFrameworkSwiper,
+  CareerFrameworkSwiperSlide,
   Blink,
   h1: H1,
   h2: H2,

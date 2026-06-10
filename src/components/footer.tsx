@@ -7,14 +7,24 @@ import { GITHUB_URL, LINKEDIN_URL, X_URL } from "@/config/app";
 export const Footer = () => {
   return (
     <footer className="mt-32 flex items-center justify-between">
-      <Link
-        href="/imprint"
-        className="inline-flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300"
-        data-hotkey="i"
-      >
-        Imprint
-        <ShortcutHint keys="i" />
-      </Link>
+      <div className="flex items-center gap-4">
+        <Link
+          href="/imprint"
+          className="inline-flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300"
+          data-hotkey="i"
+        >
+          Imprint
+          <ShortcutHint keys="i" />
+        </Link>
+        <Link
+          href="/rss.xml"
+          className="inline-flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300"
+          data-hotkey="f"
+        >
+          RSS
+          <ShortcutHint keys="f" />
+        </Link>
+      </div>
       <div className="flex gap-4">
         <Link
           href={X_URL}

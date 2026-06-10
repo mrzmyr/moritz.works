@@ -569,7 +569,7 @@ export const ProviderIcon = ({ icon, fallbackIcon, label }) => {
     return (
       <svg
         aria-label={icon.title}
-        className="size-5 shrink-0"
+        className="size-4 shrink-0"
         role="img"
         viewBox="0 0 24 24"
       >
@@ -586,7 +586,7 @@ export const ProviderIcon = ({ icon, fallbackIcon, label }) => {
   return (
     <span
       aria-label={label}
-      className="flex size-5 shrink-0 items-center justify-center rounded-sm text-[9px] font-semibold leading-none text-white"
+      className="flex size-4 shrink-0 items-center justify-center rounded-sm text-[8px] font-semibold leading-none text-white"
       role="img"
       style={{ backgroundColor: fallback.color }}
     >
@@ -598,7 +598,7 @@ export const ProviderIcon = ({ icon, fallbackIcon, label }) => {
 export const EvidenceNeedNode = ({ id, label }) => {
   return (
     <li
-      className="w-44 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-950 shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
+      className="w-36 rounded-md border border-neutral-200 bg-white px-2.5 py-1.5 text-xs font-medium leading-tight text-neutral-950 shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
       data-evidence-need={id}
       data-testid={`need-${id}`}
     >
@@ -610,18 +610,18 @@ export const EvidenceNeedNode = ({ id, label }) => {
 export const EvidenceSourceNode = ({ id, source }) => {
   return (
     <li
-      className="w-44 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-950 shadow-sm dark:border-neutral-700 dark:bg-neutral-100 dark:text-neutral-950"
+      className="w-36 rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-xs leading-tight text-neutral-950 shadow-sm dark:border-neutral-700 dark:bg-neutral-100 dark:text-neutral-950"
       data-evidence-source={id}
       data-testid={`source-${id}`}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <ProviderIcon
           fallbackIcon={source.fallbackIcon}
           icon={source.icon}
           label={source.provider}
         />
-        <span className="min-w-0">
-          <span className="block truncate font-medium text-neutral-950">
+        <span className="min-w-0 flex-1">
+          <span className="block break-words font-medium text-neutral-950">
             {source.name}
           </span>
         </span>
@@ -680,9 +680,9 @@ export const EvidenceSourceFlow = ({ flow }) => {
   return (
     <div data-evidence-flow={flow.id}>
       <KumoFlow
-        align="center"
-        className="rounded-lg border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950/50"
-        padding={{ x: 10, y: 18 }}
+        align="start"
+        className="rounded-lg border border-neutral-200 bg-neutral-50 transition-all duration-300 ease-out motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-2 motion-safe:duration-500 dark:border-neutral-800 dark:bg-neutral-950/50"
+        padding={{ x: 8, y: 12 }}
       >
         {needs}
         {sources}
@@ -693,7 +693,7 @@ export const EvidenceSourceFlow = ({ flow }) => {
 
 export const EvidenceSourceFlows = () => {
   return (
-    <div className="not-prose my-8 grid gap-4">
+    <div className="not-prose my-8 grid max-h-[680px] gap-3 overflow-y-auto rounded-lg border border-neutral-200 bg-neutral-50/60 p-2 pr-1 dark:border-neutral-800 dark:bg-neutral-950/30">
       {evidenceSourceFlows.map((flow) => (
         <EvidenceSourceFlow flow={flow} key={flow.id} />
       ))}

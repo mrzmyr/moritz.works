@@ -83,7 +83,7 @@ export default async function Page() {
 
         <Section>
           <div className="flex items-center justify-between">
-            <Headline>Recent Posts</Headline>
+            <Headline>Posts</Headline>
             <QuickLink href="/blog" shortcut="b" data-hotkey="b">
               View All
             </QuickLink>

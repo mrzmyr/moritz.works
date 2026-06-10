@@ -25,12 +25,12 @@ const ProjectListItem = ({
         </div> */}
         <div className="flex flex-col gap-1">
           <div className="dark:text-white">{name}</div>
-          <div className="text-neutral-400 dark:text-neutral-400 text-sm">
+          <div className="text-neutral-500 dark:text-neutral-300">
             {description}
           </div>
         </div>
       </div>
-      <div className="flex shrink-0 items-center gap-2 text-sm text-neutral-400 dark:text-neutral-400 mt-2 sm:mt-0">
+      <div className="flex shrink-0 items-center gap-2 text-sm text-neutral-500 dark:text-neutral-300 mt-2 sm:mt-0">
         <span>
           {from}
           {to ? ` - ${to}` : ""}
@@ -46,7 +46,7 @@ const ProjectListItem = ({
         href={href}
         target={href.startsWith("http") ? "_blank" : undefined}
         rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-        className="block hover:bg-neutral-100 dark:hover:bg-neutral-800 px-4 py-2.5 rounded-md group"
+        className="block hover:bg-neutral-200/70 dark:hover:bg-neutral-700/70 px-4 py-2.5 rounded-md group"
         data-hotkey={shortcut?.join(" ")}
       >
         {content}
@@ -59,7 +59,7 @@ const ProjectListItem = ({
 
 const ProjectList = () => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-2">
       <ProjectListItem
         name="LLM Ops"
         description="Collection of tools for running LLMs in production"
@@ -79,8 +79,10 @@ const ProjectList = () => {
       <ProjectListItem
         name="Astra"
         description="AI companion with 30+ agentic tools"
+        href="https://www.linkedin.com/in/bd40da1b5cafa74efb3c0d32ae3989b0/details/projects/"
         from="2025"
         to="2026"
+        shortcut={["p", "3"]}
       />
       <ProjectListItem
         name="Pixy"
@@ -88,7 +90,7 @@ const ProjectList = () => {
         href="https://pixy.day"
         from="2021"
         to="2024"
-        shortcut={["p", "3"]}
+        shortcut={["p", "4"]}
       />
       <ProjectListItem
         name="GibTherapie"
@@ -96,7 +98,7 @@ const ProjectList = () => {
         href="https://gibtherapie.de"
         from="2022"
         to="2024"
-        shortcut={["p", "4"]}
+        shortcut={["p", "5"]}
       />
     </div>
   );
