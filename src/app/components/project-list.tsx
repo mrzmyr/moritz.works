@@ -69,12 +69,20 @@ const ProjectList = () => {
         shortcut={["p", "1"]}
       />
       <ProjectListItem
+        name="LLM Cards"
+        description="Curated LLM operations links"
+        href="https://llm.cards"
+        from="2026"
+        to="today"
+        shortcut={["p", "2"]}
+      />
+      <ProjectListItem
         name="GIGA Ω"
         description="Unified API for German energy grid data"
         href="https://www.gigaohm.de"
         from="2025"
         to="today"
-        shortcut={["p", "2"]}
+        shortcut={["p", "3"]}
       />
       <ProjectListItem
         name="Astra"
@@ -82,7 +90,7 @@ const ProjectList = () => {
         href="https://www.linkedin.com/in/bd40da1b5cafa74efb3c0d32ae3989b0/details/projects/"
         from="2025"
         to="2026"
-        shortcut={["p", "3"]}
+        shortcut={["p", "4"]}
       />
       <ProjectListItem
         name="Pixy"
@@ -90,7 +98,7 @@ const ProjectList = () => {
         href="https://pixy.day"
         from="2021"
         to="2024"
-        shortcut={["p", "4"]}
+        shortcut={["p", "5"]}
       />
       <ProjectListItem
         name="GibTherapie"
@@ -98,7 +106,7 @@ const ProjectList = () => {
         href="https://gibtherapie.de"
         from="2022"
         to="2024"
-        shortcut={["p", "5"]}
+        shortcut={["p", "6"]}
       />
     </div>
   );
