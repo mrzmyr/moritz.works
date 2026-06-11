@@ -44,7 +44,7 @@ export default async function Page() {
     <>
       <PostStructuredData type="person" />
       <KeyboardShortcuts />
-      <div className="max-w-3xl mx-auto pt-8 pb-12 px-4 h-full">
+      <div className="max-w-2xl mx-auto pt-8 pb-12 px-4 h-full">
         <Banner currentBook={currentBook} />
         <div className="text-neutral-800 leading-7 space-y-6 dark:text-neutral-200">
           <div className="flex flex-col">

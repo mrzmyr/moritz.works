@@ -62,7 +62,7 @@ export default function Stack() {
         style={{ backgroundImage: "url('/static/images/stack-bg.jpg')" }}
       />
       <DndContext onDragEnd={handleDragEnd}>
-        <div className="max-w-3xl mx-auto h-full">
+        <div className="max-w-2xl mx-auto h-full">
           <div className="relative w-full h-full">
             {items.map((item) => (
               <Draggable key={item.id} id={item.id} x={item.x} y={item.y}>
