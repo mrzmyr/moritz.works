@@ -8,7 +8,7 @@ export const siteConfig = {
   name: "moritz.works",
   title: "Moritz Meyer",
   description:
-    "Where I write down little realizations I make on my way. Thoughts on Software Engineering, User Experience, and Engineering Management in the Climate Tech space.",
+    "Where I write down little realizations I make on my way. Thoughts on AI transformation, Software Engineering, and User Experience in the Climate Tech space.",
   url: "https://moritz.works",
   author: {
     name: "Moritz Meyer",
@@ -16,9 +16,13 @@ export const siteConfig = {
     github: "mrzmyr",
   },
   keywords: [
+    "ai lead",
+    "ai transformation",
+    "ai adoption",
+    "ai agents",
     "software engineering",
-    "engineering management",
     "user experience",
+    "climate tech",
     "product management",
     "nextjs",
     "react",

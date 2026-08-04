@@ -52,17 +52,15 @@ export default async function Page() {
             <span className="opacity-50 rounded text-sm">he/him</span>
           </div>
           <div className="leading-7 lg:mt-36">
-            Hey, I&apos;m Moritz. I work in the triangle{" "}
-            <span className="text-[12px] px-0.5 -mt-1 inline-block">◢</span> of
-            Software Engineering, User Experience, and Engineering Management.
-            Currently, I&apos;m working as{" "}
-            <span className="font-semibold">Engineering Manager</span> at{" "}
-            <span className="font-semibold">1KOMMA5°</span> in the{" "}
+            Hey, I&apos;m Moritz. Currently, I lead the{" "}
+            <span className="font-semibold">AI transformation at 1KOMMA5°</span>{" "}
+            in the{" "}
             <span>
               <TreeDeciduous className="inline-block w-4 h-4 -mt-1 -mr-0.5" />{" "}
               Climate Tech
             </span>{" "}
-            space, mostly focused on customer experience in delivery processes.
+            space, driving adoption, building internal AI products, and scaling
+            agents.
           </div>
           <div className="leading-7">
             Originally I studied a combination of computer science and
