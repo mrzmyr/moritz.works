@@ -3,7 +3,7 @@ title: AI Setup
 excerpt: Things to consider when setting up an AI agent.
 slug: ai
 createdAt: 2026-06-03
-updatedAt: 2026-06-03
+updatedAt: 2026-08-04
 ---
 
 ## Skills
@@ -19,6 +19,35 @@ updatedAt: 2026-06-03
 
 - `.agents/` is a remote git repository
 - Updated by hooks when you commit to `~/.agents/`
+
+## `AGENTS.md`
+
+Project rules the agent must follow. Two that pay off most:
+
+### Engineering principles
+
+- **No backward compatibility.** Remove obsolete paths instead of adding compatibility layers, fallbacks, or migrations.
+- **Simplest thing that fully works.** Choose the simplest implementation that meets the current requirements. Avoid speculative abstractions, configuration, and indirection.
+- **Grow in layers.** Start with the smallest version that works end to end, and add each capability on top of something that already works. Never trade a working product for unfinished complexity.
+- **Modular by default.** Keep components separate and concerns clearly divided.
+- **Use existing dependencies first.** Reach for what the project already has before writing your own implementation or adding a package. Do not assume a library lacks a capability without checking its docs and types.
+- **Prefer established libraries.** Use well-maintained libraries when they reduce complexity or improve reliability. Do not reimplement common functionality without a clear reason.
+- **Decide for the long term.** Do not accept a stopgap that only works for now and is meant to be replaced later.
+
+### Every error carries a fix
+
+`message` says what broke, `why` says what the system saw, `fix` says what to do about it.
+
+```ts
+{
+  status: 502,
+  message: "Auth0 metadata request failed",
+  why: `Auth0 returned status ${response.status} while loading OAuth metadata`,
+  fix: "Verify Auth0 is reachable and the issuer configuration is correct",
+}
+```
+
+See [evlog.dev](https://www.evlog.dev).
 
 ## Writing style
 
