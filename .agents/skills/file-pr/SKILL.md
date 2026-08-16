@@ -73,6 +73,68 @@ If you missed it:
 
 If you cannot produce a before state, **explain why in the PR** and document what you tried.
 
+## How to Put Images in the PR
+
+Use the GitHub uploads API to add screenshots and videos directly to the PR body. No browser or computer-use needed.
+
+### Upload Command
+
+```bash
+curl -s "https://uploads.github.com/user-attachments/assets?name=<f>&content_type=<mime>&repository_id=<id>" \
+  -X POST \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Accept: application/json" \
+  --data-binary @<f>
+```
+
+### Parameters
+
+- Replace `<f>` with the filename (e.g., `before-desktop.png`)
+- Replace `<mime>` with the content type:
+  - Images: `image/png`, `image/jpeg`, `image/gif`, `image/webp`
+  - Videos: `video/mp4`, `video/webm`
+- Replace `<id>` with the GitHub repository numeric id:
+  ```bash
+  gh api repos/{owner}/{repo} --jq .id
+  ```
+
+### Embedding the Result
+
+The API returns JSON with a `.url` field. Embed it as markdown:
+
+- **Images**: `![description](url)`
+- **Videos**: Put the URL on its own bare line (not wrapped in `![]()`)
+
+Example:
+```bash
+# Upload screenshot
+result=$(curl -s "https://uploads.github.com/user-attachments/assets?name=before.png&content_type=image/png&repository_id=12345" \
+  -X POST -H "Authorization: Bearer $(gh auth token)" -H "Accept: application/json" --data-binary @before.png)
+
+# Extract URL and use in markdown
+url=$(echo "$result" | jq -r .url)
+echo "![Before state]($url)"
+```
+
+### Rules
+
+- Same CDN as GitHub drag-and-drop; inherits repo visibility
+- **Never push proof assets to any product repo branch**
+- Do not commit screenshots to `.github/pr-assets` or similar
+- Error codes:
+  - `422`: Unsupported file type
+  - `404`: Bad repository id or no push permission
+- **Fallback if endpoint fails**: Use Crabbox artifact publishing plus the manifest URL
+
+### Videos
+
+- Use `video/mp4` or `video/webm` content type
+- Put the returned URL on its own bare line in the PR body
+- If Playwright recorded `.webm`, transcode to `.mp4` first:
+  ```bash
+  ffmpeg -i recording.webm -c:v libx264 -pix_fmt yuv420p recording.mp4
+  ```
+
 ## Checklist
 
 Before creating or updating a PR:
