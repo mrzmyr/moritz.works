@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { BookOpen } from "lucide-react";
 import { ShortcutHint } from "@/components/shortcut-hint";
 import {
   HoverCard,
@@ -62,18 +63,19 @@ export const Banner = ({ currentBook }: { currentBook?: Book }) => {
         <span>Hamburg</span>
       </div>
       {currentBook && bookUrl && (
-        <div className="min-w-0 overflow-hidden whitespace-nowrap">
-          <span className="shrink-0">Currently reading: </span>
+        <div className="flex items-center gap-1 min-w-0">
           <HoverCard openDelay={0} closeDelay={0}>
             <HoverCardTrigger asChild>
               <Link
                 href={bookUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="italic underline underline-offset-2 hover:text-neutral-600 dark:hover:text-neutral-300 inline-flex items-center gap-1 max-w-full overflow-hidden"
+                className="inline-flex items-center gap-1 min-w-0 italic underline underline-offset-2 hover:text-neutral-600 dark:hover:text-neutral-300"
                 data-hotkey="r"
+                aria-label="Currently reading"
               >
-                <span className="truncate">{currentBook.title}</span>
+                <BookOpen className="shrink-0" size={16} />
+                <span className="truncate min-w-0">{currentBook.title}</span>
                 <ShortcutHint keys="r" />
               </Link>
             </HoverCardTrigger>
