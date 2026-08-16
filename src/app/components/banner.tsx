@@ -47,8 +47,8 @@ export const Banner = ({ currentBook }: { currentBook?: Book }) => {
     : undefined;
 
   return (
-    <div className="flex justify-between items-center text-sm text-neutral-400 dark:text-neutral-500 mb-8">
-      <div className="flex items-center gap-1">
+    <div className="flex justify-between items-center gap-4 text-sm text-neutral-400 dark:text-neutral-500 mb-8">
+      <div className="flex items-center gap-1 shrink-0">
         {time && (
           <span className="font-mono">
             {time.hours}
@@ -62,18 +62,18 @@ export const Banner = ({ currentBook }: { currentBook?: Book }) => {
         <span>Hamburg</span>
       </div>
       {currentBook && bookUrl && (
-        <div>
-          Currently reading:{" "}
+        <div className="min-w-0 overflow-hidden whitespace-nowrap">
+          <span className="shrink-0">Currently reading: </span>
           <HoverCard openDelay={0} closeDelay={0}>
             <HoverCardTrigger asChild>
               <Link
                 href={bookUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 italic underline underline-offset-2 hover:text-neutral-600 dark:hover:text-neutral-300"
+                className="italic underline underline-offset-2 hover:text-neutral-600 dark:hover:text-neutral-300 inline-flex items-center gap-1 max-w-full overflow-hidden"
                 data-hotkey="r"
               >
-                {currentBook.title}
+                <span className="truncate">{currentBook.title}</span>
                 <ShortcutHint keys="r" />
               </Link>
             </HoverCardTrigger>
